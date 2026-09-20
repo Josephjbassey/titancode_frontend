@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
+import { PublicLayout } from './components/PublicLayout';
 import { SignInView } from './views/SignInView';
 import { SignUpView } from './views/SignUpView';
 import { QualificationView } from './views/QualificationView';
@@ -11,6 +12,12 @@ import { SettingsLayout } from './views/SettingsLayout';
 import { ProfileSettingsView } from './views/ProfileSettingsView';
 import { PasswordSettingsView } from './views/PasswordSettingsView';
 import { ChangePasswordView } from './views/ChangePasswordView';
+import { ServicesView } from './views/public/ServicesView';
+import { HireUsView } from './views/public/HireUsView';
+import { ContactUsView } from './views/public/ContactUsView';
+import { FaqsView } from './views/public/FaqsView';
+import { TestimonialsView } from './views/public/TestimonialsView';
+import { ApplicationFormView } from './views/public/ApplicationFormView';
 import { NotificationModal } from './components/NotificationModal';
 import { Modal } from './components/Modal';
 import { OtpInput } from './components/OtpInput';
@@ -35,10 +42,19 @@ export type ScreenId =
   | 'incorrect_current_password'
   | 'confirm_password_otp'
   | 'incorrect_code_toast'
-  | 'password_changed_success_toast';
+  | 'password_changed_success_toast'
+  | 'services'
+  | 'hire_us'
+  | 'contact_us'
+  | 'faqs'
+  | 'testimonials'
+  | 'application_form'
+  | 'application_required'
+  | 'application_email_exists'
+  | 'application_submitted';
 
 export function App() {
-  const [currentView, setCurrentView] = useState<ScreenId>('sign_in');
+  const [currentView, setCurrentView] = useState<ScreenId>('services');
   const [currentUser, setCurrentUser] = useState<User>(MOCK_MEMBER_USER);
   const [settingsTab, setSettingsTab] = useState<'profile' | 'password' | 'notifications'>('profile');
 
@@ -46,6 +62,15 @@ export function App() {
   const [standaloneOtp, setStandaloneOtp] = useState('12345');
 
   const screensList: { id: ScreenId; label: string; number: number }[] = [
+    { id: 'services', label: '17. Services (Full Marketing Page)', number: 17 },
+    { id: 'hire_us', label: '18. Hire Us (Inquiry Form)', number: 18 },
+    { id: 'contact_us', label: '19. Contact Us (Direct Reachout)', number: 19 },
+    { id: 'faqs', label: '20. FAQs (Accordion Q&A)', number: 20 },
+    { id: 'testimonials', label: '21. Testimonials (Client Reviews)', number: 21 },
+    { id: 'application_form', label: '22. Member Application Form (Default)', number: 22 },
+    { id: 'application_required', label: '23. Application Form (Required Error)', number: 23 },
+    { id: 'application_email_exists', label: '24. Application Form (Email Exists Error)', number: 24 },
+    { id: 'application_submitted', label: '25. Application Form (Submitted Modal)', number: 25 },
     { id: 'sign_in', label: '1. Sign In (Split Hero Carousel)', number: 1 },
     { id: 'sign_up', label: '2. Sign Up (Registration)', number: 2 },
     { id: 'qualification', label: '3. Role Qualification (Member vs Client)', number: 3 },
@@ -72,7 +97,7 @@ export function App() {
     }
   };
 
-  // Determine if current screen is inside the authenticated workspace
+  // Determine view group
   const isWorkspaceView = [
     'dashboard',
     'clients',
@@ -82,10 +107,43 @@ export function App() {
     'incorrect_current_password',
   ].includes(currentView);
 
+  const isPublicView = [
+    'services',
+    'hire_us',
+    'contact_us',
+    'faqs',
+    'testimonials',
+    'application_form',
+    'application_required',
+    'application_email_exists',
+    'application_submitted',
+  ].includes(currentView);
+
   return (
     <div className="tc-app-container">
-      {/* Authenticated Layout with Sidebar & Header */}
-      {isWorkspaceView ? (
+      {/* 1. PUBLIC MARKETING & APPLICATION PAGES */}
+      {isPublicView ? (
+        <PublicLayout currentView={currentView} onNavigate={setCurrentView}>
+          {currentView === 'services' && <ServicesView onNavigate={setCurrentView} />}
+          {currentView === 'hire_us' && <HireUsView onNavigate={setCurrentView} />}
+          {currentView === 'contact_us' && <ContactUsView onNavigate={setCurrentView} />}
+          {currentView === 'faqs' && <FaqsView onNavigate={setCurrentView} />}
+          {currentView === 'testimonials' && <TestimonialsView onNavigate={setCurrentView} />}
+          {currentView === 'application_form' && (
+            <ApplicationFormView initialState="default" onNavigate={setCurrentView} />
+          )}
+          {currentView === 'application_required' && (
+            <ApplicationFormView initialState="required" onNavigate={setCurrentView} />
+          )}
+          {currentView === 'application_email_exists' && (
+            <ApplicationFormView initialState="email_exists" onNavigate={setCurrentView} />
+          )}
+          {currentView === 'application_submitted' && (
+            <ApplicationFormView initialState="submitted" onNavigate={setCurrentView} />
+          )}
+        </PublicLayout>
+      ) : isWorkspaceView ? (
+        /* 2. AUTHENTICATED WORKSPACE WITH SIDEBAR & HEADER */
         <div style={{ display: 'flex', width: '100%', minHeight: '100vh' }}>
           <Sidebar
             currentView={currentView}
@@ -178,7 +236,7 @@ export function App() {
           </div>
         </div>
       ) : (
-        /* Standalone Auth & Wizard Views */
+        /* 3. STANDALONE AUTH & WIZARD VIEWS */
         <div style={{ width: '100%', minHeight: '100vh' }}>
           {currentView === 'sign_in' && (
             <SignInView
@@ -320,7 +378,7 @@ export function App() {
             if (val === 'profile_settings') setSettingsTab('profile');
             if (val === 'password_settings' || val === 'change_password' || val === 'incorrect_current_password') setSettingsTab('password');
           }}
-          style={{ maxWidth: '280px' }}
+          style={{ maxWidth: '300px' }}
         >
           {screensList.map((s) => (
             <option key={s.id} value={s.id}>
@@ -356,4 +414,5 @@ export function App() {
     </div>
   );
 }
+
 export default App;
