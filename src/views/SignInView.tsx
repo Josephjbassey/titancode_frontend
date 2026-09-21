@@ -86,7 +86,7 @@ export const SignInView: React.FC<SignInViewProps> = ({
                 outline: 'none',
                 transition: 'border-color 0.2s',
               }}
-              onFocus={(e) => e.target.style.borderColor = '#E5A83B'}
+              onFocus={(e) => e.target.style.borderColor = '#dfae32'}
               onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
             />
             <span style={{
@@ -133,7 +133,7 @@ export const SignInView: React.FC<SignInViewProps> = ({
                 outline: 'none',
                 transition: 'border-color 0.2s',
               }}
-              onFocus={(e) => e.target.style.borderColor = '#E5A83B'}
+              onFocus={(e) => e.target.style.borderColor = '#dfae32'}
               onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
             />
             <button
@@ -177,7 +177,7 @@ export const SignInView: React.FC<SignInViewProps> = ({
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
               style={{
-                accentColor: '#E5A83B',
+                accentColor: '#dfae32',
                 width: '15px',
                 height: '15px',
                 cursor: 'pointer',
@@ -192,7 +192,7 @@ export const SignInView: React.FC<SignInViewProps> = ({
             style={{
               background: 'none',
               border: 'none',
-              color: '#E5A83B',
+              color: '#dfae32',
               fontSize: '13px',
               fontWeight: '500',
               cursor: 'pointer',
@@ -211,13 +211,13 @@ export const SignInView: React.FC<SignInViewProps> = ({
             width: '100%',
             height: '46px',
             borderRadius: '9999px',
-            backgroundColor: '#E5A83B',
+            backgroundColor: '#dfae32',
             color: '#000000',
             fontSize: '15px',
             fontWeight: '700',
             border: 'none',
             cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
             transition: 'opacity 0.2s, transform 0.1s',
           }}
           onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.99)'}
@@ -239,7 +239,7 @@ export const SignInView: React.FC<SignInViewProps> = ({
           <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
         </div>
 
-        {/* Social Buttons: Google & iphone */}
+        {/* Social Buttons: Google & Apple */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
           <button
             type="button"
@@ -247,31 +247,22 @@ export const SignInView: React.FC<SignInViewProps> = ({
               height: '44px',
               borderRadius: '9999px',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid #FFFFFF59',
               color: '#FFFFFF',
               fontSize: '14px',
               fontWeight: '500',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '8px',
+              gap: '10px',
               cursor: 'pointer',
             }}
           >
-            <span style={{
-              width: '18px',
-              height: '18px',
-              borderRadius: '50%',
-              backgroundColor: '#FFFFFF',
-              color: '#000000',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontWeight: '700',
-              fontSize: '11px',
-            }}>
-              G
-            </span>
+            <img
+              src="/assets/google.png"
+              alt="Google"
+              style={{ width: '20px', height: '20px', objectFit: 'contain' }}
+            />
             Google
           </button>
 
@@ -281,18 +272,22 @@ export const SignInView: React.FC<SignInViewProps> = ({
               height: '44px',
               borderRadius: '9999px',
               backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
+              border: '1px solid #FFFFFF59',
               color: '#FFFFFF',
               fontSize: '14px',
               fontWeight: '500',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              gap: '8px',
+              gap: '10px',
               cursor: 'pointer',
             }}
           >
-            <span style={{ fontSize: '16px', lineHeight: 1 }}></span>
+            <img
+              src="/assets/apple.png"
+              alt="Apple"
+              style={{ width: '20px', height: '20px', objectFit: 'contain' }}
+            />
             iphone
           </button>
         </div>
@@ -310,7 +305,7 @@ export const SignInView: React.FC<SignInViewProps> = ({
             style={{
               background: 'none',
               border: 'none',
-              color: '#E5A83B',
+              color: '#dfae32',
               fontWeight: '600',
               cursor: 'pointer',
               padding: 0,

@@ -33,7 +33,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
           {/* Exact TitanCode Logo */}
           <div style={{ marginBottom: '28px' }}>
             <img
-              src="/assets/tc_brand_logo.png"
+              src="/assets/logo.png"
               alt="TitanCode"
               style={{
                 height: '34px',
@@ -82,7 +82,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
           justifyContent: 'center',
           padding: '28px',
           position: 'relative',
-          backgroundColor: '#0A0C10',
+          backgroundColor: '#0b0b0c',
         }}
       >
         <div style={{
@@ -92,12 +92,12 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
           height: 'calc(100vh - 56px)',
           borderRadius: '24px',
           overflow: 'hidden',
-          backgroundColor: '#121620',
+          backgroundColor: '#232324',
           boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
         }}>
           {/* Full Bleed Rounded Hero Image */}
           <img
-            src="/assets/auth_hero.png"
+            src="/assets/authside_bg.jpg"
             alt="TitanCode"
             style={{
               width: '100%',
@@ -123,7 +123,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
               width: '28px',
               height: '4px',
               borderRadius: '2px',
-              backgroundColor: '#E5A83B',
+              backgroundColor: '#dfae32',
               transition: 'all 0.3s ease',
             }} />
             <span style={{

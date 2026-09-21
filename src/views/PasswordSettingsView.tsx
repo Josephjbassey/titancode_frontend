@@ -9,7 +9,7 @@ export const PasswordSettingsView: React.FC<PasswordSettingsViewProps> = ({
 }) => {
   return (
     <div style={{
-      backgroundColor: '#121620',
+      backgroundColor: '#232324',
       border: '1px solid rgba(255, 255, 255, 0.08)',
       borderRadius: '16px',
       padding: '28px',
@@ -73,13 +73,13 @@ export const PasswordSettingsView: React.FC<PasswordSettingsViewProps> = ({
           height: '44px',
           padding: '0 28px',
           borderRadius: '9999px',
-          backgroundColor: '#E5A83B',
+          backgroundColor: '#dfae32',
           color: '#000000',
           fontSize: '14px',
           fontWeight: '700',
           border: 'none',
           cursor: 'pointer',
-          boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+          boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
         }}
       >
         Change Password

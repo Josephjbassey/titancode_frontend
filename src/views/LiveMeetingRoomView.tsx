@@ -32,10 +32,10 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
   const [inputMessage, setInputMessage] = useState('');
 
   const participants = [
-    { name: 'Joseph John (You)', role: 'Lead Fullstack', avatar: '/assets/team_joseph.png', speaking: true },
-    { name: 'Munis Samuel', role: 'Product Architect', avatar: '/assets/team_munis.png', speaking: false },
-    { name: 'Benedicta Atagamen', role: 'UI/UX Designer', avatar: '/assets/team_benedicta.png', speaking: false },
-    { name: 'Olukayode Tioluwanimi', role: 'Product Manager', avatar: '/assets/team_olukayode.png', speaking: false },
+    { name: 'Joseph John (You)', role: 'Lead Fullstack', avatar: '/assets/joseph.jpg', speaking: true },
+    { name: 'Munis Samuel', role: 'Product Architect', avatar: '/assets/munis.jpg', speaking: false },
+    { name: 'Benedicta Atagamen', role: 'UI/UX Designer', avatar: '/assets/benedicta.png', speaking: false },
+    { name: 'Olukayode Tioluwanimi', role: 'Product Manager', avatar: '/assets/blessing.jpg', speaking: false },
   ];
 
   const handleSendMessage = (e: React.FormEvent) => {
@@ -61,7 +61,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
         backgroundColor: '#07090D',
         borderRadius: '16px',
         overflow: 'hidden',
-        border: '1px solid rgba(229, 168, 59, 0.2)',
+        border: '1px solid rgba(223, 174, 50, 0.2)',
         color: '#FFFFFF',
       }}
     >
@@ -71,7 +71,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
         <div
           style={{
             padding: '16px 24px',
-            backgroundColor: '#0E1118',
+            backgroundColor: '#0b0b0c',
             borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
             display: 'flex',
             alignItems: 'center',
@@ -113,7 +113,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
               type="button"
               onClick={() => setShowChat(!showChat)}
               style={{
-                backgroundColor: showChat ? '#E5A83B' : 'rgba(255, 255, 255, 0.08)',
+                backgroundColor: showChat ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
                 color: showChat ? '#0A0D14' : '#FFFFFF',
                 border: 'none',
                 borderRadius: '6px',
@@ -141,7 +141,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
             gridTemplateColumns: '1fr 1fr',
             gridTemplateRows: '1fr 1fr',
             gap: '16px',
-            backgroundColor: '#0B0E14',
+            backgroundColor: '#161617',
           }}
         >
           {participants.map((p, idx) => (
@@ -152,7 +152,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
                 backgroundColor: '#11151F',
                 borderRadius: '12px',
                 overflow: 'hidden',
-                border: p.speaking ? '2px solid #E5A83B' : '1px solid rgba(255, 255, 255, 0.08)',
+                border: p.speaking ? '2px solid #dfae32' : '1px solid rgba(255, 255, 255, 0.08)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -221,7 +221,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
         <div
           style={{
             height: '80px',
-            backgroundColor: '#0E1118',
+            backgroundColor: '#0b0b0c',
             borderTop: '1px solid rgba(255, 255, 255, 0.06)',
             display: 'flex',
             alignItems: 'center',
@@ -281,7 +281,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
               width: '48px',
               height: '48px',
               borderRadius: '50%',
-              backgroundColor: isScreenSharing ? '#E5A83B' : 'rgba(255, 255, 255, 0.1)',
+              backgroundColor: isScreenSharing ? '#dfae32' : 'rgba(255, 255, 255, 0.1)',
               color: isScreenSharing ? '#0A0D14' : '#FFFFFF',
               border: 'none',
               display: 'flex',
@@ -325,7 +325,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
         <div
           style={{
             width: '320px',
-            backgroundColor: '#0E1118',
+            backgroundColor: '#0b0b0c',
             borderLeft: '1px solid rgba(255, 255, 255, 0.08)',
             display: 'flex',
             flexDirection: 'column',
@@ -357,7 +357,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
             {chatMessages.map((msg, i) => (
               <div key={i} style={{ fontSize: '13px' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                  <span style={{ fontWeight: 700, color: '#E5A83B', fontSize: '12px' }}>{msg.sender}</span>
+                  <span style={{ fontWeight: 700, color: '#dfae32', fontSize: '12px' }}>{msg.sender}</span>
                   <span style={{ color: '#6B7280', fontSize: '11px' }}>{msg.time}</span>
                 </div>
                 <div style={{ backgroundColor: '#11151F', padding: '10px 12px', borderRadius: '8px', color: '#D1D5DB', lineHeight: 1.4 }}>
@@ -396,7 +396,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
             <button
               type="submit"
               style={{
-                backgroundColor: '#E5A83B',
+                backgroundColor: '#dfae32',
                 color: '#0A0D14',
                 border: 'none',
                 borderRadius: '8px',

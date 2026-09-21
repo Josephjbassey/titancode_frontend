@@ -34,7 +34,7 @@ export const MOCK_MEMBER_USER: User = {
   github_url: 'https://github.com/alexmorgan-tc',
   portfolio_url: 'https://alexmorgan.dev',
   status: 'active',
-  avatar_url: '/assets/member_avatar.png',
+  avatar_url: '/assets/dashprofile.jpg',
   gender: 'Male',
   address: '14 Admiralty Way, Lekki Phase 1',
   city: 'Lekki',
@@ -59,7 +59,7 @@ export const MOCK_ADMIN_USER: User = {
   country: 'Nigeria',
   phone_number: '+234 803 987 6543',
   status: 'active',
-  avatar_url: '/assets/admin_avatar.png',
+  avatar_url: '/assets/dashprofile.jpg',
   gender: 'Female',
   address: '7 Victoria Island Crescent',
   city: 'Victoria Island',
@@ -216,10 +216,10 @@ export const MOCK_MEETING: Meeting = {
   duration_minutes: 45,
   meet_url: 'https://meet.google.com/titancode-sync',
   attendees: [
-    { id: 1, name: 'Alex Morgan', avatar: '/assets/member_avatar.png', role: 'Frontend Lead' },
-    { id: 2, name: 'Elena Rostova', avatar: '/assets/admin_avatar.png', role: 'VP Engineering' },
-    { id: 3, name: 'David Kalu', avatar: '/assets/tc_logo_sample.png', role: 'Backend Lead' },
-    { id: 4, name: 'Sara Danjuma', avatar: '/assets/member_avatar.png', role: 'Product Manager' },
+    { id: 1, name: 'Alex Morgan', avatar: '/assets/joseph.jpg', role: 'Frontend Lead' },
+    { id: 2, name: 'Elena Rostova', avatar: '/assets/dashprofile.jpg', role: 'VP Engineering' },
+    { id: 3, name: 'David Kalu', avatar: '/assets/munis.jpg', role: 'Backend Lead' },
+    { id: 4, name: 'Sara Danjuma', avatar: '/assets/benedicta.png', role: 'Product Manager' },
   ],
 };
 

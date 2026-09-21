@@ -22,8 +22,8 @@ const INITIAL_DEPARTMENTS: Department[] = [
     id: 'DEP-01',
     name: 'Fullstack & Backend Engineering',
     description: 'High-availability server infrastructure, microservices, cloud deployments, and resilient database architectures.',
-    manager: { name: 'Joseph John', avatar: '/assets/team_joseph.png' },
-    assistant: { name: 'David Mensah', avatar: '/assets/admin_avatar.png' },
+    manager: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
+    assistant: { name: 'David Mensah', avatar: '/assets/dashprofile.jpg' },
     memberCount: 12,
     activeProjects: ['TitanCore SaaS Cloud Engine', 'OmniTrade Crypto Arbitrage Bot'],
   },
@@ -31,8 +31,8 @@ const INITIAL_DEPARTMENTS: Department[] = [
     id: 'DEP-02',
     name: 'UI/UX & Product Design',
     description: 'Enterprise design systems, interactive prototypes, user journey mapping, and conversion-optimized aesthetics.',
-    manager: { name: 'Benedicta Atagamen', avatar: '/assets/team_benedicta.png' },
-    assistant: { name: 'Sarah Al-Mansoor', avatar: '/assets/admin_avatar.png' },
+    manager: { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
+    assistant: { name: 'Sarah Al-Mansoor', avatar: '/assets/dashprofile.jpg' },
     memberCount: 8,
     activeProjects: ['Aurelia FinTech Mobile App', 'PulseHealth Telemedicine Portal'],
   },
@@ -40,8 +40,8 @@ const INITIAL_DEPARTMENTS: Department[] = [
     id: 'DEP-03',
     name: 'Product Management & QA',
     description: 'Sprint planning, user story grooming, client milestone alignment, and automated regression testing.',
-    manager: { name: 'Olukayode Tioluwanimi', avatar: '/assets/team_olukayode.png' },
-    assistant: { name: 'Munis Samuel', avatar: '/assets/team_munis.png' },
+    manager: { name: 'Olukayode Tioluwanimi', avatar: '/assets/blessing.jpg' },
+    assistant: { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
     memberCount: 6,
     activeProjects: ['Aurelia FinTech Mobile App', 'TitanCore SaaS Cloud Engine'],
   },
@@ -66,8 +66,8 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
       id: `DEP-0${departments.length + 1}`,
       name: newName,
       description: newDesc || 'Specialized division of TitanCode.',
-      manager: { name: 'Joseph John', avatar: '/assets/team_joseph.png' },
-      assistant: { name: 'Benedicta Atagamen', avatar: '/assets/team_benedicta.png' },
+      manager: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
+      assistant: { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
       memberCount: 1,
       activeProjects: [],
     };
@@ -104,7 +104,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
           type="button"
           onClick={() => setShowCreateModal(true)}
           style={{
-            backgroundColor: '#E5A83B',
+            backgroundColor: '#dfae32',
             color: '#0A0D14',
             fontWeight: 700,
             fontSize: '14px',
@@ -115,7 +115,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            boxShadow: '0 4px 14px rgba(229, 168, 59, 0.25)',
+            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
           }}
         >
           <Plus size={18} strokeWidth={2.5} />
@@ -147,7 +147,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
               justifyContent: 'space-between',
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(229, 168, 59, 0.35)';
+              e.currentTarget.style.borderColor = 'rgba(223, 174, 50, 0.35)';
               e.currentTarget.style.transform = 'translateY(-3px)';
             }}
             onMouseOut={(e) => {
@@ -158,7 +158,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
             <div>
               {/* Header Badge */}
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <span style={{ color: '#E5A83B', fontSize: '12px', fontWeight: 700 }}>{dept.id}</span>
+                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>{dept.id}</span>
                 <span
                   style={{
                     backgroundColor: 'rgba(255, 255, 255, 0.08)',
@@ -181,7 +181,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
 
               {/* Leadership Row */}
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-                <div style={{ backgroundColor: '#0B0E14', padding: '12px', borderRadius: '8px' }}>
+                <div style={{ backgroundColor: '#161617', padding: '12px', borderRadius: '8px' }}>
                   <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Department Manager</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
                     <img
@@ -193,7 +193,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
                   </div>
                 </div>
 
-                <div style={{ backgroundColor: '#0B0E14', padding: '12px', borderRadius: '8px' }}>
+                <div style={{ backgroundColor: '#161617', padding: '12px', borderRadius: '8px' }}>
                   <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Assistant Lead</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
                     <img
@@ -220,7 +220,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
               }}
             >
               <span>{dept.activeProjects.length} Active Client Projects</span>
-              <span style={{ color: '#E5A83B', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '2px' }}>
+              <span style={{ color: '#dfae32', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '2px' }}>
                 <span>Inspect</span>
                 <ChevronRight size={14} />
               </span>
@@ -248,7 +248,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '540px',
               width: '100%',
@@ -258,7 +258,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
               <div>
-                <span style={{ color: '#E5A83B', fontSize: '12px', fontWeight: 700 }}>{selectedDept.id}</span>
+                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>{selectedDept.id}</span>
                 <h3 style={{ fontSize: '20px', fontWeight: 800, margin: '4px 0 0', color: '#FFFFFF' }}>
                   {selectedDept.name}
                 </h3>
@@ -276,15 +276,15 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
               {selectedDept.description}
             </p>
 
-            <div style={{ backgroundColor: '#0B0E14', padding: '16px', borderRadius: '10px', marginBottom: '20px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: '#E5A83B', marginBottom: '10px' }}>
+            <div style={{ backgroundColor: '#161617', padding: '16px', borderRadius: '10px', marginBottom: '20px' }}>
+              <div style={{ fontSize: '13px', fontWeight: 700, color: '#dfae32', marginBottom: '10px' }}>
                 Active Client Projects Assigned:
               </div>
               {selectedDept.activeProjects.length > 0 ? (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   {selectedDept.activeProjects.map((p, i) => (
                     <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#FFFFFF' }}>
-                      <FolderGit2 size={14} color="#E5A83B" />
+                      <FolderGit2 size={14} color="#dfae32" />
                       <span>{p}</span>
                     </div>
                   ))}
@@ -299,7 +299,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
                 type="button"
                 onClick={() => setSelectedDept(null)}
                 style={{
-                  backgroundColor: '#E5A83B',
+                  backgroundColor: '#dfae32',
                   color: '#0A0D14',
                   fontWeight: 700,
                   padding: '10px 24px',
@@ -334,7 +334,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '500px',
               width: '100%',
@@ -368,7 +368,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
                   onChange={(e) => setNewName(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -390,7 +390,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
                   onChange={(e) => setNewDesc(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -420,7 +420,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
                 <button
                   type="submit"
                   style={{
-                    backgroundColor: '#E5A83B',
+                    backgroundColor: '#dfae32',
                     color: '#0A0D14',
                     fontWeight: 700,
                     padding: '10px 22px',

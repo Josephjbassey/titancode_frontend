@@ -20,7 +20,7 @@ export const TeamDashboardView: React.FC = () => {
   const donutSlices = [
     { label: 'Completed', value: 5, color: '#10B981' },
     { label: 'In Progress', value: 4, color: '#3B82F6' },
-    { label: 'Pending', value: 3, color: '#E5A83B' },
+    { label: 'Pending', value: 3, color: '#dfae32' },
   ];
 
   return (
@@ -52,26 +52,28 @@ export const TeamDashboardView: React.FC = () => {
         gap: '16px',
       }}>
         {/* Card 1: My Projects */}
-        <div style={{
-          backgroundColor: '#121620',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}>
+        <div
+          className="figma-card"
+          style={{
+            borderTop: '3px solid #DDC998',
+            borderRadius: '16px',
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>My Projects</span>
             <div style={{
               width: '32px',
               height: '32px',
               borderRadius: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              backgroundColor: '#DFAE324D',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#9CA3AF',
+              color: '#DDC998',
             }}>
               <FolderGit2 size={18} />
             </div>
@@ -86,26 +88,28 @@ export const TeamDashboardView: React.FC = () => {
         </div>
 
         {/* Card 2: My Tasks */}
-        <div style={{
-          backgroundColor: '#121620',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}>
+        <div
+          className="figma-card"
+          style={{
+            borderTop: '3px solid #DDC998',
+            borderRadius: '16px',
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>My Tasks</span>
             <div style={{
               width: '32px',
               height: '32px',
               borderRadius: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              backgroundColor: '#DFAE324D',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#9CA3AF',
+              color: '#DDC998',
             }}>
               <CheckSquare size={18} />
             </div>
@@ -120,7 +124,7 @@ export const TeamDashboardView: React.FC = () => {
               alignItems: 'center',
               gap: '4px',
               fontSize: '12px',
-              color: '#E5A83B',
+              color: '#DFAE32',
               fontWeight: '600',
               background: 'none',
               border: 'none',
@@ -129,31 +133,33 @@ export const TeamDashboardView: React.FC = () => {
               textAlign: 'left',
             }}
           >
-            View all tasks →
+            View all tasks &gt;
           </button>
         </div>
 
         {/* Card 3: Upcoming Meetings */}
-        <div style={{
-          backgroundColor: '#121620',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}>
+        <div
+          className="figma-card"
+          style={{
+            borderTop: '3px solid #DDC998',
+            borderRadius: '16px',
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>Upcoming Meetings</span>
             <div style={{
               width: '32px',
               height: '32px',
               borderRadius: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              backgroundColor: '#DFAE324D',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#9CA3AF',
+              color: '#DDC998',
             }}>
               <Video size={18} />
             </div>
@@ -168,7 +174,7 @@ export const TeamDashboardView: React.FC = () => {
               alignItems: 'center',
               gap: '4px',
               fontSize: '12px',
-              color: '#E5A83B',
+              color: '#DFAE32',
               fontWeight: '600',
               background: 'none',
               border: 'none',
@@ -177,31 +183,33 @@ export const TeamDashboardView: React.FC = () => {
               textAlign: 'left',
             }}
           >
-            View all meetings →
+            View all meetings &gt;
           </button>
         </div>
 
         {/* Card 4: Wallet Balance */}
-        <div style={{
-          backgroundColor: '#121620',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}>
+        <div
+          className="figma-card"
+          style={{
+            borderTop: '3px solid #DDC998',
+            borderRadius: '16px',
+            padding: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'space-between',
+          }}
+        >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>Wallet Balance</span>
             <div style={{
               width: '32px',
               height: '32px',
               borderRadius: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              backgroundColor: '#DFAE324D',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              color: '#9CA3AF',
+              color: '#DDC998',
             }}>
               <Wallet size={18} />
             </div>
@@ -216,7 +224,7 @@ export const TeamDashboardView: React.FC = () => {
               alignItems: 'center',
               gap: '4px',
               fontSize: '12px',
-              color: '#E5A83B',
+              color: '#DFAE32',
               fontWeight: '600',
               background: 'none',
               border: 'none',
@@ -225,7 +233,7 @@ export const TeamDashboardView: React.FC = () => {
               textAlign: 'left',
             }}
           >
-            View all payments →
+            View all payments &gt;
           </button>
         </div>
       </div>
@@ -242,7 +250,7 @@ export const TeamDashboardView: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Card: My Tasks */}
           <div style={{
-            backgroundColor: '#121620',
+            backgroundColor: '#232324',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             padding: '20px',
@@ -291,7 +299,7 @@ export const TeamDashboardView: React.FC = () => {
                     <tr key={row.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
                       <td style={{ padding: '14px 12px', color: '#FFFFFF', fontWeight: '500' }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#E5A83B' }} />
+                          <span style={{ width: '6px', height: '6px', borderRadius: '50%', backgroundColor: '#dfae32' }} />
                           {row.name}
                         </div>
                       </td>
@@ -317,8 +325,8 @@ export const TeamDashboardView: React.FC = () => {
                         <span style={{
                           padding: '4px 10px',
                           borderRadius: '9999px',
-                          backgroundColor: 'rgba(229, 168, 59, 0.15)',
-                          color: '#E5A83B',
+                          backgroundColor: 'rgba(223, 174, 50, 0.15)',
+                          color: '#dfae32',
                           fontSize: '11px',
                           fontWeight: '600',
                         }}>
@@ -354,7 +362,7 @@ export const TeamDashboardView: React.FC = () => {
 
           {/* Card: My Project Progress */}
           <div style={{
-            backgroundColor: '#121620',
+            backgroundColor: '#232324',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             padding: '20px',
@@ -394,7 +402,7 @@ export const TeamDashboardView: React.FC = () => {
                 <div style={{ fontSize: '15px', fontWeight: '700', color: '#FFFFFF', marginBottom: '2px' }}>
                   TitanCode Website
                 </div>
-                <div style={{ fontSize: '12px', color: '#E5A83B', marginBottom: '10px' }}>
+                <div style={{ fontSize: '12px', color: '#dfae32', marginBottom: '10px' }}>
                   UI/UX Design
                 </div>
                 <div style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '4px' }}>
@@ -445,7 +453,7 @@ export const TeamDashboardView: React.FC = () => {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
           {/* Card: Upcoming Meeting */}
           <div style={{
-            backgroundColor: '#121620',
+            backgroundColor: '#232324',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             padding: '20px',
@@ -482,7 +490,7 @@ export const TeamDashboardView: React.FC = () => {
 
             {/* Overlapping Attendee Avatars */}
             <div style={{ display: 'flex', alignItems: 'center', marginBottom: '16px' }}>
-              {['benedicta_avatar_sm.png', 'admin_avatar.png', 'member_avatar.png'].map((imgName, i) => (
+              {['dashprofile.jpg', 'joseph.jpg', 'blessing.jpg'].map((imgName, i) => (
                 <img
                   key={i}
                   src={`/assets/${imgName}`}
@@ -491,7 +499,7 @@ export const TeamDashboardView: React.FC = () => {
                     width: '32px',
                     height: '32px',
                     borderRadius: '50%',
-                    border: '2px solid #121620',
+                    border: '2px solid #232324',
                     marginLeft: i === 0 ? 0 : '-8px',
                     objectFit: 'cover',
                   }}
@@ -506,7 +514,7 @@ export const TeamDashboardView: React.FC = () => {
                 width: '100%',
                 height: '42px',
                 borderRadius: '9999px',
-                backgroundColor: '#E5A83B',
+                backgroundColor: '#dfae32',
                 color: '#000000',
                 fontSize: '14px',
                 fontWeight: '700',
@@ -544,7 +552,7 @@ export const TeamDashboardView: React.FC = () => {
 
           {/* Card: Task Overview (Circular Donut Chart) */}
           <div style={{
-            backgroundColor: '#121620',
+            backgroundColor: '#232324',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             padding: '20px',
@@ -600,7 +608,7 @@ export const TeamDashboardView: React.FC = () => {
 
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: '12px' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#E5A83B' }} />
+                    <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#dfae32' }} />
                     <span style={{ color: '#FFFFFF' }}>Pending</span>
                   </div>
                   <span style={{ color: '#9CA3AF', fontWeight: '600' }}>3 (25.0%)</span>
@@ -611,7 +619,7 @@ export const TeamDashboardView: React.FC = () => {
 
           {/* Card: Recent Activity */}
           <div style={{
-            backgroundColor: '#121620',
+            backgroundColor: '#232324',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             padding: '20px',
@@ -674,8 +682,8 @@ export const TeamDashboardView: React.FC = () => {
                   width: '30px',
                   height: '30px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(229, 168, 59, 0.15)',
-                  color: '#E5A83B',
+                  backgroundColor: 'rgba(223, 174, 50, 0.15)',
+                  color: '#dfae32',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

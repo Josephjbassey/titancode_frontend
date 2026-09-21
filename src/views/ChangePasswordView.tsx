@@ -72,7 +72,7 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
       >
         {/* Left Card: Change Password Form */}
         <div style={{
-          backgroundColor: '#121620',
+          backgroundColor: '#232324',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '16px',
           padding: '28px',
@@ -267,7 +267,7 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#E5A83B',
+                  color: '#dfae32',
                   fontSize: '13px',
                   fontWeight: '500',
                   cursor: 'pointer',
@@ -304,13 +304,13 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
                   height: '44px',
                   padding: '0 28px',
                   borderRadius: '9999px',
-                  backgroundColor: '#E5A83B',
+                  backgroundColor: '#dfae32',
                   color: '#000000',
                   fontSize: '14px',
                   fontWeight: '700',
                   border: 'none',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+                  boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
                 }}
               >
                 Update Password
@@ -339,7 +339,7 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
 
         {/* Right Card: Where you're logged in (Figma) */}
         <div style={{
-          backgroundColor: '#121620',
+          backgroundColor: '#232324',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '16px',
           padding: '28px',
@@ -492,7 +492,7 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#E5A83B',
+                color: '#dfae32',
                 fontWeight: '600',
                 cursor: 'pointer',
                 padding: 0,
@@ -510,13 +510,13 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
               width: '100%',
               height: '46px',
               borderRadius: '9999px',
-              backgroundColor: '#E5A83B',
+              backgroundColor: '#dfae32',
               color: '#000000',
               fontSize: '15px',
               fontWeight: '700',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+              boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
             }}
           >
             Confirm

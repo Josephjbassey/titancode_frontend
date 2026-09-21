@@ -103,7 +103,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
               padding: '8px 18px',
               borderRadius: '6px',
               border: 'none',
-              backgroundColor: activeTab === 'request_form' ? '#E5A83B' : 'transparent',
+              backgroundColor: activeTab === 'request_form' ? '#dfae32' : 'transparent',
               color: activeTab === 'request_form' ? '#0A0D14' : '#9CA3AF',
               fontWeight: 700,
               fontSize: '13px',
@@ -119,7 +119,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
               padding: '8px 18px',
               borderRadius: '6px',
               border: 'none',
-              backgroundColor: activeTab === 'my_projects' ? '#E5A83B' : 'transparent',
+              backgroundColor: activeTab === 'my_projects' ? '#dfae32' : 'transparent',
               color: activeTab === 'my_projects' ? '#0A0D14' : '#9CA3AF',
               fontWeight: 700,
               fontSize: '13px',
@@ -141,7 +141,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
               textAlign: 'center',
               maxWidth: '640px',
               margin: '40px auto',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
             }}
           >
             <CheckCircle2 size={54} color="#10B981" style={{ margin: '0 auto 16px' }} />
@@ -156,7 +156,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
               type="button"
               onClick={() => setActiveTab('my_projects')}
               style={{
-                backgroundColor: '#E5A83B',
+                backgroundColor: '#dfae32',
                 color: '#0A0D14',
                 fontWeight: 700,
                 fontSize: '14px',
@@ -197,7 +197,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                   onChange={(e) => setProjectName(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '12px 14px',
@@ -218,7 +218,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                     onChange={(e) => setBudgetTier(e.target.value)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '12px 14px',
@@ -243,7 +243,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                     onChange={(e) => setTimeline(e.target.value)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '12px 14px',
@@ -271,7 +271,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                   onChange={(e) => setBrief(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '12px 14px',
@@ -286,15 +286,15 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
               {/* Upload brief mock box */}
               <div
                 style={{
-                  border: '2px dashed rgba(229, 168, 59, 0.3)',
+                  border: '2px dashed rgba(223, 174, 50, 0.3)',
                   borderRadius: '10px',
                   padding: '24px',
                   textAlign: 'center',
                   marginBottom: '28px',
-                  backgroundColor: '#0B0E14',
+                  backgroundColor: '#161617',
                 }}
               >
-                <UploadCloud size={32} color="#E5A83B" style={{ margin: '0 auto 8px' }} />
+                <UploadCloud size={32} color="#dfae32" style={{ margin: '0 auto 8px' }} />
                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF' }}>
                   Upload Technical Brief or Architecture Diagrams
                 </div>
@@ -307,7 +307,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                 type="submit"
                 style={{
                   width: '100%',
-                  backgroundColor: '#E5A83B',
+                  backgroundColor: '#dfae32',
                   color: '#0A0D14',
                   fontWeight: 700,
                   fontSize: '15px',
@@ -315,7 +315,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                   borderRadius: '8px',
                   border: 'none',
                   cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+                  boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
                 }}
               >
                 Submit Project Request to TitanCode
@@ -343,7 +343,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
             >
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                  <span style={{ color: '#E5A83B', fontSize: '12px', fontWeight: 700 }}>{p.id}</span>
+                  <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>{p.id}</span>
                   <span
                     style={{
                       padding: '3px 8px',
@@ -353,8 +353,8 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                       backgroundColor:
                         p.status === 'Active Development'
                           ? 'rgba(16, 185, 129, 0.15)'
-                          : 'rgba(229, 168, 59, 0.15)',
-                      color: p.status === 'Active Development' ? '#10B981' : '#E5A83B',
+                          : 'rgba(223, 174, 50, 0.15)',
+                      color: p.status === 'Active Development' ? '#10B981' : '#dfae32',
                     }}
                   >
                     ● {p.status}
@@ -368,7 +368,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
               </div>
 
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#E5A83B' }}>{p.budgetTier}</div>
+                <div style={{ fontSize: '18px', fontWeight: 800, color: '#dfae32' }}>{p.budgetTier}</div>
                 <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '4px' }}>
                   Target: {p.deadlinePreference}
                 </div>

@@ -421,7 +421,7 @@ export function App() {
             <button
               type="button"
               onClick={() => alert('Code resent')}
-              style={{ background: 'none', border: 'none', color: '#E5A83B', fontWeight: '600', cursor: 'pointer' }}
+              style={{ background: 'none', border: 'none', color: '#dfae32', fontWeight: '600', cursor: 'pointer' }}
             >
               Resend code
             </button>

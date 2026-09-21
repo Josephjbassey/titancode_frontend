@@ -96,7 +96,7 @@ export const OtpInput: React.FC<OtpInputProps> = ({
             textAlign: 'center',
             backgroundColor: digit ? '#54461B' : 'rgba(255, 255, 255, 0.05)',
             color: '#FFFFFF',
-            border: `1.5px solid ${hasError ? '#EF4444' : digit ? '#E5A83B' : 'rgba(255, 255, 255, 0.15)'}`,
+            border: `1.5px solid ${hasError ? '#EF4444' : digit ? '#dfae32' : 'rgba(255, 255, 255, 0.15)'}`,
             borderRadius: '12px',
             outline: 'none',
             transition: 'all 0.2s ease',
@@ -104,13 +104,13 @@ export const OtpInput: React.FC<OtpInputProps> = ({
           }}
           onFocus={(e) => {
             if (!hasError) {
-              e.target.style.borderColor = '#E5A83B';
+              e.target.style.borderColor = '#dfae32';
               e.target.style.backgroundColor = '#54461B';
             }
           }}
           onBlur={(e) => {
             if (!hasError) {
-              e.target.style.borderColor = digit ? '#E5A83B' : 'rgba(255, 255, 255, 0.15)';
+              e.target.style.borderColor = digit ? '#dfae32' : 'rgba(255, 255, 255, 0.15)';
               e.target.style.backgroundColor = digit ? '#54461B' : 'rgba(255, 255, 255, 0.05)';
             }
           }}

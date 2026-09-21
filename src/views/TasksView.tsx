@@ -25,7 +25,7 @@ const INITIAL_TASKS: Task[] = [
     id: 'TSK-201',
     title: 'Implement WebRTC audio and video mesh signaling',
     project: 'Aurelia FinTech Mobile App',
-    assignee: { name: 'Joseph John', avatar: '/assets/team_joseph.png' },
+    assignee: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
     priority: 'Urgent',
     status: 'In Progress',
     deadline: '2026-09-24',
@@ -35,7 +35,7 @@ const INITIAL_TASKS: Task[] = [
     id: 'TSK-202',
     title: 'Design high-fidelity wallet transaction receipt cards',
     project: 'Aurelia FinTech Mobile App',
-    assignee: { name: 'Benedicta Atagamen', avatar: '/assets/team_benedicta.png' },
+    assignee: { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
     priority: 'High',
     status: 'Completed',
     deadline: '2026-09-19',
@@ -45,7 +45,7 @@ const INITIAL_TASKS: Task[] = [
     id: 'TSK-203',
     title: 'Configure PostgreSQL pg_stat_statements & indexes',
     project: 'TitanCore SaaS Cloud Engine',
-    assignee: { name: 'Munis Samuel', avatar: '/assets/team_munis.png' },
+    assignee: { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
     priority: 'Medium',
     status: 'Open',
     deadline: '2026-10-02',
@@ -55,7 +55,7 @@ const INITIAL_TASKS: Task[] = [
     id: 'TSK-204',
     title: 'Product requirements spec for client onboarding portal',
     project: 'PulseHealth Telemedicine Portal',
-    assignee: { name: 'Olukayode Tioluwanimi', avatar: '/assets/team_olukayode.png' },
+    assignee: { name: 'Olukayode Tioluwanimi', avatar: '/assets/blessing.jpg' },
     priority: 'High',
     status: 'In Progress',
     deadline: '2026-09-28',
@@ -65,7 +65,7 @@ const INITIAL_TASKS: Task[] = [
     id: 'TSK-205',
     title: 'Execute DEX liquidity flash-loan slippage benchmark',
     project: 'OmniTrade Crypto Arbitrage Bot',
-    assignee: { name: 'Joseph John', avatar: '/assets/team_joseph.png' },
+    assignee: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
     priority: 'Urgent',
     status: 'Completed',
     deadline: '2026-09-18',
@@ -109,7 +109,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
       id: `TSK-${Math.floor(200 + Math.random() * 800)}`,
       title: newTitle,
       project: newProject,
-      assignee: { name: 'Joseph John', avatar: '/assets/team_joseph.png' },
+      assignee: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
       priority: newPriority,
       status: 'Open',
       deadline: newDeadline || '2026-10-10',
@@ -175,7 +175,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                 padding: '6px 12px',
                 borderRadius: '6px',
                 border: 'none',
-                backgroundColor: viewMode === 'kanban' ? '#E5A83B' : 'transparent',
+                backgroundColor: viewMode === 'kanban' ? '#dfae32' : 'transparent',
                 color: viewMode === 'kanban' ? '#0A0D14' : '#9CA3AF',
                 fontWeight: 600,
                 fontSize: '13px',
@@ -195,7 +195,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                 padding: '6px 12px',
                 borderRadius: '6px',
                 border: 'none',
-                backgroundColor: viewMode === 'list' ? '#E5A83B' : 'transparent',
+                backgroundColor: viewMode === 'list' ? '#dfae32' : 'transparent',
                 color: viewMode === 'list' ? '#0A0D14' : '#9CA3AF',
                 fontWeight: 600,
                 fontSize: '13px',
@@ -211,7 +211,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
             type="button"
             onClick={() => setShowCreateModal(true)}
             style={{
-              backgroundColor: '#E5A83B',
+              backgroundColor: '#dfae32',
               color: '#0A0D14',
               fontWeight: 700,
               fontSize: '14px',
@@ -222,7 +222,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 4px 14px rgba(229, 168, 59, 0.25)',
+              boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
             }}
           >
             <Plus size={18} strokeWidth={2.5} />
@@ -253,9 +253,9 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                 padding: '6px 14px',
                 borderRadius: '6px',
                 border: '1px solid',
-                borderColor: filterPriority === priority ? '#E5A83B' : 'rgba(255, 255, 255, 0.08)',
-                backgroundColor: filterPriority === priority ? 'rgba(229, 168, 59, 0.15)' : '#11151F',
-                color: filterPriority === priority ? '#E5A83B' : '#9CA3AF',
+                borderColor: filterPriority === priority ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
+                backgroundColor: filterPriority === priority ? 'rgba(223, 174, 50, 0.15)' : '#11151F',
+                color: filterPriority === priority ? '#dfae32' : '#9CA3AF',
                 fontSize: '12px',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -305,7 +305,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
             const colTasks = filteredTasks.filter((t) => t.status === colStatus);
             const statusTheme = {
               Open: { border: '#9CA3AF', title: 'To Do / Backlog' },
-              'In Progress': { border: '#E5A83B', title: 'In Active Sprint' },
+              'In Progress': { border: '#dfae32', title: 'In Active Sprint' },
               Completed: { border: '#10B981', title: 'QA Approved & Done' },
             }[colStatus];
 
@@ -355,7 +355,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                   {colTasks.map((task) => {
                     const priorityColor = {
                       Urgent: { bg: 'rgba(239, 68, 68, 0.15)', text: '#EF4444' },
-                      High: { bg: 'rgba(229, 168, 59, 0.15)', text: '#E5A83B' },
+                      High: { bg: 'rgba(223, 174, 50, 0.15)', text: '#dfae32' },
                       Medium: { bg: 'rgba(59, 130, 246, 0.15)', text: '#3B82F6' },
                     }[task.priority];
 
@@ -372,7 +372,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                           transition: 'all 0.15s ease',
                         }}
                         onMouseOver={(e) => {
-                          e.currentTarget.style.borderColor = 'rgba(229, 168, 59, 0.4)';
+                          e.currentTarget.style.borderColor = 'rgba(223, 174, 50, 0.4)';
                           e.currentTarget.style.transform = 'translateY(-2px)';
                         }}
                         onMouseOut={(e) => {
@@ -402,7 +402,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                           {task.title}
                         </h4>
 
-                        <div style={{ fontSize: '12px', color: '#E5A83B', marginBottom: '14px' }}>
+                        <div style={{ fontSize: '12px', color: '#dfae32', marginBottom: '14px' }}>
                           {task.project}
                         </div>
 
@@ -477,7 +477,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                     <div style={{ fontWeight: 600, color: '#FFFFFF' }}>{t.title}</div>
                     <div style={{ color: '#9CA3AF', fontSize: '11px' }}>{t.id}</div>
                   </td>
-                  <td style={{ padding: '14px 18px', color: '#E5A83B' }}>{t.project}</td>
+                  <td style={{ padding: '14px 18px', color: '#dfae32' }}>{t.project}</td>
                   <td style={{ padding: '14px 18px' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                       <img
@@ -495,8 +495,8 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                         borderRadius: '4px',
                         fontSize: '11px',
                         fontWeight: 700,
-                        backgroundColor: t.priority === 'Urgent' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(229, 168, 59, 0.15)',
-                        color: t.priority === 'Urgent' ? '#EF4444' : '#E5A83B',
+                        backgroundColor: t.priority === 'Urgent' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(223, 174, 50, 0.15)',
+                        color: t.priority === 'Urgent' ? '#EF4444' : '#dfae32',
                       }}
                     >
                       {t.priority}
@@ -513,13 +513,13 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                           t.status === 'Completed'
                             ? 'rgba(16, 185, 129, 0.15)'
                             : t.status === 'In Progress'
-                            ? 'rgba(229, 168, 59, 0.15)'
+                            ? 'rgba(223, 174, 50, 0.15)'
                             : 'rgba(156, 163, 175, 0.15)',
                         color:
                           t.status === 'Completed'
                             ? '#10B981'
                             : t.status === 'In Progress'
-                            ? '#E5A83B'
+                            ? '#dfae32'
                             : '#9CA3AF',
                       }}
                     >
@@ -553,7 +553,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '560px',
               width: '100%',
@@ -563,7 +563,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
               <div>
-                <span style={{ color: '#E5A83B', fontSize: '12px', fontWeight: 700 }}>
+                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>
                   {selectedTask.id} ● {selectedTask.project}
                 </span>
                 <h3 style={{ fontSize: '20px', fontWeight: 800, margin: '6px 0 0', color: '#FFFFFF' }}>
@@ -581,13 +581,13 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
 
             <div style={{ marginBottom: '20px' }}>
               <div style={{ fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>Task Instructions</div>
-              <p style={{ backgroundColor: '#0B0E14', padding: '14px', borderRadius: '8px', color: '#D1D5DB', fontSize: '14px', lineHeight: 1.6 }}>
+              <p style={{ backgroundColor: '#161617', padding: '14px', borderRadius: '8px', color: '#D1D5DB', fontSize: '14px', lineHeight: 1.6 }}>
                 {selectedTask.description}
               </p>
             </div>
 
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '24px' }}>
-              <div style={{ backgroundColor: '#0B0E14', padding: '12px 14px', borderRadius: '8px' }}>
+              <div style={{ backgroundColor: '#161617', padding: '12px 14px', borderRadius: '8px' }}>
                 <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Assignee</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
                   <img
@@ -598,9 +598,9 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                   <span style={{ fontSize: '13px', fontWeight: 600 }}>{selectedTask.assignee.name}</span>
                 </div>
               </div>
-              <div style={{ backgroundColor: '#0B0E14', padding: '12px 14px', borderRadius: '8px' }}>
+              <div style={{ backgroundColor: '#161617', padding: '12px 14px', borderRadius: '8px' }}>
                 <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Sprint Deadline</div>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: '#E5A83B', marginTop: '6px' }}>
+                <div style={{ fontSize: '14px', fontWeight: 700, color: '#dfae32', marginTop: '6px' }}>
                   {selectedTask.deadline}
                 </div>
               </div>
@@ -619,9 +619,9 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                       flex: 1,
                       padding: '10px',
                       borderRadius: '8px',
-                      border: selectedTask.status === st ? '1px solid #E5A83B' : '1px solid rgba(255, 255, 255, 0.08)',
-                      backgroundColor: selectedTask.status === st ? 'rgba(229, 168, 59, 0.15)' : '#0B0E14',
-                      color: selectedTask.status === st ? '#E5A83B' : '#9CA3AF',
+                      border: selectedTask.status === st ? '1px solid #dfae32' : '1px solid rgba(255, 255, 255, 0.08)',
+                      backgroundColor: selectedTask.status === st ? 'rgba(223, 174, 50, 0.15)' : '#161617',
+                      color: selectedTask.status === st ? '#dfae32' : '#9CA3AF',
                       fontWeight: 600,
                       fontSize: '12px',
                       cursor: 'pointer',
@@ -638,7 +638,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                 type="button"
                 onClick={() => setSelectedTask(null)}
                 style={{
-                  backgroundColor: '#E5A83B',
+                  backgroundColor: '#dfae32',
                   color: '#0A0D14',
                   fontWeight: 700,
                   fontSize: '14px',
@@ -674,7 +674,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '520px',
               width: '100%',
@@ -708,7 +708,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                   onChange={(e) => setNewTitle(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -729,7 +729,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                     onChange={(e) => setNewProject(e.target.value)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '10px 14px',
@@ -754,7 +754,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                     onChange={(e) => setNewPriority(e.target.value as any)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '10px 14px',
@@ -780,7 +780,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                   onChange={(e) => setNewDeadline(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -802,7 +802,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                   onChange={(e) => setNewDescription(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -832,7 +832,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                 <button
                   type="submit"
                   style={{
-                    backgroundColor: '#E5A83B',
+                    backgroundColor: '#dfae32',
                     color: '#0A0D14',
                     fontWeight: 700,
                     padding: '10px 22px',

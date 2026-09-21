@@ -23,13 +23,13 @@ interface ClientItem {
 
 export const ClientsView: React.FC = () => {
   const [clientRows, setClientRows] = useState<ClientItem[]>([
-    { id: 1, date: '10 May, 26', name: 'John Peter', avatar: '/assets/member_avatar.png', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 2, date: '10 May, 26', name: 'John Peter', avatar: '/assets/member_avatar.png', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 3, date: '10 May, 26', name: 'John Peter', avatar: '/assets/member_avatar.png', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 4, date: '10 May, 26', name: 'John Peter', avatar: '/assets/member_avatar.png', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 5, date: '10 May, 26', name: 'John Peter', avatar: '/assets/member_avatar.png', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 6, date: '10 May, 26', name: 'John Peter', avatar: '/assets/member_avatar.png', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 7, date: '10 May, 26', name: 'John Peter', avatar: '/assets/member_avatar.png', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
+    { id: 1, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
+    { id: 2, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
+    { id: 3, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
+    { id: 4, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
+    { id: 5, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
+    { id: 6, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
+    { id: 7, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
   ]);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -52,7 +52,7 @@ export const ClientsView: React.FC = () => {
       id: Date.now(),
       date: '10 May, 26',
       name: newClientName,
-      avatar: '/assets/member_avatar.png',
+      avatar: '/assets/dashprofile.jpg',
       company: newCompany || 'Tesla, Inc. (TSLA)',
       amount: `₦${newAmount}`,
       status: 'Active',
@@ -84,7 +84,7 @@ export const ClientsView: React.FC = () => {
           style={{
             height: '40px',
             borderRadius: '9999px',
-            backgroundColor: '#E5A83B',
+            backgroundColor: '#dfae32',
             color: '#000000',
             fontSize: '13px',
             fontWeight: '700',
@@ -107,16 +107,16 @@ export const ClientsView: React.FC = () => {
         gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
         gap: '16px',
       }}>
-        {/* Card 1: Active Clients (SOLID GOLD #E5A83B in Figma) */}
+        {/* Card 1: Active Clients (SOLID GOLD #dfae32 in Figma) */}
         <div style={{
-          backgroundColor: '#E5A83B',
+          backgroundColor: '#dfae32',
           borderRadius: '16px',
           padding: '20px',
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
           color: '#000000',
-          boxShadow: '0 8px 24px rgba(229, 168, 59, 0.25)',
+          boxShadow: '0 8px 24px rgba(223, 174, 50, 0.25)',
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
             <span style={{ fontSize: '14px', fontWeight: '600', color: '#1F2937' }}>Active Clients</span>
@@ -143,7 +143,7 @@ export const ClientsView: React.FC = () => {
 
         {/* Card 2: Pending Clients */}
         <div style={{
-          backgroundColor: '#121620',
+          backgroundColor: '#232324',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '16px',
           padding: '20px',
@@ -176,7 +176,7 @@ export const ClientsView: React.FC = () => {
 
         {/* Card 3: Total Clients */}
         <div style={{
-          backgroundColor: '#121620',
+          backgroundColor: '#232324',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '16px',
           padding: '20px',
@@ -209,7 +209,7 @@ export const ClientsView: React.FC = () => {
 
         {/* Card 4: Total Amount */}
         <div style={{
-          backgroundColor: '#121620',
+          backgroundColor: '#232324',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '16px',
           padding: '20px',
@@ -243,7 +243,7 @@ export const ClientsView: React.FC = () => {
 
       {/* Clients Table Card (Figma 100%) */}
       <div style={{
-        backgroundColor: '#121620',
+        backgroundColor: '#232324',
         border: '1px solid rgba(255, 255, 255, 0.08)',
         borderRadius: '16px',
         padding: '24px',

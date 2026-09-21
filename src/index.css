@@ -1,26 +1,36 @@
 :root {
-  /* Colors */
-  --tc-bg-primary: #0B0E14;
-  --tc-bg-card: #12151C;
-  --tc-bg-card-hover: #161A22;
-  --tc-bg-surface-elevated: #171B24;
-  --tc-bg-input: #191D26;
-  --tc-bg-input-focus: #1E232E;
+  /* Colors - exact Figma palette */
+  --tc-bg-primary: #0b0b0c;
+  --tc-bg-card: #232324;
+  --tc-bg-card-hover: #2a2a2b;
+  --tc-bg-surface-elevated: #232324;
+  --tc-bg-input: #161617;
+  --tc-bg-input-focus: #1c1c1d;
   
-  --tc-border-subtle: #232834;
-  --tc-border-subtle-hover: #313848;
-  --tc-border-focus: #E5A83B;
+  --tc-border-subtle: #202022;
+  --tc-border-subtle-hover: #3e3e42;
+  --tc-border-focus: #dfae32;
 
-  --tc-brand-gold: #E5A83B;
-  --tc-brand-gold-hover: #F4B333;
-  --tc-brand-gold-active: #CA902D;
-  --tc-brand-gold-light: rgba(229, 168, 59, 0.12);
-  --tc-brand-gold-glow: rgba(229, 168, 59, 0.28);
+  --tc-brand-gold: #DFAE32;
+  --tc-brand-gold-hover: #eec147;
+  --tc-brand-gold-active: #c89c28;
+  --tc-brand-gold-light: rgba(223, 174, 50, 0.12);
+  --tc-brand-gold-glow: rgba(223, 174, 50, 0.28);
+
+  /* Exact Figma specifications from colorFromFigma.txt */
+  --tc-figma-black: #0B0B0C;
+  --tc-figma-gold: #DFAE32;
+  --tc-figma-input-border: #FFFFFF59;
+  --tc-figma-card-border: #FFFFFF26;
+  --tc-figma-card-bg: #FFFFFF1A;
+  --tc-figma-footer-line: #DFAE32;
+  --tc-figma-teamdash-icon-bg: #DFAE324D;
+  --tc-figma-teamdash-highlight: #DDC998;
 
   --tc-text-primary: #FFFFFF;
   --tc-text-secondary: #94A3B8;
-  --tc-text-muted: #5F6682;
-  --tc-text-inverse: #0B0E14;
+  --tc-text-muted: #707070;
+  --tc-text-inverse: #0B0B0C;
 
   --tc-status-green: #10B981;
   --tc-status-green-bg: rgba(16, 185, 129, 0.14);
@@ -44,7 +54,7 @@
   --tc-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.35);
   --tc-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
   --tc-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.65);
-  --tc-shadow-gold: 0 0 20px rgba(229, 168, 59, 0.25);
+  --tc-shadow-gold: 0 0 20px rgba(223, 174, 50, 0.25);
 
   --tc-header-height: 72px;
   --tc-sidebar-width: 250px;
@@ -148,7 +158,7 @@ input, textarea, select {
 .tc-btn-primary {
   background-color: var(--tc-brand-gold);
   color: var(--tc-text-inverse);
-  box-shadow: 0 2px 8px rgba(229, 168, 59, 0.25);
+  box-shadow: 0 2px 8px rgba(223, 174, 50, 0.25);
 }
 
 .tc-btn-primary:hover {
@@ -206,10 +216,80 @@ input, textarea, select {
 
 /* Input Fields */
 .tc-form-group {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-  margin-bottom: 18px;
+ display: flex;
+ flex-direction: column;
+ gap: 8px;
+ margin-bottom: 18px;
+}
+
+.tc-public-layout {
+ overflow-x: hidden;
+}
+
+.tc-public-layout .tc-public-nav {
+ flex: 1;
+}
+
+.tc-homepage {
+ overflow-x: hidden;
+}
+
+.tc-homepage .tc-homepage-nav {
+ flex: 1;
+}
+
+@media (max-width: 900px) {
+ .tc-public-layout header {
+   padding: 18px 24px !important;
+ }
+
+ .tc-public-layout .tc-public-nav {
+   width: 100%;
+   justify-content: center;
+   gap: 18px 24px !important;
+ }
+
+ .tc-public-layout .tc-public-footer-grid {
+   grid-template-columns: 1fr !important;
+   gap: 28px !important;
+ }
+
+ .tc-homepage .tc-homepage-header {
+   padding-left: 24px !important;
+   padding-right: 24px !important;
+ }
+
+ .tc-homepage .tc-homepage-nav {
+   width: 100%;
+   justify-content: center;
+   gap: 16px 22px !important;
+ }
+}
+
+@media (max-width: 640px) {
+ .tc-public-layout header {
+   justify-content: center !important;
+ }
+
+ .tc-public-layout .tc-public-nav {
+   gap: 12px 18px !important;
+   font-size: 0.9rem;
+ }
+
+ .tc-homepage .tc-homepage-header {
+   justify-content: center !important;
+   padding-left: 18px !important;
+   padding-right: 18px !important;
+ }
+
+ .tc-homepage .tc-homepage-nav {
+   gap: 12px 18px !important;
+   font-size: 0.9rem;
+ }
+
+ .tc-public-layout button {
+   white-space: normal;
+ }
 }
 
 .tc-label {
@@ -299,7 +379,7 @@ input, textarea, select {
 .tc-badge-gold {
   background: var(--tc-brand-gold-light);
   color: var(--tc-brand-gold);
-  border: 1px solid rgba(229, 168, 59, 0.25);
+  border: 1px solid rgba(223, 174, 50, 0.25);
 }
 
 .tc-badge-green {
@@ -434,7 +514,7 @@ input, textarea, select {
   border: 1px solid var(--tc-brand-gold);
   border-radius: var(--tc-radius-full);
   padding: 8px 14px;
-  box-shadow: var(--tc-shadow-lg), 0 0 15px rgba(229, 168, 59, 0.25);
+  box-shadow: var(--tc-shadow-lg), 0 0 15px rgba(223, 174, 50, 0.25);
   backdrop-filter: blur(12px);
 }
 
@@ -452,3 +532,40 @@ input, textarea, select {
   background: #12151C;
   color: #FFFFFF;
 }
+
+/* Exact Figma Design Specifications */
+.figma-card {
+  background: var(--tc-figma-card-bg) !important;
+  border: 1px solid var(--tc-figma-card-border) !important;
+}
+
+.figma-input {
+  border: 1px solid var(--tc-figma-input-border) !important;
+}
+
+.figma-contact-corner {
+  border: 0.7px solid;
+  border-image-source: linear-gradient(305.42deg, rgba(223, 174, 50, 0) 61.55%, #DFAE32 100%);
+}
+
+.figma-footer-border {
+  border-top: 0.4px solid #DFAE32 !important;
+}
+
+.figma-aboutus-title {
+  font-family: 'Inter', sans-serif !important;
+  font-weight: 700 !important;
+  font-size: 64px !important;
+  line-height: 100% !important;
+  letter-spacing: 0% !important;
+}
+
+.figma-aboutus-subtitle {
+  font-family: 'Poppins', sans-serif !important;
+  font-weight: 500 !important;
+  font-size: 20px !important;
+  line-height: 32px !important;
+  letter-spacing: 0% !important;
+  text-align: center !important;
+}
+

@@ -24,7 +24,7 @@ export const MetricCard: React.FC<MetricCardProps> = ({
     gold: {
       bg: 'var(--tc-brand-gold-light)',
       text: 'var(--tc-brand-gold)',
-      border: 'rgba(229, 168, 59, 0.25)',
+      border: 'rgba(223, 174, 50, 0.25)',
     },
     green: {
       bg: 'var(--tc-status-green-bg)',

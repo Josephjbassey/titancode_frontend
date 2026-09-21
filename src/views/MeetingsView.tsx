@@ -33,10 +33,10 @@ const INITIAL_MEETINGS: Meeting[] = [
     duration: '45 mins',
     roomUrl: 'room_aurelia_sprint14',
     participants: [
-      { name: 'Munis Samuel', avatar: '/assets/team_munis.png' },
-      { name: 'Joseph John', avatar: '/assets/team_joseph.png' },
-      { name: 'Benedicta Atagamen', avatar: '/assets/team_benedicta.png' },
-      { name: 'Olukayode Tioluwanimi', avatar: '/assets/team_olukayode.png' },
+      { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
+      { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
+      { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
+      { name: 'Olukayode Tioluwanimi', avatar: '/assets/blessing.jpg' },
     ],
   },
   {
@@ -49,8 +49,8 @@ const INITIAL_MEETINGS: Meeting[] = [
     duration: '60 mins',
     roomUrl: 'room_apex_demo',
     participants: [
-      { name: 'Munis Samuel', avatar: '/assets/team_munis.png' },
-      { name: 'Benedicta Atagamen', avatar: '/assets/team_benedicta.png' },
+      { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
+      { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
     ],
   },
   {
@@ -63,8 +63,8 @@ const INITIAL_MEETINGS: Meeting[] = [
     duration: '30 mins',
     roomUrl: 'room_audio_products',
     participants: [
-      { name: 'Joseph John', avatar: '/assets/team_joseph.png' },
-      { name: 'Munis Samuel', avatar: '/assets/team_munis.png' },
+      { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
+      { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
     ],
   },
   {
@@ -77,8 +77,8 @@ const INITIAL_MEETINGS: Meeting[] = [
     duration: '60 mins',
     roomUrl: 'room_postmortem',
     participants: [
-      { name: 'Joseph John', avatar: '/assets/team_joseph.png' },
-      { name: 'Olukayode Tioluwanimi', avatar: '/assets/team_olukayode.png' },
+      { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
+      { name: 'Olukayode Tioluwanimi', avatar: '/assets/blessing.jpg' },
     ],
   },
 ];
@@ -117,8 +117,8 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
       duration: '60 mins',
       roomUrl: `room_${newTitle.toLowerCase().replace(/\s+/g, '_')}`,
       participants: [
-        { name: 'Munis Samuel', avatar: '/assets/team_munis.png' },
-        { name: 'Joseph John', avatar: '/assets/team_joseph.png' },
+        { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
+        { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
       ],
     };
 
@@ -155,7 +155,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
           type="button"
           onClick={() => setShowScheduleModal(true)}
           style={{
-            backgroundColor: '#E5A83B',
+            backgroundColor: '#dfae32',
             color: '#0A0D14',
             fontWeight: 700,
             fontSize: '14px',
@@ -166,7 +166,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            boxShadow: '0 4px 14px rgba(229, 168, 59, 0.25)',
+            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
           }}
         >
           <Plus size={18} strokeWidth={2.5} />
@@ -185,9 +185,9 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
               padding: '8px 18px',
               borderRadius: '8px',
               border: '1px solid',
-              borderColor: typeFilter === t ? '#E5A83B' : 'rgba(255, 255, 255, 0.08)',
-              backgroundColor: typeFilter === t ? 'rgba(229, 168, 59, 0.15)' : '#11151F',
-              color: typeFilter === t ? '#E5A83B' : '#9CA3AF',
+              borderColor: typeFilter === t ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
+              backgroundColor: typeFilter === t ? 'rgba(223, 174, 50, 0.15)' : '#11151F',
+              color: typeFilter === t ? '#dfae32' : '#9CA3AF',
               fontWeight: 600,
               fontSize: '13px',
               cursor: 'pointer',
@@ -210,13 +210,13 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
                 backgroundColor: '#11151F',
                 borderRadius: '14px',
                 padding: '24px',
-                border: isLive ? '1px solid #E5A83B' : '1px solid rgba(255, 255, 255, 0.06)',
+                border: isLive ? '1px solid #dfae32' : '1px solid rgba(255, 255, 255, 0.06)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
                 gap: '20px',
-                boxShadow: isLive ? '0 0 25px rgba(229, 168, 59, 0.15)' : 'none',
+                boxShadow: isLive ? '0 0 25px rgba(223, 174, 50, 0.15)' : 'none',
               }}
             >
               {/* Left Details */}
@@ -227,7 +227,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
                     height: '54px',
                     borderRadius: '12px',
                     backgroundColor: isLive
-                      ? '#E5A83B'
+                      ? '#dfae32'
                       : meeting.type === 'Video'
                       ? 'rgba(59, 130, 246, 0.15)'
                       : 'rgba(16, 185, 129, 0.15)',
@@ -278,11 +278,11 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
 
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px', color: '#9CA3AF' }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Calendar size={14} color="#E5A83B" />
+                      <Calendar size={14} color="#dfae32" />
                       <span>{meeting.date}</span>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Clock size={14} color="#E5A83B" />
+                      <Clock size={14} color="#dfae32" />
                       <span>{meeting.time}</span>
                     </div>
                   </div>
@@ -323,7 +323,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
                       }
                     }}
                     style={{
-                      backgroundColor: isLive ? '#E5A83B' : 'rgba(255, 255, 255, 0.08)',
+                      backgroundColor: isLive ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
                       color: isLive ? '#0A0D14' : '#FFFFFF',
                       fontWeight: 700,
                       fontSize: '14px',
@@ -334,7 +334,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
                       display: 'flex',
                       alignItems: 'center',
                       gap: '8px',
-                      boxShadow: isLive ? '0 4px 14px rgba(229, 168, 59, 0.3)' : 'none',
+                      boxShadow: isLive ? '0 4px 14px rgba(223, 174, 50, 0.3)' : 'none',
                     }}
                   >
                     <span>{isLive ? 'Join Room Now' : 'Enter Waiting Room'}</span>
@@ -370,7 +370,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '520px',
               width: '100%',
@@ -404,7 +404,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
                   onChange={(e) => setNewTitle(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -425,7 +425,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
                     onChange={(e) => setNewType(e.target.value as any)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '10px 14px',
@@ -448,7 +448,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
                     onChange={(e) => setNewDate(e.target.value)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '10px 14px',
@@ -471,7 +471,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
                   onChange={(e) => setNewTime(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -500,7 +500,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
                 <button
                   type="submit"
                   style={{
-                    backgroundColor: '#E5A83B',
+                    backgroundColor: '#dfae32',
                     color: '#0A0D14',
                     fontWeight: 700,
                     padding: '10px 22px',

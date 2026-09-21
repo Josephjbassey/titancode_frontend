@@ -38,7 +38,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             alignItems: 'center',
             justifyContent: 'center',
             margin: '0 auto 20px',
-            border: '1px solid rgba(229, 168, 59, 0.3)',
+            border: '1px solid rgba(223, 174, 50, 0.3)',
           }}>
             <ShieldCheck size={32} />
           </div>
@@ -87,7 +87,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
       padding: '20px',
     }}>
       <div style={{
-        backgroundColor: '#E5A83B',
+        backgroundColor: '#dfae32',
         borderRadius: '20px',
         padding: '36px 28px',
         width: '100%',
@@ -121,14 +121,14 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
           width: '68px',
           height: '68px',
           borderRadius: '50%',
-          backgroundColor: '#0F1218',
+          backgroundColor: '#0b0b0c',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           margin: '0 auto 20px',
         }}>
           {isSuccess ? (
-            <Check size={36} color="#E5A83B" strokeWidth={3} />
+            <Check size={36} color="#dfae32" strokeWidth={3} />
           ) : (
             <X size={36} color="#EF4444" strokeWidth={3} />
           )}
@@ -169,7 +169,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             width: '100%',
             height: '44px',
             borderRadius: '9999px',
-            backgroundColor: '#0F1218',
+            backgroundColor: '#0b0b0c',
             color: '#FFFFFF',
             fontSize: '14px',
             fontWeight: '600',

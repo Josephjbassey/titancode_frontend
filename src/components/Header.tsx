@@ -16,7 +16,7 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header style={{
       height: '76px',
-      backgroundColor: '#0A0C10',
+      backgroundColor: '#0b0b0c',
       borderBottom: '1px solid rgba(255, 255, 255, 0.06)',
       padding: '0 36px',
       display: 'flex',
@@ -49,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({
           style={{
             width: '100%',
             height: '42px',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
+            backgroundColor: '#232324',
             border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '9999px',
             padding: '0 20px 0 46px',
@@ -59,12 +59,12 @@ export const Header: React.FC<HeaderProps> = ({
             transition: 'all 0.2s ease',
           }}
           onFocus={(e) => {
-            e.target.style.borderColor = '#E5A83B';
-            e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+            e.target.style.borderColor = '#dfae32';
+            e.target.style.backgroundColor = '#2a2a2b';
           }}
           onBlur={(e) => {
             e.target.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-            e.target.style.backgroundColor = 'rgba(255, 255, 255, 0.05)';
+            e.target.style.backgroundColor = '#232324';
           }}
         />
       </div>
@@ -102,7 +102,7 @@ export const Header: React.FC<HeaderProps> = ({
             height: '8px',
             borderRadius: '50%',
             backgroundColor: '#FF3B8A',
-            border: '2px solid #0A0C10',
+            border: '2px solid #0b0b0c',
           }} />
         </button>
 
@@ -116,14 +116,14 @@ export const Header: React.FC<HeaderProps> = ({
           }}
         >
           <img
-            src="/assets/benedicta_avatar_sm.png"
+            src="/assets/dashprofile.jpg"
             alt={user.full_name}
             style={{
               width: '42px',
               height: '42px',
               borderRadius: '50%',
               objectFit: 'cover',
-              border: '2px solid rgba(229, 168, 59, 0.4)',
+              border: '2px solid #DFAE32',
             }}
           />
         </div>

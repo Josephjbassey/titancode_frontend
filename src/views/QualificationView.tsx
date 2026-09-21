@@ -33,7 +33,7 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
               padding: '24px 18px',
               borderRadius: '16px',
               backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: `2px solid ${selectedRole === 'Member' ? '#E5A83B' : 'rgba(255, 255, 255, 0.1)'}`,
+              border: `2px solid ${selectedRole === 'Member' ? '#dfae32' : 'rgba(255, 255, 255, 0.1)'}`,
               cursor: 'pointer',
               display: 'flex',
               flexDirection: 'column',
@@ -50,7 +50,7 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
               justifyContent: 'space-between',
             }}>
               <div style={{
-                color: selectedRole === 'Member' ? '#E5A83B' : '#9CA3AF',
+                color: selectedRole === 'Member' ? '#dfae32' : '#9CA3AF',
               }}>
                 <Users size={28} />
               </div>
@@ -59,8 +59,8 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
                 width: '20px',
                 height: '20px',
                 borderRadius: '50%',
-                backgroundColor: selectedRole === 'Member' ? '#E5A83B' : 'transparent',
-                border: `2px solid ${selectedRole === 'Member' ? '#E5A83B' : 'rgba(255, 255, 255, 0.3)'}`,
+                backgroundColor: selectedRole === 'Member' ? '#dfae32' : 'transparent',
+                border: `2px solid ${selectedRole === 'Member' ? '#dfae32' : 'rgba(255, 255, 255, 0.3)'}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -88,7 +88,7 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
               padding: '24px 18px',
               borderRadius: '16px',
               backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: `2px solid ${selectedRole === 'Client' ? '#E5A83B' : 'rgba(255, 255, 255, 0.1)'}`,
+              border: `2px solid ${selectedRole === 'Client' ? '#dfae32' : 'rgba(255, 255, 255, 0.1)'}`,
               cursor: 'pointer',
               display: 'flex',
               flexDirection: 'column',
@@ -105,7 +105,7 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
               justifyContent: 'space-between',
             }}>
               <div style={{
-                color: selectedRole === 'Client' ? '#E5A83B' : '#9CA3AF',
+                color: selectedRole === 'Client' ? '#dfae32' : '#9CA3AF',
               }}>
                 <Briefcase size={28} />
               </div>
@@ -114,8 +114,8 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
                 width: '20px',
                 height: '20px',
                 borderRadius: '50%',
-                backgroundColor: selectedRole === 'Client' ? '#E5A83B' : 'transparent',
-                border: `2px solid ${selectedRole === 'Client' ? '#E5A83B' : 'rgba(255, 255, 255, 0.3)'}`,
+                backgroundColor: selectedRole === 'Client' ? '#dfae32' : 'transparent',
+                border: `2px solid ${selectedRole === 'Client' ? '#dfae32' : 'rgba(255, 255, 255, 0.3)'}`,
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -145,13 +145,13 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
             width: '100%',
             height: '46px',
             borderRadius: '9999px',
-            backgroundColor: '#E5A83B',
+            backgroundColor: '#dfae32',
             color: '#000000',
             fontSize: '15px',
             fontWeight: '700',
             border: 'none',
             cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
             marginBottom: '24px',
           }}
         >
@@ -171,7 +171,7 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
             style={{
               background: 'none',
               border: 'none',
-              color: '#E5A83B',
+              color: '#dfae32',
               fontWeight: '600',
               cursor: 'pointer',
               padding: 0,

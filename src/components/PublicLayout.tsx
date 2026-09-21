@@ -14,17 +14,30 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
   onNavigate,
 }) => {
   return (
-    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: '#0B0E14', color: '#FFFFFF' }}>
+    <div
+      className="tc-public-layout"
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#0b0b0c',
+        color: '#FFFFFF',
+        backgroundImage: 'radial-gradient(circle at top left, rgba(223,174,50,0.18), transparent 35%), radial-gradient(circle at right center, rgba(255,255,255,0.05), transparent 25%)',
+      }}
+    >
       {/* PUBLIC NAVBAR */}
       <header
         style={{
-          height: '92px',
+          minHeight: '92px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          padding: '0 80px',
-          backgroundColor: '#0B0E14',
+          gap: '16px',
+          flexWrap: 'wrap',
+          padding: '18px 80px',
+          backgroundColor: 'rgba(11, 11, 12, 0.88)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          backdropFilter: 'blur(12px)',
           position: 'sticky',
           top: 0,
           zIndex: 100,
@@ -36,14 +49,14 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
         >
           <img
-            src="/assets/tc_brand_logo.png"
+            src="/assets/logo.png"
             alt="TitanCode Logo"
             style={{ height: '36px', objectFit: 'contain' }}
           />
         </div>
 
         {/* Center Nav Links */}
-        <nav style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
+        <nav className="tc-public-nav" style={{ display: 'flex', alignItems: 'center', gap: '40px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <button
             type="button"
             onClick={() => onNavigate('home')}
@@ -112,19 +125,18 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
             type="button"
             onClick={() => onNavigate('hire_us')}
             style={{
-              backgroundColor: '#E5A83B',
-              color: '#0A0D14',
+              backgroundColor: '#dfae32',
+              color: '#0b0b0c',
               fontWeight: '700',
               fontSize: '15px',
               padding: '12px 28px',
               borderRadius: '8px',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
               transition: 'all 0.2s ease',
             }}
-            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#F4B333')}
-            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#E5A83B')}
+            onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#eec147')}
+            onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#dfae32')}
           >
             Hire Us
           </button>
@@ -139,12 +151,13 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
       {/* PUBLIC FOOTER */}
       <footer
         style={{
-          backgroundColor: '#0B0E14',
-          borderTop: '1px solid rgba(229, 168, 59, 0.2)',
+          backgroundColor: '#0b0b0c',
+          borderTop: '0.4px solid #DFAE32',
           padding: '70px 80px 30px',
         }}
       >
         <div
+          className="tc-public-footer-grid"
           style={{
             maxWidth: '1280px',
             margin: '0 auto',
@@ -161,7 +174,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
               style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '18px' }}
             >
               <img
-                src="/assets/tc_brand_logo.png"
+                src="/assets/logo.png"
                 alt="TitanCode"
                 style={{ height: '32px', objectFit: 'contain' }}
               />
@@ -274,45 +287,45 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
               <button
                 type="button"
                 onClick={() => onNavigate('home')}
-                style={{ textAlign: 'left', color: currentView === 'home' ? '#E5A83B' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
+                style={{ textAlign: 'left', color: currentView === 'home' ? '#dfae32' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'home' ? '#E5A83B' : '#9CA3AF')}
+                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'home' ? '#dfae32' : '#9CA3AF')}
               >
                 Home
               </button>
               <button
                 type="button"
                 onClick={() => onNavigate('about_us')}
-                style={{ textAlign: 'left', color: currentView === 'about_us' ? '#E5A83B' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
+                style={{ textAlign: 'left', color: currentView === 'about_us' ? '#dfae32' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'about_us' ? '#E5A83B' : '#9CA3AF')}
+                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'about_us' ? '#dfae32' : '#9CA3AF')}
               >
                 About
               </button>
               <button
                 type="button"
                 onClick={() => onNavigate('services')}
-                style={{ textAlign: 'left', color: currentView === 'services' ? '#E5A83B' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
+                style={{ textAlign: 'left', color: currentView === 'services' ? '#dfae32' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'services' ? '#E5A83B' : '#9CA3AF')}
+                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'services' ? '#dfae32' : '#9CA3AF')}
               >
                 Services
               </button>
               <button
                 type="button"
                 onClick={() => onNavigate('faqs')}
-                style={{ textAlign: 'left', color: currentView === 'faqs' ? '#E5A83B' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
+                style={{ textAlign: 'left', color: currentView === 'faqs' ? '#dfae32' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'faqs' ? '#E5A83B' : '#9CA3AF')}
+                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'faqs' ? '#dfae32' : '#9CA3AF')}
               >
                 FAQs
               </button>
               <button
                 type="button"
                 onClick={() => onNavigate('testimonials')}
-                style={{ textAlign: 'left', color: currentView === 'testimonials' ? '#E5A83B' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
+                style={{ textAlign: 'left', color: currentView === 'testimonials' ? '#dfae32' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'testimonials' ? '#E5A83B' : '#9CA3AF')}
+                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'testimonials' ? '#dfae32' : '#9CA3AF')}
               >
                 Testimonies
               </button>
@@ -326,11 +339,11 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#9CA3AF', fontSize: '14px' }}>
-                <Phone size={16} color="#E5A83B" />
+                <Phone size={16} color="#dfae32" />
                 <span>+233(0)546606807</span>
               </div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#9CA3AF', fontSize: '14px' }}>
-                <Mail size={16} color="#E5A83B" />
+                <Mail size={16} color="#dfae32" />
                 <span>Titancode@gmail.com</span>
               </div>
             </div>

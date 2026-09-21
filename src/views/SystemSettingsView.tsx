@@ -44,7 +44,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
             marginBottom: '20px',
           }}
         >
-          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '18px', color: '#E5A83B' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '18px', color: '#dfae32' }}>
             Organization Entity & Branding
           </h3>
 
@@ -59,7 +59,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 onChange={(e) => setCompanyName(e.target.value)}
                 style={{
                   width: '100%',
-                  backgroundColor: '#0B0E14',
+                  backgroundColor: '#161617',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '8px',
                   padding: '10px 14px',
@@ -79,7 +79,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 onChange={(e) => setSupportEmail(e.target.value)}
                 style={{
                   width: '100%',
-                  backgroundColor: '#0B0E14',
+                  backgroundColor: '#161617',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '8px',
                   padding: '10px 14px',
@@ -102,7 +102,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
             marginBottom: '20px',
           }}
         >
-          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '18px', color: '#E5A83B' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '18px', color: '#dfae32' }}>
             Financial Settlement & Escrow Commission
           </h3>
 
@@ -116,7 +116,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 onChange={(e) => setCurrency(e.target.value)}
                 style={{
                   width: '100%',
-                  backgroundColor: '#0B0E14',
+                  backgroundColor: '#161617',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '8px',
                   padding: '10px 14px',
@@ -140,7 +140,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 onChange={(e) => setTimezone(e.target.value)}
                 style={{
                   width: '100%',
-                  backgroundColor: '#0B0E14',
+                  backgroundColor: '#161617',
                   border: '1px solid rgba(255, 255, 255, 0.1)',
                   borderRadius: '8px',
                   padding: '10px 14px',
@@ -167,7 +167,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
               onChange={(e) => setEscrowSplitPlatform(e.target.value)}
               style={{
                 width: '100%',
-                backgroundColor: '#0B0E14',
+                backgroundColor: '#161617',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '8px',
                 padding: '10px 14px',
@@ -189,7 +189,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
             marginBottom: '28px',
           }}
         >
-          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '18px', color: '#E5A83B' }}>
+          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '18px', color: '#dfae32' }}>
             Notification Triggers & Webhooks
           </h3>
 
@@ -199,7 +199,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 type="checkbox"
                 checked={notifyOnMilestone}
                 onChange={(e) => setNotifyOnMilestone(e.target.checked)}
-                style={{ accentColor: '#E5A83B', width: '18px', height: '18px' }}
+                style={{ accentColor: '#dfae32', width: '18px', height: '18px' }}
               />
               <div>
                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF' }}>
@@ -216,7 +216,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 type="checkbox"
                 checked={notifyOnWithdrawal}
                 onChange={(e) => setNotifyOnWithdrawal(e.target.checked)}
-                style={{ accentColor: '#E5A83B', width: '18px', height: '18px' }}
+                style={{ accentColor: '#dfae32', width: '18px', height: '18px' }}
               />
               <div>
                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF' }}>
@@ -235,7 +235,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
           <button
             type="submit"
             style={{
-              backgroundColor: '#E5A83B',
+              backgroundColor: '#dfae32',
               color: '#0A0D14',
               fontWeight: 700,
               fontSize: '14px',
@@ -246,7 +246,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
               display: 'flex',
               alignItems: 'center',
               gap: '8px',
-              boxShadow: '0 4px 14px rgba(229, 168, 59, 0.25)',
+              boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
             }}
           >
             <Save size={16} />

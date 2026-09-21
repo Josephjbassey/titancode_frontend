@@ -75,7 +75,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     <aside style={{
       width: '240px',
       height: '100vh',
-      backgroundColor: '#0E1118',
+      backgroundColor: '#0b0b0c',
       borderRight: '1px solid rgba(255, 255, 255, 0.08)',
       display: 'flex',
       flexDirection: 'column',
@@ -92,7 +92,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         alignItems: 'center',
       }}>
         <img
-          src="/assets/tc_brand_logo.png"
+          src="/assets/logo.png"
           alt="TitanCode"
           style={{
             height: '28px',
@@ -123,8 +123,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 gap: '12px',
                 padding: '10px 16px',
                 borderRadius: '9999px',
-                backgroundColor: isActive ? '#E5A83B' : 'transparent',
-                color: isActive ? '#000000' : '#9CA3AF',
+                backgroundColor: isActive ? '#dfae32' : 'transparent',
+                color: isActive ? '#0b0b0c' : '#9CA3AF',
                 fontWeight: isActive ? 700 : 500,
                 fontSize: '14px',
                 width: '100%',
@@ -153,7 +153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: isActive ? '#000000' : 'inherit',
+                color: isActive ? '#0b0b0c' : 'inherit',
               }}>
                 <Icon size={18} strokeWidth={isActive ? 2.4 : 1.8} />
               </div>
@@ -179,8 +179,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             gap: '12px',
             padding: '10px 16px',
             borderRadius: '9999px',
-            backgroundColor: isSettingsActive ? '#E5A83B' : 'transparent',
-            color: isSettingsActive ? '#000000' : '#9CA3AF',
+            backgroundColor: isSettingsActive ? '#dfae32' : 'transparent',
+            color: isSettingsActive ? '#0b0b0c' : '#9CA3AF',
             fontWeight: isSettingsActive ? 700 : 500,
             fontSize: '14px',
             width: '100%',

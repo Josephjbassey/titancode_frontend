@@ -1,6 +1,16 @@
 import React from 'react';
 import type { ScreenId } from '../../App';
-import { Globe, Smartphone, Palette, Layers, Search, Code, CheckCircle, ShieldCheck, Mail, Phone } from 'lucide-react';
+import { CheckCircle, Mail, Phone } from 'lucide-react';
+import {
+  ServiceWebGlobeIcon,
+  ServiceMobileIcon,
+  ServiceDesignIcon,
+  ServiceLayersIcon,
+  CircleSearchIcon,
+  CirclePaletteIcon,
+  CircleMonitorIcon,
+  CircleVerifiedIcon,
+} from '../../components/FigmaIcons';
 
 interface ServicesViewProps {
   onNavigate: (view: ScreenId) => void;
@@ -8,11 +18,11 @@ interface ServicesViewProps {
 
 export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
   return (
-    <div style={{ backgroundColor: '#0B0E14', color: '#FFFFFF', paddingBottom: '100px' }}>
+    <div style={{ backgroundColor: 'var(--tc-figma-black, #0B0B0C)', color: '#FFFFFF', paddingBottom: '100px' }}>
       {/* 1. HERO BANNER */}
       <section style={{ width: '100%', position: 'relative', overflow: 'hidden' }}>
         <img
-          src="/assets/services_hero_banner.png"
+          src="/assets/servicesHero_bg.jpg"
           alt="Our Services"
           style={{ width: '100%', maxHeight: '580px', objectFit: 'cover', display: 'block' }}
         />
@@ -20,10 +30,10 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
 
       {/* 2. SERVICES SECTION */}
       <section style={{ maxWidth: '1280px', margin: '90px auto 0', padding: '0 40px', textAlign: 'center' }}>
-        <h2 style={{ fontSize: '38px', fontWeight: '800', color: '#E5A83B', marginBottom: '16px' }}>
+        <h2 style={{ fontSize: '38px', fontWeight: '800', color: 'var(--tc-figma-gold, #DFAE32)', marginBottom: '16px', fontFamily: "'Inter', sans-serif" }}>
           Services
         </h2>
-        <p style={{ fontSize: '16px', color: '#9CA3AF', maxWidth: '680px', margin: '0 auto 50px', lineHeight: '1.6' }}>
+        <p style={{ fontSize: '16px', color: '#9CA3AF', maxWidth: '680px', margin: '0 auto 50px', lineHeight: '1.6', fontFamily: "'Poppins', sans-serif" }}>
           We design and develop websites, mobile apps, and software solutions that help businesses grow and solve realworld problems.
         </p>
 
@@ -39,35 +49,15 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
           {/* Card 1: Web Development */}
           <div
             style={{
-              backgroundColor: '#181B20',
-              border: '1px solid #2B2F38',
+              backgroundColor: '#FFFFFF1A',
+              border: '1px solid #FFFFFF26',
               borderRadius: '20px',
               padding: '36px 28px',
-              transition: 'transform 0.2s ease, border-color 0.2s ease',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = '#E5A83B';
-              e.currentTarget.style.transform = 'translateY(-4px)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = '#2B2F38';
-              e.currentTarget.style.transform = 'translateY(0)';
+              transition: 'border-color 0.2s ease',
             }}
           >
-            <div
-              style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '12px',
-                backgroundColor: '#E5A83B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#0B0E14',
-                marginBottom: '24px',
-              }}
-            >
-              <Globe size={28} strokeWidth={2.2} />
+            <div style={{ marginBottom: '24px' }}>
+              <ServiceWebGlobeIcon style={{ width: '60px', height: '60px' }} />
             </div>
             <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '14px', color: '#FFFFFF' }}>
               Web Development
@@ -80,35 +70,15 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
           {/* Card 2: Mobile App */}
           <div
             style={{
-              backgroundColor: '#181B20',
-              border: '1px solid #2B2F38',
+              backgroundColor: '#FFFFFF1A',
+              border: '1px solid #FFFFFF26',
               borderRadius: '20px',
               padding: '36px 28px',
-              transition: 'transform 0.2s ease, border-color 0.2s ease',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = '#E5A83B';
-              e.currentTarget.style.transform = 'translateY(-4px)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = '#2B2F38';
-              e.currentTarget.style.transform = 'translateY(0)';
+              transition: 'border-color 0.2s ease',
             }}
           >
-            <div
-              style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '12px',
-                backgroundColor: '#E5A83B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#0B0E14',
-                marginBottom: '24px',
-              }}
-            >
-              <Smartphone size={28} strokeWidth={2.2} />
+            <div style={{ marginBottom: '24px' }}>
+              <ServiceMobileIcon style={{ width: '60px', height: '60px' }} />
             </div>
             <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '14px', color: '#FFFFFF' }}>
               Mobile App
@@ -121,35 +91,15 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
           {/* Card 3: UI/UX Design */}
           <div
             style={{
-              backgroundColor: '#181B20',
-              border: '1px solid #2B2F38',
+              backgroundColor: '#FFFFFF1A',
+              border: '1px solid #FFFFFF26',
               borderRadius: '20px',
               padding: '36px 28px',
-              transition: 'transform 0.2s ease, border-color 0.2s ease',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = '#E5A83B';
-              e.currentTarget.style.transform = 'translateY(-4px)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = '#2B2F38';
-              e.currentTarget.style.transform = 'translateY(0)';
+              transition: 'border-color 0.2s ease',
             }}
           >
-            <div
-              style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '12px',
-                backgroundColor: '#E5A83B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#0B0E14',
-                marginBottom: '24px',
-              }}
-            >
-              <Palette size={28} strokeWidth={2.2} />
+            <div style={{ marginBottom: '24px' }}>
+              <ServiceDesignIcon style={{ width: '60px', height: '60px' }} />
             </div>
             <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '14px', color: '#FFFFFF' }}>
               UI/UX Design
@@ -162,35 +112,15 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
           {/* Card 4: Product */}
           <div
             style={{
-              backgroundColor: '#181B20',
-              border: '1px solid #2B2F38',
+              backgroundColor: '#FFFFFF1A',
+              border: '1px solid #FFFFFF26',
               borderRadius: '20px',
               padding: '36px 28px',
-              transition: 'transform 0.2s ease, border-color 0.2s ease',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = '#E5A83B';
-              e.currentTarget.style.transform = 'translateY(-4px)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = '#2B2F38';
-              e.currentTarget.style.transform = 'translateY(0)';
+              transition: 'border-color 0.2s ease',
             }}
           >
-            <div
-              style={{
-                width: '54px',
-                height: '54px',
-                borderRadius: '12px',
-                backgroundColor: '#E5A83B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#0B0E14',
-                marginBottom: '24px',
-              }}
-            >
-              <Layers size={28} strokeWidth={2.2} />
+            <div style={{ marginBottom: '24px' }}>
+              <ServiceLayersIcon style={{ width: '60px', height: '60px' }} />
             </div>
             <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '14px', color: '#FFFFFF' }}>
               Product
@@ -205,7 +135,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
       {/* 3. OUR WORK PROCESS */}
       <section style={{ maxWidth: '1280px', margin: '140px auto 0', padding: '0 40px', textAlign: 'center' }}>
         <h2 style={{ fontSize: '38px', fontWeight: '800', marginBottom: '16px' }}>
-          Our <span style={{ color: '#E5A83B' }}>Process</span>
+          Our Work <span style={{ color: '#DFAE32' }}>Process</span>
         </h2>
         <p style={{ fontSize: '16px', color: '#9CA3AF', maxWidth: '680px', margin: '0 auto 70px', lineHeight: '1.6' }}>
           A simple and efficient approach to delivering high-quality digital solutions from start to finish.
@@ -223,28 +153,14 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
           {/* Step 1: Discover */}
           <div style={{ flex: 1, maxWidth: '240px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ position: 'relative', marginBottom: '24px' }}>
-              <div
-                style={{
-                  width: '90px',
-                  height: '90px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E5A83B',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#0B0E14',
-                  boxShadow: '0 8px 24px rgba(229, 168, 59, 0.3)',
-                }}
-              >
-                <Search size={36} strokeWidth={2.4} />
-              </div>
+              <CircleSearchIcon style={{ width: '84px', height: '84px' }} />
               <span
                 style={{
                   position: 'absolute',
                   top: '0',
                   right: '-6px',
-                  backgroundColor: '#0B0E14',
-                  border: '1px solid #E5A83B',
+                  backgroundColor: '#0B0B0C',
+                  border: '1px solid #DFAE32',
                   color: '#FFFFFF',
                   fontSize: '11px',
                   fontWeight: '700',
@@ -268,39 +184,25 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
             <svg width="70" height="24" viewBox="0 0 70 24" fill="none">
               <path
                 d="M 5 20 Q 35 -5 65 14"
-                stroke="#E5A83B"
+                stroke="#DFAE32"
                 strokeWidth="2"
                 fill="none"
               />
-              <polygon points="63,9 68,15 60,16" fill="#E5A83B" />
+              <polygon points="63,9 68,15 60,16" fill="#DFAE32" />
             </svg>
           </div>
 
           {/* Step 2: Design */}
           <div style={{ flex: 1, maxWidth: '240px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ position: 'relative', marginBottom: '24px' }}>
-              <div
-                style={{
-                  width: '90px',
-                  height: '90px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E5A83B',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#0B0E14',
-                  boxShadow: '0 8px 24px rgba(229, 168, 59, 0.3)',
-                }}
-              >
-                <Palette size={36} strokeWidth={2.4} />
-              </div>
+              <CirclePaletteIcon style={{ width: '84px', height: '84px' }} />
               <span
                 style={{
                   position: 'absolute',
                   top: '0',
                   right: '-6px',
-                  backgroundColor: '#0B0E14',
-                  border: '1px solid #E5A83B',
+                  backgroundColor: '#0B0B0C',
+                  border: '1px solid #DFAE32',
                   color: '#FFFFFF',
                   fontSize: '11px',
                   fontWeight: '700',
@@ -315,7 +217,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
               Design
             </h4>
             <p style={{ fontSize: '14px', color: '#9CA3AF', lineHeight: '1.6', textAlign: 'center' }}>
-              We create intuitive designs and user-focused experiences.
+              We craft intuitive and engaging user experiences.
             </p>
           </div>
 
@@ -324,39 +226,25 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
             <svg width="70" height="24" viewBox="0 0 70 24" fill="none">
               <path
                 d="M 5 20 Q 35 -5 65 14"
-                stroke="#E5A83B"
+                stroke="#DFAE32"
                 strokeWidth="2"
                 fill="none"
               />
-              <polygon points="63,9 68,15 60,16" fill="#E5A83B" />
+              <polygon points="63,9 68,15 60,16" fill="#DFAE32" />
             </svg>
           </div>
 
           {/* Step 3: Develop */}
           <div style={{ flex: 1, maxWidth: '240px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ position: 'relative', marginBottom: '24px' }}>
-              <div
-                style={{
-                  width: '90px',
-                  height: '90px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E5A83B',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#0B0E14',
-                  boxShadow: '0 8px 24px rgba(229, 168, 59, 0.3)',
-                }}
-              >
-                <Code size={36} strokeWidth={2.4} />
-              </div>
+              <CircleMonitorIcon style={{ width: '84px', height: '84px' }} />
               <span
                 style={{
                   position: 'absolute',
                   top: '0',
                   right: '-6px',
-                  backgroundColor: '#0B0E14',
-                  border: '1px solid #E5A83B',
+                  backgroundColor: '#0B0B0C',
+                  border: '1px solid #DFAE32',
                   color: '#FFFFFF',
                   fontSize: '11px',
                   fontWeight: '700',
@@ -380,39 +268,25 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
             <svg width="70" height="24" viewBox="0 0 70 24" fill="none">
               <path
                 d="M 5 20 Q 35 -5 65 14"
-                stroke="#E5A83B"
+                stroke="#DFAE32"
                 strokeWidth="2"
                 fill="none"
               />
-              <polygon points="63,9 68,15 60,16" fill="#E5A83B" />
+              <polygon points="63,9 68,15 60,16" fill="#DFAE32" />
             </svg>
           </div>
 
           {/* Step 4: Deliver */}
           <div style={{ flex: 1, maxWidth: '240px', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
             <div style={{ position: 'relative', marginBottom: '24px' }}>
-              <div
-                style={{
-                  width: '90px',
-                  height: '90px',
-                  borderRadius: '50%',
-                  backgroundColor: '#E5A83B',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: '#0B0E14',
-                  boxShadow: '0 8px 24px rgba(229, 168, 59, 0.3)',
-                }}
-              >
-                <ShieldCheck size={36} strokeWidth={2.4} />
-              </div>
+              <CircleVerifiedIcon style={{ width: '84px', height: '84px' }} />
               <span
                 style={{
                   position: 'absolute',
                   top: '0',
                   right: '-6px',
-                  backgroundColor: '#0B0E14',
-                  border: '1px solid #E5A83B',
+                  backgroundColor: '#0B0B0C',
+                  border: '1px solid #DFAE32',
                   color: '#FFFFFF',
                   fontSize: '11px',
                   fontWeight: '700',
@@ -443,24 +317,38 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
             alignItems: 'center',
           }}
         >
-          {/* Left: Photos collage */}
-          <div>
-            <img
-              src="/assets/services_why_collage.png"
-              alt="Developer Workstation Setup"
-              style={{
-                width: '100%',
-                borderRadius: '16px',
-                boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
-                display: 'block',
-              }}
-            />
+          {/* Left: Photos showcase using services_1.jpg & services_2.jpg */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
+            <div style={{ borderRadius: '16px', overflow: 'hidden', height: '340px', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' }}>
+              <img
+                src="/assets/services_1.jpg"
+                alt="Developer Workstation"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            </div>
+            <div style={{ borderRadius: '16px', overflow: 'hidden', height: '340px', marginTop: '28px', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' }}>
+              <img
+                src="/assets/services_2.jpg"
+                alt="Collaboration and Architecture"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  display: 'block',
+                }}
+              />
+            </div>
           </div>
 
           {/* Right: Copy & Bullets */}
           <div>
             <h2 style={{ fontSize: '42px', fontWeight: '800', marginBottom: '16px' }}>
-              Why Choose <span style={{ color: '#E5A83B' }}>Us</span>
+              Why Choose <span style={{ color: '#dfae32' }}>Us</span>
             </h2>
             <p style={{ fontSize: '16px', color: '#9CA3AF', lineHeight: '1.6', marginBottom: '36px' }}>
               We deliver reliable digital solutions with a focus on quality, scalability, and user experience.
@@ -469,8 +357,8 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '26px', marginBottom: '40px' }}>
               {/* Feature 1 */}
               <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <div style={{ color: '#E5A83B', marginTop: '2px' }}>
-                  <CheckCircle size={22} fill="#E5A83B" color="#0B0E14" />
+                <div style={{ color: '#dfae32', marginTop: '2px' }}>
+                  <CheckCircle size={22} fill="#dfae32" color="#0b0b0c" />
                 </div>
                 <div>
                   <h4 style={{ fontSize: '18px', fontWeight: '700', color: '#FFFFFF', marginBottom: '6px' }}>
@@ -484,8 +372,8 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
 
               {/* Feature 2 */}
               <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <div style={{ color: '#E5A83B', marginTop: '2px' }}>
-                  <CheckCircle size={22} fill="#E5A83B" color="#0B0E14" />
+                <div style={{ color: '#dfae32', marginTop: '2px' }}>
+                  <CheckCircle size={22} fill="#dfae32" color="#0b0b0c" />
                 </div>
                 <div>
                   <h4 style={{ fontSize: '18px', fontWeight: '700', color: '#FFFFFF', marginBottom: '6px' }}>
@@ -499,8 +387,8 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
 
               {/* Feature 3 */}
               <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <div style={{ color: '#E5A83B', marginTop: '2px' }}>
-                  <CheckCircle size={22} fill="#E5A83B" color="#0B0E14" />
+                <div style={{ color: '#dfae32', marginTop: '2px' }}>
+                  <CheckCircle size={22} fill="#dfae32" color="#0b0b0c" />
                 </div>
                 <div>
                   <h4 style={{ fontSize: '18px', fontWeight: '700', color: '#FFFFFF', marginBottom: '6px' }}>
@@ -514,8 +402,8 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
 
               {/* Feature 4 */}
               <div style={{ display: 'flex', gap: '16px', alignItems: 'flex-start' }}>
-                <div style={{ color: '#E5A83B', marginTop: '2px' }}>
-                  <CheckCircle size={22} fill="#E5A83B" color="#0B0E14" />
+                <div style={{ color: '#dfae32', marginTop: '2px' }}>
+                  <CheckCircle size={22} fill="#dfae32" color="#0b0b0c" />
                 </div>
                 <div>
                   <h4 style={{ fontSize: '18px', fontWeight: '700', color: '#FFFFFF', marginBottom: '6px' }}>
@@ -532,19 +420,18 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
               type="button"
               onClick={() => onNavigate('hire_us')}
               style={{
-                backgroundColor: '#E5A83B',
-                color: '#0A0D14',
+                backgroundColor: '#dfae32',
+                color: '#0b0b0c',
                 fontWeight: '700',
                 fontSize: '15px',
                 padding: '14px 36px',
                 borderRadius: '8px',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
-                transition: 'all 0.2s ease',
+                transition: 'background-color 0.2s ease',
               }}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#F4B333')}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#E5A83B')}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#eec147')}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#dfae32')}
             >
               Hire Us
             </button>
@@ -552,20 +439,19 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* 5. BOTTOM CTA BANNER */}
+      {/* 5. BOTTOM CTA BANNER (matching Figma) */}
       <section style={{ maxWidth: '1280px', margin: '140px auto 0', padding: '0 40px' }}>
         <div
           style={{
-            backgroundColor: '#161920',
-            border: '1px solid #2B2F38',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '24px',
             padding: '70px 40px',
             textAlign: 'center',
-            boxShadow: '0 20px 40px rgba(0, 0, 0, 0.4)',
           }}
         >
           <h2 style={{ fontSize: '42px', fontWeight: '800', marginBottom: '16px' }}>
-            Ready to Build Your <span style={{ color: '#E5A83B' }}>Next Project?</span>
+            Ready to Build Your <span style={{ color: '#DFAE32' }}>Next Project?</span>
           </h2>
           <p style={{ fontSize: '16px', color: '#9CA3AF', marginBottom: '36px' }}>
             Have a project or idea? Let’s bring it to life with smart, scalable solutions.
@@ -576,15 +462,14 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
               type="button"
               onClick={() => onNavigate('hire_us')}
               style={{
-                backgroundColor: '#E5A83B',
-                color: '#0A0D14',
+                backgroundColor: '#DFAE32',
+                color: '#0B0B0C',
                 fontWeight: '700',
                 fontSize: '15px',
                 padding: '14px 34px',
                 borderRadius: '8px',
                 border: 'none',
                 cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
               }}
             >
               Hire Us
@@ -594,13 +479,13 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
               type="button"
               onClick={() => onNavigate('contact_us')}
               style={{
-                backgroundColor: '#1E232B',
+                backgroundColor: 'transparent',
                 color: '#FFFFFF',
                 fontWeight: '600',
                 fontSize: '15px',
                 padding: '14px 34px',
                 borderRadius: '8px',
-                border: '1px solid #E5A83B',
+                border: '1px solid #DFAE32',
                 cursor: 'pointer',
               }}
             >
@@ -610,11 +495,11 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '40px', color: '#9CA3AF', fontSize: '14px' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Mail size={16} color="#E5A83B" />
+              <Mail size={16} color="#DFAE32" />
               <span>Titancodetechnologies@gmail.com</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Phone size={16} color="#E5A83B" />
+              <Phone size={16} color="#DFAE32" />
               <span>+233(0)546606807</span>
             </div>
           </div>

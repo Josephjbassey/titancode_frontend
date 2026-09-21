@@ -53,11 +53,11 @@ export const FaqsView: React.FC<FaqsViewProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div style={{ backgroundColor: '#0B0E14', color: '#FFFFFF', paddingBottom: '120px' }}>
+    <div style={{ backgroundColor: 'var(--tc-figma-black, #0B0B0C)', color: '#FFFFFF', paddingBottom: '140px' }}>
       {/* 1. HERO BANNER */}
       <section style={{ width: '100%', position: 'relative', overflow: 'hidden' }}>
         <img
-          src="/assets/faqs_hero_banner.png"
+          src="/assets/faqhero_bg.jpg"
           alt="Frequently Asked Questions"
           style={{ width: '100%', maxHeight: '580px', objectFit: 'cover', display: 'block' }}
         />
@@ -73,66 +73,37 @@ export const FaqsView: React.FC<FaqsViewProps> = ({ onNavigate }) => {
             alignItems: 'start',
           }}
         >
-          {/* Left Side: Header & Inquiry CTA */}
+          {/* Left Side: Header & Subtitle matching Figma FAQs.png (NO extra button) */}
           <div>
-            <h2 style={{ fontSize: '46px', fontWeight: '800', lineHeight: '1.2', marginBottom: '16px', color: '#FFFFFF' }}>
+            <h2 style={{ fontSize: '46px', fontWeight: '800', lineHeight: '1.2', marginBottom: '20px', color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
               Frequently Asked <br />
-              <span style={{ color: '#E5A83B' }}>Questions</span>
+              <span style={{ color: 'var(--tc-figma-gold, #DFAE32)' }}>Questions</span>
             </h2>
-            <p style={{ fontSize: '16px', color: '#9CA3AF', lineHeight: '1.6', marginBottom: '32px' }}>
+            <p style={{ fontSize: '16px', color: '#9CA3AF', lineHeight: '1.6', maxWidth: '420px', fontFamily: "'Poppins', sans-serif" }}>
               Have questions? Send us a message and our team will get back to you shortly
             </p>
-
-            <button
-              type="button"
-              onClick={() => onNavigate('contact_us')}
-              style={{
-                backgroundColor: 'transparent',
-                border: '1px solid #E5A83B',
-                color: '#E5A83B',
-                fontWeight: '600',
-                fontSize: '15px',
-                padding: '12px 28px',
-                borderRadius: '8px',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = '#E5A83B';
-                e.currentTarget.style.color = '#0A0D14';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = '#E5A83B';
-              }}
-            >
-              Contact Support
-            </button>
           </div>
 
-          {/* Right Side: Accordion Container matching Figma */}
+          {/* Right Side: Accordion Container matching Figma FAQs.png */}
           <div
+            className="figma-card"
             style={{
-              backgroundColor: '#14171D',
               borderRadius: '24px',
-              padding: '36px',
-              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.5)',
+              padding: '32px 36px',
               display: 'flex',
               flexDirection: 'column',
-              gap: '16px',
             }}
           >
-            {faqs.map((faq) => {
+            {faqs.map((faq, index) => {
               const isOpen = openFaq === faq.id;
+              const isLast = index === faqs.length - 1;
               return (
                 <div
                   key={faq.id}
                   style={{
-                    backgroundColor: '#1A1D24',
-                    border: '1px solid rgba(229, 168, 59, 0.35)',
-                    borderRadius: '14px',
-                    overflow: 'hidden',
-                    transition: 'border-color 0.2s ease',
+                    borderBottom: isLast ? 'none' : '1px solid rgba(255, 255, 255, 0.08)',
+                    paddingTop: index === 0 ? '0' : '20px',
+                    paddingBottom: isLast ? '0' : '20px',
                   }}
                 >
                   <button
@@ -140,13 +111,13 @@ export const FaqsView: React.FC<FaqsViewProps> = ({ onNavigate }) => {
                     onClick={() => toggleFaq(faq.id)}
                     style={{
                       width: '100%',
-                      padding: '22px 26px',
+                      padding: '12px 0',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
                       textAlign: 'left',
                       color: '#FFFFFF',
-                      fontSize: '16px',
+                      fontSize: '18px',
                       fontWeight: '600',
                       cursor: 'pointer',
                       border: 'none',
@@ -156,7 +127,7 @@ export const FaqsView: React.FC<FaqsViewProps> = ({ onNavigate }) => {
                     <span>{faq.question}</span>
                     <ChevronDown
                       size={20}
-                      color="#E5A83B"
+                      color="#DFAE32"
                       style={{
                         transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
                         transition: 'transform 0.25s ease',
@@ -169,12 +140,10 @@ export const FaqsView: React.FC<FaqsViewProps> = ({ onNavigate }) => {
                   {isOpen && (
                     <div
                       style={{
-                        padding: '0 26px 24px',
+                        padding: '8px 0 14px',
                         color: '#9CA3AF',
                         fontSize: '15px',
                         lineHeight: '1.7',
-                        borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                        paddingTop: '16px',
                       }}
                     >
                       {faq.answer}
@@ -184,7 +153,7 @@ export const FaqsView: React.FC<FaqsViewProps> = ({ onNavigate }) => {
                             type="button"
                             onClick={() => onNavigate('application_form')}
                             style={{
-                              color: '#E5A83B',
+                              color: '#dfae32',
                               fontWeight: '600',
                               fontSize: '14px',
                               textDecoration: 'underline',

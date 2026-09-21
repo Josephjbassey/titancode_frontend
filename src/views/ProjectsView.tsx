@@ -33,9 +33,9 @@ const INITIAL_PROJECTS: Project[] = [
     progress: 68,
     description: 'Next-gen cross-platform mobile wallet with biometric security, real-time FX currency conversions, and multi-signature authorization.',
     members: [
-      { name: 'Joseph John', role: 'Lead Fullstack', avatar: '/assets/team_joseph.png' },
-      { name: 'Benedicta Atagamen', role: 'UI/UX Designer', avatar: '/assets/team_benedicta.png' },
-      { name: 'Munis Samuel', role: 'Product Architect', avatar: '/assets/team_munis.png' },
+      { name: 'Joseph John', role: 'Lead Fullstack', avatar: '/assets/joseph.jpg' },
+      { name: 'Benedicta Atagamen', role: 'UI/UX Designer', avatar: '/assets/benedicta.png' },
+      { name: 'Munis Samuel', role: 'Product Architect', avatar: '/assets/munis.jpg' },
     ],
     tasks: [
       { id: 'T-1', title: 'Setup WebRTC streaming & auth endpoints', completed: true },
@@ -55,8 +55,8 @@ const INITIAL_PROJECTS: Project[] = [
     progress: 42,
     description: 'High-throughput event ingestion cloud platform capable of processing 10,000 metrics/sec with automated anomaly detection.',
     members: [
-      { name: 'Olukayode Tioluwanimi', role: 'Product Manager', avatar: '/assets/team_olukayode.png' },
-      { name: 'Joseph John', role: 'Backend Lead', avatar: '/assets/team_joseph.png' },
+      { name: 'Olukayode Tioluwanimi', role: 'Product Manager', avatar: '/assets/blessing.jpg' },
+      { name: 'Joseph John', role: 'Backend Lead', avatar: '/assets/joseph.jpg' },
     ],
     tasks: [
       { id: 'T-5', title: 'Kafka message broker partitioning', completed: true },
@@ -75,8 +75,8 @@ const INITIAL_PROJECTS: Project[] = [
     progress: 100,
     description: 'Algorithmic trading engine monitoring DEX liquidity pools and executing flash loan swaps under 80 milliseconds.',
     members: [
-      { name: 'Munis Samuel', role: 'Algorithm Lead', avatar: '/assets/team_munis.png' },
-      { name: 'Joseph John', role: 'Systems Engineer', avatar: '/assets/team_joseph.png' },
+      { name: 'Munis Samuel', role: 'Algorithm Lead', avatar: '/assets/munis.jpg' },
+      { name: 'Joseph John', role: 'Systems Engineer', avatar: '/assets/joseph.jpg' },
     ],
     tasks: [
       { id: 'T-8', title: 'Mempool listener & smart contract execution', completed: true },
@@ -94,8 +94,8 @@ const INITIAL_PROJECTS: Project[] = [
     progress: 10,
     description: 'HIPAA-compliant doctor-patient teleconsultation portal with encrypted medical document storage and digital prescriptions.',
     members: [
-      { name: 'Benedicta Atagamen', role: 'UI/UX Designer', avatar: '/assets/team_benedicta.png' },
-      { name: 'Olukayode Tioluwanimi', role: 'Product Manager', avatar: '/assets/team_olukayode.png' },
+      { name: 'Benedicta Atagamen', role: 'UI/UX Designer', avatar: '/assets/benedicta.png' },
+      { name: 'Olukayode Tioluwanimi', role: 'Product Manager', avatar: '/assets/blessing.jpg' },
     ],
     tasks: [
       { id: 'T-10', title: 'HIPAA compliance audit & wireframes', completed: true },
@@ -114,6 +114,8 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // New project form state
   const [newProjectName, setNewProjectName] = useState('');
   const [newProjectClient, setNewProjectClient] = useState('');
   const [newProjectBudget, setNewProjectBudget] = useState('');
@@ -136,14 +138,14 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
     const created: Project = {
       id: `PRJ-${Math.floor(100 + Math.random() * 900)}`,
       name: newProjectName,
-      client: newProjectClient || 'Titan Enterprise Client',
+      client: newProjectClient || 'Internal Project',
       department: 'Web Engineering',
       budget: Number(newProjectBudget) || 20000,
       deadline: newProjectDeadline || '2026-12-31',
       status: 'Active',
       progress: 0,
       description: newProjectDesc || 'Custom enterprise software development.',
-      members: [{ name: 'Joseph John', role: 'Lead Developer', avatar: '/assets/team_joseph.png' }],
+      members: [{ name: 'Joseph John', role: 'Lead Developer', avatar: '/assets/joseph.jpg' }],
       tasks: [{ id: `T-${Date.now()}`, title: 'Project kick-off & requirements spec', completed: false }],
     };
 
@@ -216,7 +218,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
           type="button"
           onClick={() => setShowCreateModal(true)}
           style={{
-            backgroundColor: '#E5A83B',
+            backgroundColor: '#dfae32',
             color: '#0A0D14',
             fontWeight: 700,
             fontSize: '14px',
@@ -227,7 +229,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            boxShadow: '0 4px 14px rgba(229, 168, 59, 0.25)',
+            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
           }}
         >
           <Plus size={18} strokeWidth={2.5} />
@@ -266,7 +268,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
           }}
         >
           <div style={{ color: '#9CA3AF', fontSize: '13px', marginBottom: '8px' }}>Active Sprints</div>
-          <div style={{ fontSize: '28px', fontWeight: 800, color: '#E5A83B' }}>
+          <div style={{ fontSize: '28px', fontWeight: 800, color: '#dfae32' }}>
             {projects.filter((p) => p.status === 'Active').length}
           </div>
           <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '4px' }}>On-schedule delivery</div>
@@ -335,7 +337,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                 padding: '8px 16px',
                 borderRadius: '6px',
                 border: 'none',
-                backgroundColor: statusFilter === tab ? '#E5A83B' : 'transparent',
+                backgroundColor: statusFilter === tab ? '#dfae32' : 'transparent',
                 color: statusFilter === tab ? '#0A0D14' : '#9CA3AF',
                 fontWeight: statusFilter === tab ? 700 : 500,
                 fontSize: '13px',
@@ -389,7 +391,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
       >
         {filteredProjects.map((project) => {
           const statusColors = {
-            Active: { bg: 'rgba(229, 168, 59, 0.15)', text: '#E5A83B', border: 'rgba(229, 168, 59, 0.3)' },
+            Active: { bg: 'rgba(223, 174, 50, 0.15)', text: '#dfae32', border: 'rgba(223, 174, 50, 0.3)' },
             Pending: { bg: 'rgba(156, 163, 175, 0.15)', text: '#9CA3AF', border: 'rgba(156, 163, 175, 0.3)' },
             Completed: { bg: 'rgba(16, 185, 129, 0.15)', text: '#10B981', border: 'rgba(16, 185, 129, 0.3)' },
             Cancelled: { bg: 'rgba(239, 68, 68, 0.15)', text: '#EF4444', border: 'rgba(239, 68, 68, 0.3)' },
@@ -411,7 +413,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                 justifyContent: 'space-between',
               }}
               onMouseOver={(e) => {
-                e.currentTarget.style.borderColor = 'rgba(229, 168, 59, 0.35)';
+                e.currentTarget.style.borderColor = 'rgba(223, 174, 50, 0.35)';
                 e.currentTarget.style.transform = 'translateY(-3px)';
               }}
               onMouseOut={(e) => {
@@ -422,7 +424,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
               <div>
                 {/* Header: ID + Status */}
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
-                  <span style={{ color: '#E5A83B', fontSize: '12px', fontWeight: 700, letterSpacing: '0.04em' }}>
+                  <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700, letterSpacing: '0.04em' }}>
                     {project.id}
                   </span>
                   <span
@@ -459,7 +461,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                       style={{
                         width: `${project.progress}%`,
                         height: '100%',
-                        backgroundColor: project.status === 'Completed' ? '#10B981' : '#E5A83B',
+                        backgroundColor: project.status === 'Completed' ? '#10B981' : '#dfae32',
                         borderRadius: '999px',
                         transition: 'width 0.4s ease',
                       }}
@@ -529,7 +531,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '680px',
               width: '100%',
@@ -543,7 +545,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
             {/* Modal Header */}
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
               <div>
-                <span style={{ color: '#E5A83B', fontSize: '12px', fontWeight: 700 }}>
+                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>
                   {selectedProject.id} ● {selectedProject.department}
                 </span>
                 <h2 style={{ fontSize: '24px', fontWeight: 800, margin: '6px 0 0', color: '#FFFFFF' }}>
@@ -573,20 +575,20 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
               <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF', marginBottom: '8px' }}>
                 Scope & Specifications
               </h4>
-              <p style={{ color: '#9CA3AF', fontSize: '14px', lineHeight: 1.6, backgroundColor: '#0B0E14', padding: '14px', borderRadius: '8px' }}>
+              <p style={{ color: '#9CA3AF', fontSize: '14px', lineHeight: 1.6, backgroundColor: '#161617', padding: '14px', borderRadius: '8px' }}>
                 {selectedProject.description}
               </p>
             </div>
 
             {/* Budget & Timeline cards */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '24px' }}>
-              <div style={{ backgroundColor: '#0B0E14', padding: '16px', borderRadius: '10px' }}>
+              <div style={{ backgroundColor: '#161617', padding: '16px', borderRadius: '10px' }}>
                 <div style={{ color: '#9CA3AF', fontSize: '12px' }}>Total Escrow Budget</div>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: '#E5A83B', marginTop: '4px' }}>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#dfae32', marginTop: '4px' }}>
                   ${selectedProject.budget.toLocaleString()} USD
                 </div>
               </div>
-              <div style={{ backgroundColor: '#0B0E14', padding: '16px', borderRadius: '10px' }}>
+              <div style={{ backgroundColor: '#161617', padding: '16px', borderRadius: '10px' }}>
                 <div style={{ color: '#9CA3AF', fontSize: '12px' }}>Milestone Deadline</div>
                 <div style={{ fontSize: '20px', fontWeight: 800, color: '#FFFFFF', marginTop: '4px' }}>
                   {selectedProject.deadline}
@@ -607,7 +609,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'space-between',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       padding: '10px 14px',
                       borderRadius: '8px',
                     }}
@@ -635,7 +637,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                 <h4 style={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
                   Milestone Tasks ({selectedProject.tasks.filter((t) => t.completed).length} / {selectedProject.tasks.length})
                 </h4>
-                <span style={{ fontSize: '13px', color: '#E5A83B', fontWeight: 700 }}>
+                <span style={{ fontSize: '13px', color: '#dfae32', fontWeight: 700 }}>
                   {selectedProject.progress}% Done
                 </span>
               </div>
@@ -648,7 +650,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                       display: 'flex',
                       alignItems: 'center',
                       gap: '12px',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       padding: '12px 14px',
                       borderRadius: '8px',
                       cursor: 'pointer',
@@ -659,7 +661,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                       type="checkbox"
                       checked={task.completed}
                       onChange={() => {}}
-                      style={{ cursor: 'pointer', accentColor: '#E5A83B' }}
+                      style={{ cursor: 'pointer', accentColor: '#dfae32' }}
                     />
                     <span
                       style={{
@@ -740,7 +742,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '540px',
               width: '100%',
@@ -774,7 +776,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                   onChange={(e) => setNewProjectName(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -797,7 +799,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                     onChange={(e) => setNewProjectClient(e.target.value)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '10px 14px',
@@ -818,7 +820,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                     onChange={(e) => setNewProjectBudget(e.target.value)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '10px 14px',
@@ -840,7 +842,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                   onChange={(e) => setNewProjectDeadline(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -862,7 +864,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                   onChange={(e) => setNewProjectDesc(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -892,7 +894,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                 <button
                   type="submit"
                   style={{
-                    backgroundColor: '#E5A83B',
+                    backgroundColor: '#dfae32',
                     color: '#0A0D14',
                     fontWeight: 700,
                     padding: '10px 22px',

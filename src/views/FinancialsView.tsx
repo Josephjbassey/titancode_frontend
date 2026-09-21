@@ -165,7 +165,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                 padding: '8px 16px',
                 borderRadius: '6px',
                 border: 'none',
-                backgroundColor: activeTab === tab.id ? '#E5A83B' : 'transparent',
+                backgroundColor: activeTab === tab.id ? '#dfae32' : 'transparent',
                 color: activeTab === tab.id ? '#0A0D14' : '#9CA3AF',
                 fontWeight: activeTab === tab.id ? 700 : 500,
                 fontSize: '13px',
@@ -188,7 +188,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               backgroundColor: '#11151F',
               borderRadius: '16px',
               padding: '36px',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               marginBottom: '28px',
               display: 'flex',
               alignItems: 'center',
@@ -202,7 +202,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               <div style={{ color: '#9CA3AF', fontSize: '14px', marginBottom: '8px' }}>
                 Available Settlement Balance
               </div>
-              <div style={{ fontSize: '42px', fontWeight: 800, color: '#E5A83B', letterSpacing: '-0.02em' }}>
+              <div style={{ fontSize: '42px', fontWeight: 800, color: '#dfae32', letterSpacing: '-0.02em' }}>
                 ${myBalance.toLocaleString()} <span style={{ fontSize: '20px', color: '#FFFFFF' }}>USD</span>
               </div>
               <div style={{ color: '#10B981', fontSize: '13px', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -215,7 +215,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               type="button"
               onClick={() => setShowWithdrawModal(true)}
               style={{
-                backgroundColor: '#E5A83B',
+                backgroundColor: '#dfae32',
                 color: '#0A0D14',
                 fontWeight: 700,
                 fontSize: '15px',
@@ -226,7 +226,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                boxShadow: '0 4px 16px rgba(229, 168, 59, 0.35)',
+                boxShadow: '0 4px 16px rgba(223, 174, 50, 0.35)',
               }}
             >
               <ArrowUpRight size={18} strokeWidth={2.5} />
@@ -263,7 +263,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                   { ref: 'TXN-880', project: 'Aurelia FinTech Milestone 2', type: 'Milestone Credit', date: '2026-09-08', amount: '+$5,400.00', isCredit: true },
                 ].map((row, i) => (
                   <tr key={i} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                    <td style={{ padding: '14px 20px', color: '#E5A83B', fontWeight: 600 }}>{row.ref}</td>
+                    <td style={{ padding: '14px 20px', color: '#dfae32', fontWeight: 600 }}>{row.ref}</td>
                     <td style={{ padding: '14px 20px', color: '#FFFFFF', fontWeight: 600 }}>{row.project}</td>
                     <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{row.type}</td>
                     <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{row.date}</td>
@@ -306,11 +306,11 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
             <tbody>
               {withdrawals.map((w) => (
                 <tr key={w.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                  <td style={{ padding: '14px 20px', color: '#E5A83B', fontWeight: 600 }}>{w.id}</td>
+                  <td style={{ padding: '14px 20px', color: '#dfae32', fontWeight: 600 }}>{w.id}</td>
                   <td style={{ padding: '14px 20px', color: '#FFFFFF', fontWeight: 700 }}>{w.member}</td>
                   <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{w.bankName}</td>
                   <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{w.account}</td>
-                  <td style={{ padding: '14px 20px', fontWeight: 700, color: '#E5A83B' }}>${w.amount.toLocaleString()}</td>
+                  <td style={{ padding: '14px 20px', fontWeight: 700, color: '#dfae32' }}>${w.amount.toLocaleString()}</td>
                   <td style={{ padding: '14px 20px' }}>
                     <span
                       style={{
@@ -318,8 +318,8 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                         borderRadius: '999px',
                         fontSize: '11px',
                         fontWeight: 700,
-                        backgroundColor: w.status === 'Approved' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(229, 168, 59, 0.15)',
-                        color: w.status === 'Approved' ? '#10B981' : '#E5A83B',
+                        backgroundColor: w.status === 'Approved' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(223, 174, 50, 0.15)',
+                        color: w.status === 'Approved' ? '#10B981' : '#dfae32',
                       }}
                     >
                       ● {w.status}
@@ -369,13 +369,13 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
                 <div>
-                  <span style={{ color: '#E5A83B', fontSize: '12px', fontWeight: 700 }}>{inv.id}</span>
+                  <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>{inv.id}</span>
                   <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '4px 0 0' }}>{inv.project}</h3>
                   <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '2px' }}>Generated: {inv.generatedDate}</div>
                 </div>
 
                 <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '22px', fontWeight: 800, color: '#E5A83B' }}>
+                  <div style={{ fontSize: '22px', fontWeight: 800, color: '#dfae32' }}>
                     ${inv.totalPayout.toLocaleString()} USD
                   </div>
                   <span
@@ -384,8 +384,8 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                       fontWeight: 700,
                       padding: '2px 8px',
                       borderRadius: '4px',
-                      backgroundColor: inv.status === 'Settled' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(229, 168, 59, 0.15)',
-                      color: inv.status === 'Settled' ? '#10B981' : '#E5A83B',
+                      backgroundColor: inv.status === 'Settled' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(223, 174, 50, 0.15)',
+                      color: inv.status === 'Settled' ? '#10B981' : '#dfae32',
                     }}
                   >
                     {inv.status}
@@ -394,7 +394,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               </div>
 
               {/* Split Breakdown */}
-              <div style={{ backgroundColor: '#0B0E14', borderRadius: '10px', padding: '16px', marginBottom: '16px' }}>
+              <div style={{ backgroundColor: '#161617', borderRadius: '10px', padding: '16px', marginBottom: '16px' }}>
                 <div style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '10px', fontWeight: 600 }}>
                   Escrow Contract Split Breakdown:
                 </div>
@@ -404,7 +404,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                       <span style={{ color: '#D1D5DB' }}>
                         <span style={{ fontWeight: 700, color: '#FFFFFF' }}>{s.member}</span> ({s.role}) — {s.share}%
                       </span>
-                      <span style={{ fontWeight: 700, color: '#E5A83B' }}>${s.amount.toLocaleString()} USD</span>
+                      <span style={{ fontWeight: 700, color: '#dfae32' }}>${s.amount.toLocaleString()} USD</span>
                     </div>
                   ))}
                 </div>
@@ -446,9 +446,9 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               marginBottom: '28px',
             }}
           >
-            <div style={{ backgroundColor: '#11151F', borderRadius: '14px', padding: '24px', border: '1px solid rgba(229, 168, 59, 0.3)' }}>
+            <div style={{ backgroundColor: '#11151F', borderRadius: '14px', padding: '24px', border: '1px solid rgba(223, 174, 50, 0.3)' }}>
               <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Corporate Vault Balance</div>
-              <div style={{ fontSize: '32px', fontWeight: 800, color: '#E5A83B', marginTop: '6px' }}>$194,250.00</div>
+              <div style={{ fontSize: '32px', fontWeight: 800, color: '#dfae32', marginTop: '6px' }}>$194,250.00</div>
               <div style={{ color: '#10B981', fontSize: '12px', marginTop: '4px' }}>+$18,400 this month</div>
             </div>
 
@@ -486,7 +486,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '480px',
               width: '100%',
@@ -532,7 +532,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '12px 14px',
@@ -541,12 +541,12 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                       outline: 'none',
                     }}
                   />
-                  <div style={{ fontSize: '12px', color: '#E5A83B', marginTop: '4px' }}>
+                  <div style={{ fontSize: '12px', color: '#dfae32', marginTop: '4px' }}>
                     Available: ${myBalance.toLocaleString()} USD
                   </div>
                 </div>
 
-                <div style={{ backgroundColor: '#0B0E14', padding: '14px', borderRadius: '8px', marginBottom: '24px' }}>
+                <div style={{ backgroundColor: '#161617', padding: '14px', borderRadius: '8px', marginBottom: '24px' }}>
                   <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Destination Account:</div>
                   <div style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF', marginTop: '2px' }}>
                     Guaranty Trust Bank (0123456789)
@@ -571,7 +571,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                   <button
                     type="submit"
                     style={{
-                      backgroundColor: '#E5A83B',
+                      backgroundColor: '#dfae32',
                       color: '#0A0D14',
                       fontWeight: 700,
                       padding: '10px 22px',

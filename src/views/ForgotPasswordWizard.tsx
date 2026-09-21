@@ -115,7 +115,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
                 <div style={{
                   width: '32px',
                   height: '2px',
-                  backgroundColor: num <= activeStep ? '#E5A83B' : 'rgba(255, 255, 255, 0.15)',
+                  backgroundColor: num <= activeStep ? '#dfae32' : 'rgba(255, 255, 255, 0.15)',
                   transition: 'background-color 0.3s ease',
                 }} />
               )}
@@ -123,7 +123,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
                 width: '32px',
                 height: '32px',
                 borderRadius: '50%',
-                backgroundColor: isDoneOrActive ? '#E5A83B' : 'rgba(255, 255, 255, 0.08)',
+                backgroundColor: isDoneOrActive ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
                 color: isDoneOrActive ? '#000000' : 'rgba(255, 255, 255, 0.5)',
                 display: 'flex',
                 alignItems: 'center',
@@ -231,14 +231,14 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
               width: '100%',
               height: '46px',
               borderRadius: '9999px',
-              backgroundColor: '#E5A83B',
+              backgroundColor: '#dfae32',
               color: '#000000',
               fontSize: '15px',
               fontWeight: '700',
               border: 'none',
               cursor: 'pointer',
               marginBottom: '14px',
-              boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+              boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
             }}
           >
             {isLoading ? 'Sending...' : 'Reset Password'}
@@ -332,14 +332,14 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
               width: '100%',
               height: '46px',
               borderRadius: '9999px',
-              backgroundColor: '#E5A83B',
+              backgroundColor: '#dfae32',
               color: '#000000',
               fontSize: '15px',
               fontWeight: '700',
               border: 'none',
               cursor: 'pointer',
               marginBottom: '18px',
-              boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+              boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
             }}
           >
             {isLoading ? 'Verifying...' : 'Continue'}
@@ -358,7 +358,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#E5A83B',
+                color: '#dfae32',
                 fontWeight: '600',
                 cursor: 'pointer',
                 padding: 0,
@@ -555,14 +555,14 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
               width: '100%',
               height: '46px',
               borderRadius: '9999px',
-              backgroundColor: '#E5A83B',
+              backgroundColor: '#dfae32',
               color: '#000000',
               fontSize: '15px',
               fontWeight: '700',
               border: 'none',
               cursor: 'pointer',
               marginBottom: '14px',
-              boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+              boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
             }}
           >
             {isLoading ? 'Updating...' : 'Reset Password'}
@@ -604,13 +604,13 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
           width: '72px',
           height: '72px',
           borderRadius: '50%',
-          backgroundColor: '#E5A83B',
+          backgroundColor: '#dfae32',
           color: '#000000',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           margin: '0 auto 24px',
-          boxShadow: '0 8px 24px rgba(229, 168, 59, 0.3)',
+          boxShadow: '0 8px 24px rgba(223, 174, 50, 0.3)',
         }}>
           <Check size={38} strokeWidth={3} />
         </div>
@@ -641,13 +641,13 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
             width: '100%',
             height: '46px',
             borderRadius: '9999px',
-            backgroundColor: '#E5A83B',
+            backgroundColor: '#dfae32',
             color: '#000000',
             fontSize: '15px',
             fontWeight: '700',
             border: 'none',
             cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
           }}
         >
           Sign In

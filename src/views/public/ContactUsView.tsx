@@ -36,11 +36,11 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
   };
 
   return (
-    <div style={{ backgroundColor: '#0B0E14', color: '#FFFFFF', paddingBottom: '120px' }}>
+    <div style={{ backgroundColor: 'var(--tc-figma-black, #0B0B0C)', color: '#FFFFFF', paddingBottom: '120px' }}>
       {/* 1. HERO BANNER */}
       <section style={{ width: '100%', position: 'relative', overflow: 'hidden' }}>
         <img
-          src="/assets/contact_us_hero_banner.png"
+          src="/assets/contactus_bg.jpg"
           alt="Contact Us"
           style={{ width: '100%', maxHeight: '580px', objectFit: 'cover', display: 'block' }}
         />
@@ -58,10 +58,10 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
         >
           {/* Left Column: Let's Get in Touch */}
           <div>
-            <h2 style={{ fontSize: '46px', fontWeight: '800', marginBottom: '20px', color: '#FFFFFF' }}>
+            <h2 style={{ fontSize: '46px', fontWeight: '800', marginBottom: '20px', color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
               Let’s Get in Touch
             </h2>
-            <p style={{ fontSize: '16px', color: '#9CA3AF', lineHeight: '1.7', marginBottom: '48px', maxWidth: '480px' }}>
+            <p style={{ fontSize: '16px', color: '#9CA3AF', lineHeight: '1.7', marginBottom: '48px', maxWidth: '480px', fontFamily: "'Poppins', sans-serif" }}>
               Have a project, an inquiry, or looking to collaborate with us? Our team is ready to assist. Send us a message and we’ll respond as soon as possible.
             </p>
 
@@ -69,14 +69,14 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div
                   style={{
-                    width: '42px',
-                    height: '42px',
+                    width: '44px',
+                    height: '44px',
                     borderRadius: '8px',
-                    backgroundColor: 'rgba(229, 168, 59, 0.1)',
+                    backgroundColor: '#DFAE324D',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#E5A83B',
+                    color: '#DDC998',
                   }}
                 >
                   <Mail size={20} />
@@ -87,14 +87,14 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div
                   style={{
-                    width: '42px',
-                    height: '42px',
+                    width: '44px',
+                    height: '44px',
                     borderRadius: '8px',
-                    backgroundColor: 'rgba(229, 168, 59, 0.1)',
+                    backgroundColor: '#DFAE324D',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#E5A83B',
+                    color: '#DDC998',
                   }}
                 >
                   <Phone size={20} />
@@ -105,14 +105,14 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
               <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
                 <div
                   style={{
-                    width: '42px',
-                    height: '42px',
+                    width: '44px',
+                    height: '44px',
                     borderRadius: '8px',
-                    backgroundColor: 'rgba(229, 168, 59, 0.1)',
+                    backgroundColor: '#DFAE324D',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#E5A83B',
+                    color: '#DDC998',
                   }}
                 >
                   <MapPin size={20} />
@@ -122,8 +122,49 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
             </div>
           </div>
 
-          {/* Right Column: Contact Form */}
-          <div>
+          {/* Right Column: Contact Form with corner gradient border matching Figma */}
+          <div
+            style={{
+              position: 'relative',
+              padding: '40px',
+              borderRadius: '16px',
+              backgroundColor: '#FFFFFF1A',
+              border: '1px solid #FFFFFF26',
+            }}
+          >
+            {/* Top decorative corner gradient border from Figma */}
+            <div
+              style={{
+                position: 'absolute',
+                top: 0,
+                right: 0,
+                width: '97px',
+                height: '88px',
+                pointerEvents: 'none',
+                background: 'linear-gradient(305.42deg, rgba(223, 174, 50, 0) 61.55%, #DFAE32 100%)',
+                borderTopRightRadius: '16px',
+                maskImage: 'radial-gradient(circle at top right, black 60%, transparent 100%)',
+                WebkitMaskImage: 'radial-gradient(circle at top right, black 60%, transparent 100%)',
+                opacity: 0.8,
+              }}
+            />
+            {/* Bottom decorative corner gradient border from Figma */}
+            <div
+              style={{
+                position: 'absolute',
+                bottom: 0,
+                left: 0,
+                width: '97px',
+                height: '88px',
+                pointerEvents: 'none',
+                background: 'linear-gradient(125.42deg, rgba(223, 174, 50, 0) 61.55%, #DFAE32 100%)',
+                borderBottomLeftRadius: '16px',
+                maskImage: 'radial-gradient(circle at bottom left, black 60%, transparent 100%)',
+                WebkitMaskImage: 'radial-gradient(circle at bottom left, black 60%, transparent 100%)',
+                opacity: 0.8,
+              }}
+            />
+
             {submitted && (
               <div
                 style={{
@@ -146,189 +187,178 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
             )}
 
             <form onSubmit={handleSubmit}>
-              <div
-                style={{
-                  backgroundColor: '#14171D',
-                  border: '1px solid rgba(229, 168, 59, 0.35)',
-                  borderRadius: '24px',
-                  padding: '40px 36px',
-                  boxShadow: '0 16px 40px rgba(0, 0, 0, 0.5)',
-                  marginBottom: '24px',
-                }}
-              >
-                {/* Row 1: First Name | Last Name */}
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '20px' }}>
-                  <div>
-                    <input
-                      type="text"
-                      required
-                      placeholder="First Name"
-                      value={formData.firstName}
-                      onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                      style={{
-                        width: '100%',
-                        height: '54px',
-                        borderRadius: '9999px',
-                        backgroundColor: '#20242D',
-                        border: '1px solid transparent',
-                        color: '#FFFFFF',
-                        padding: '0 24px',
-                        fontSize: '15px',
-                        outline: 'none',
-                        transition: 'border-color 0.2s',
-                      }}
-                      onFocus={(e) => (e.target.style.borderColor = '#E5A83B')}
-                      onBlur={(e) => (e.target.style.borderColor = 'transparent')}
-                    />
-                  </div>
-
-                  <div>
-                    <input
-                      type="text"
-                      required
-                      placeholder="Last Name"
-                      value={formData.lastName}
-                      onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                      style={{
-                        width: '100%',
-                        height: '54px',
-                        borderRadius: '9999px',
-                        backgroundColor: '#20242D',
-                        border: '1px solid transparent',
-                        color: '#FFFFFF',
-                        padding: '0 24px',
-                        fontSize: '15px',
-                        outline: 'none',
-                        transition: 'border-color 0.2s',
-                      }}
-                      onFocus={(e) => (e.target.style.borderColor = '#E5A83B')}
-                      onBlur={(e) => (e.target.style.borderColor = 'transparent')}
-                    />
-                  </div>
-                </div>
-
-                {/* Row 2: Email */}
-                <div style={{ marginBottom: '20px' }}>
+              {/* Row 1: First Name | Last Name */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
+                <div>
                   <input
-                    type="email"
+                    type="text"
                     required
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    placeholder="First Name"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     style={{
                       width: '100%',
-                      height: '54px',
+                      height: '58px',
                       borderRadius: '9999px',
-                      backgroundColor: '#20242D',
-                      border: '1px solid transparent',
+                      backgroundColor: '#232324',
+                      border: '1px solid #FFFFFF59',
                       color: '#FFFFFF',
-                      padding: '0 24px',
+                      padding: '0 28px',
                       fontSize: '15px',
                       outline: 'none',
                       transition: 'border-color 0.2s',
                     }}
-                    onFocus={(e) => (e.target.style.borderColor = '#E5A83B')}
-                    onBlur={(e) => (e.target.style.borderColor = 'transparent')}
+                    onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
+                    onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
                   />
                 </div>
 
-                {/* Row 3: Subject Dropdown matching Figma */}
-                <div style={{ position: 'relative', marginBottom: '20px' }}>
-                  <div
-                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                <div>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Last Name"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     style={{
                       width: '100%',
-                      height: '54px',
+                      height: '58px',
                       borderRadius: '9999px',
-                      backgroundColor: '#20242D',
-                      border: dropdownOpen ? '1px solid #E5A83B' : '1px solid transparent',
+                      backgroundColor: '#232324',
+                      border: '1px solid #FFFFFF59',
                       color: '#FFFFFF',
-                      padding: '0 24px',
+                      padding: '0 28px',
                       fontSize: '15px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      userSelect: 'none',
+                      outline: 'none',
+                      transition: 'border-color 0.2s',
+                    }}
+                    onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
+                    onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
+                  />
+                </div>
+              </div>
+
+              {/* Row 2: Email */}
+              <div style={{ marginBottom: '24px' }}>
+                <input
+                  type="email"
+                  required
+                  placeholder="Email"
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  style={{
+                    width: '100%',
+                    height: '58px',
+                    borderRadius: '9999px',
+                    backgroundColor: '#232324',
+                    border: '1px solid #FFFFFF59',
+                    color: '#FFFFFF',
+                    padding: '0 28px',
+                    fontSize: '15px',
+                    outline: 'none',
+                    transition: 'border-color 0.2s',
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
+                  onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
+                />
+              </div>
+
+              {/* Row 3: Subject Dropdown matching Figma */}
+              <div style={{ position: 'relative', marginBottom: '24px' }}>
+                <div
+                  onClick={() => setDropdownOpen(!dropdownOpen)}
+                  style={{
+                    width: '100%',
+                    height: '58px',
+                    borderRadius: '9999px',
+                    backgroundColor: '#232324',
+                    border: dropdownOpen ? '1px solid #DFAE32' : '1px solid #FFFFFF59',
+                    color: '#FFFFFF',
+                    padding: '0 28px',
+                    fontSize: '15px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    cursor: 'pointer',
+                    userSelect: 'none',
+                  }}
+                >
+                  <span>{formData.subject}</span>
+                  <ChevronDown
+                    size={18}
+                    color="#DFAE32"
+                    style={{
+                      transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+                      transition: 'transform 0.2s ease',
+                    }}
+                  />
+                </div>
+
+                {/* Dropdown Menu matching Figma slice */}
+                {dropdownOpen && (
+                  <div
+                    style={{
+                      position: 'absolute',
+                      top: '66px',
+                      right: 0,
+                      width: '260px',
+                      backgroundColor: '#232324',
+                      border: '1px solid rgba(223, 174, 50, 0.4)',
+                      borderRadius: '14px',
+                      padding: '10px 0',
+                      boxShadow: '0 12px 32px rgba(0, 0, 0, 0.7)',
+                      zIndex: 50,
                     }}
                   >
-                    <span>{formData.subject}</span>
-                    <ChevronDown
-                      size={18}
-                      color="#E5A83B"
-                      style={{
-                        transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                        transition: 'transform 0.2s ease',
-                      }}
-                    />
+                    {subjectOptions.map((opt) => (
+                      <div
+                        key={opt}
+                        onClick={() => {
+                          setFormData({ ...formData, subject: opt });
+                          setDropdownOpen(false);
+                        }}
+                        style={{
+                          padding: '10px 20px',
+                          fontSize: '14px',
+                          color: formData.subject === opt ? '#DFAE32' : '#E5E7EB',
+                          fontWeight: formData.subject === opt ? '600' : '400',
+                          cursor: 'pointer',
+                          transition: 'background-color 0.15s',
+                        }}
+                        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(223, 174, 50, 0.15)')}
+                        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                      >
+                        {opt}
+                      </div>
+                    ))}
                   </div>
+                )}
+              </div>
 
-                  {/* Dropdown Menu matching Figma slice */}
-                  {dropdownOpen && (
-                    <div
-                      style={{
-                        position: 'absolute',
-                        top: '60px',
-                        right: 0,
-                        width: '240px',
-                        backgroundColor: '#161922',
-                        border: '1px solid rgba(229, 168, 59, 0.4)',
-                        borderRadius: '14px',
-                        padding: '10px 0',
-                        boxShadow: '0 12px 32px rgba(0, 0, 0, 0.7)',
-                        zIndex: 50,
-                      }}
-                    >
-                      {subjectOptions.map((opt) => (
-                        <div
-                          key={opt}
-                          onClick={() => {
-                            setFormData({ ...formData, subject: opt });
-                            setDropdownOpen(false);
-                          }}
-                          style={{
-                            padding: '10px 20px',
-                            fontSize: '14px',
-                            color: formData.subject === opt ? '#E5A83B' : '#E5E7EB',
-                            fontWeight: formData.subject === opt ? '600' : '400',
-                            cursor: 'pointer',
-                            transition: 'background-color 0.15s',
-                          }}
-                          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(229, 168, 59, 0.1)')}
-                          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                        >
-                          {opt}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Row 4: Message Textarea */}
-                <div>
-                  <textarea
-                    rows={6}
-                    required
-                    placeholder="Message"
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    style={{
-                      width: '100%',
-                      borderRadius: '20px',
-                      backgroundColor: '#20242D',
-                      border: '1px solid transparent',
-                      color: '#FFFFFF',
-                      padding: '20px 24px',
-                      fontSize: '15px',
-                      lineHeight: '1.6',
-                      outline: 'none',
-                      resize: 'none',
-                      transition: 'border-color 0.2s',
-                    }}
-                    onFocus={(e) => (e.target.style.borderColor = '#E5A83B')}
-                    onBlur={(e) => (e.target.style.borderColor = 'transparent')}
-                  />
-                </div>
+              {/* Row 4: Message Textarea */}
+              <div style={{ marginBottom: '32px' }}>
+                <textarea
+                  rows={6}
+                  required
+                  placeholder="Message"
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  style={{
+                    width: '100%',
+                    borderRadius: '20px',
+                    backgroundColor: '#232324',
+                    border: '1px solid #FFFFFF59',
+                    color: '#FFFFFF',
+                    padding: '22px 28px',
+                    fontSize: '15px',
+                    lineHeight: '1.6',
+                    outline: 'none',
+                    resize: 'none',
+                    transition: 'border-color 0.2s',
+                  }}
+                  onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
+                  onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
+                />
               </div>
 
               {/* Submit button aligned to the right matching Figma */}
@@ -336,19 +366,18 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                 <button
                   type="submit"
                   style={{
-                    backgroundColor: '#E5A83B',
-                    color: '#0A0D14',
+                    backgroundColor: '#DFAE32',
+                    color: '#0B0B0C',
                     fontWeight: '700',
-                    fontSize: '15px',
-                    padding: '13px 48px',
+                    fontSize: '16px',
+                    padding: '14px 52px',
                     borderRadius: '8px',
                     border: 'none',
                     cursor: 'pointer',
-                    boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
-                    transition: 'all 0.2s ease',
+                    transition: 'background-color 0.2s ease',
                   }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#F4B333')}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#E5A83B')}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#eec147')}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#DFAE32')}
                 >
                   Submit
                 </button>

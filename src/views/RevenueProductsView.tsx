@@ -123,7 +123,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
           type="button"
           onClick={() => setShowAddModal(true)}
           style={{
-            backgroundColor: '#E5A83B',
+            backgroundColor: '#dfae32',
             color: '#0A0D14',
             fontWeight: 700,
             fontSize: '14px',
@@ -134,7 +134,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            boxShadow: '0 4px 14px rgba(229, 168, 59, 0.25)',
+            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
           }}
         >
           <Plus size={18} strokeWidth={2.5} />
@@ -151,9 +151,9 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
           marginBottom: '28px',
         }}
       >
-        <div style={{ backgroundColor: '#11151F', borderRadius: '14px', padding: '24px', border: '1px solid rgba(229, 168, 59, 0.3)' }}>
+        <div style={{ backgroundColor: '#11151F', borderRadius: '14px', padding: '24px', border: '1px solid rgba(223, 174, 50, 0.3)' }}>
           <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Total Cumulative Revenue</div>
-          <div style={{ fontSize: '32px', fontWeight: 800, color: '#E5A83B', marginTop: '6px' }}>
+          <div style={{ fontSize: '32px', fontWeight: 800, color: '#dfae32', marginTop: '6px' }}>
             ${totalEarnings.toLocaleString()} USD
           </div>
           <div style={{ color: '#10B981', fontSize: '12px', marginTop: '4px' }}>All live products verified</div>
@@ -195,11 +195,11 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
           >
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                <span style={{ color: '#E5A83B', fontSize: '12px', fontWeight: 700 }}>{product.id}</span>
+                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>{product.id}</span>
                 <span
                   style={{
-                    backgroundColor: 'rgba(229, 168, 59, 0.15)',
-                    color: '#E5A83B',
+                    backgroundColor: 'rgba(223, 174, 50, 0.15)',
+                    color: '#dfae32',
                     padding: '2px 8px',
                     borderRadius: '4px',
                     fontSize: '11px',
@@ -221,14 +221,14 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '8px',
-                  backgroundColor: '#0B0E14',
+                  backgroundColor: '#161617',
                   padding: '6px 12px',
                   borderRadius: '6px',
                   border: '1px solid rgba(255, 255, 255, 0.08)',
                   fontSize: '12px',
                 }}
               >
-                <Key size={13} color="#E5A83B" />
+                <Key size={13} color="#dfae32" />
                 <span style={{ color: '#9CA3AF', fontFamily: 'monospace' }}>
                   {product.apiKey.slice(0, 16)}••••••••••••••••
                 </span>
@@ -238,7 +238,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
                   style={{
                     background: 'none',
                     border: 'none',
-                    color: copiedKey === product.apiKey ? '#10B981' : '#E5A83B',
+                    color: copiedKey === product.apiKey ? '#10B981' : '#dfae32',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',
@@ -256,7 +256,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
             {/* Financial Metrics & URL */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: '#E5A83B' }}>
+                <div style={{ fontSize: '20px', fontWeight: 800, color: '#dfae32' }}>
                   ${product.totalRevenue.toLocaleString()} USD
                 </div>
                 <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>
@@ -308,7 +308,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '520px',
               width: '100%',
@@ -342,7 +342,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
                   onChange={(e) => setNewName(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -363,7 +363,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
                     onChange={(e) => setNewType(e.target.value as any)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '10px 14px',
@@ -389,7 +389,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
                     onChange={(e) => setNewUrl(e.target.value)}
                     style={{
                       width: '100%',
-                      backgroundColor: '#0B0E14',
+                      backgroundColor: '#161617',
                       border: '1px solid rgba(255, 255, 255, 0.1)',
                       borderRadius: '8px',
                       padding: '10px 14px',
@@ -419,7 +419,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
                 <button
                   type="submit"
                   style={{
-                    backgroundColor: '#E5A83B',
+                    backgroundColor: '#dfae32',
                     color: '#0A0D14',
                     fontWeight: 700,
                     padding: '10px 22px',

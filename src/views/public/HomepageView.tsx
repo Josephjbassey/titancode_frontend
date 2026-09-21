@@ -10,8 +10,9 @@ import {
   Users,
   TrendingUp,
   ShieldCheck,
-  ArrowRight,
-  Sparkles,
+  Mail,
+  Phone,
+  Music2,
 } from 'lucide-react';
 
 interface HomepageViewProps {
@@ -19,653 +20,547 @@ interface HomepageViewProps {
 }
 
 export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
+  const whatWeDo = [
+    {
+      icon: Globe,
+      title: 'Web Development',
+      description: 'Modern, responsive websites built for performance and scalability.',
+    },
+    {
+      icon: Smartphone,
+      title: 'Mobile App Development',
+      description: 'High-quality mobile apps designed for seamless user experience.',
+    },
+    {
+      icon: Palette,
+      title: 'UI/UX Design',
+      description: 'User-focused designs that create intuitive and engaging experiences.',
+    },
+  ];
+
+  const whatWeOffer = [
+    {
+      icon: Globe,
+      title: 'Custom Website Development',
+      description: 'We create modern, responsive websites tailored to your business needs and goals.',
+    },
+    {
+      icon: Smartphone,
+      title: 'Mobile App Solutions',
+      description: 'We build high-performance mobile applications designed for seamless user experience.',
+    },
+    {
+      icon: Palette,
+      title: 'UI/UX Design Services',
+      description: 'We design intuitive and user-friendly interfaces that enhance digital experiences.',
+    },
+    {
+      icon: Layers,
+      title: 'Digital Product Development',
+      description: 'We turn ideas into scalable digital products from concept to launch.',
+    },
+    {
+      icon: Zap,
+      title: 'System Optimization',
+      description: 'We improve performance and efficiency of existing digital platforms and systems.',
+    },
+    {
+      icon: Settings,
+      title: 'Support & Maintenance',
+      description: 'We provide ongoing support to ensure your digital solutions run smoothly.',
+    },
+  ];
+
+  const whyChooseUs = [
+    {
+      icon: Users,
+      title: 'User-Centered Design',
+      description: 'We design intuitive and engaging experiences tailored to meet real user needs.',
+      theme: 'light',
+    },
+    {
+      icon: TrendingUp,
+      title: 'Scalable Solutions',
+      description: 'Our solutions are built to grow with your business and adapt over time.',
+      theme: 'gold',
+    },
+    {
+      icon: ShieldCheck,
+      title: 'Reliable Delivery',
+      description: 'We deliver high-quality results on time with a strong focus on performance.',
+      theme: 'dark',
+    },
+  ];
+
   return (
-    <div style={{ backgroundColor: '#0B0E14', color: '#FFFFFF', minHeight: '100vh' }}>
-      {/* 1. HERO SECTION */}
-      <section
+    <div className="tc-homepage" style={{ backgroundColor: '#0B0B0C', color: '#FFFFFF', minHeight: '100vh' }}>
+      <header
+        className="tc-homepage-header"
         style={{
-          position: 'relative',
-          padding: '110px 80px 140px',
-          overflow: 'hidden',
+          width: '100%',
+          maxWidth: '1440px',
+          margin: '0 auto',
+          padding: '28px 60px 0',
           display: 'flex',
-          flexDirection: 'column',
           alignItems: 'center',
-          textAlign: 'center',
-          borderBottom: '1px solid rgba(229, 168, 59, 0.15)',
+          justifyContent: 'space-between',
+          position: 'relative',
+          zIndex: 2,
+          gap: '16px',
+          flexWrap: 'wrap',
         }}
       >
-        {/* Background glow & hero banner image */}
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            backgroundImage: 'url(/assets/homepage_hero_banner.png)',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat',
-            backgroundSize: 'cover',
-            opacity: 0.28,
-            pointerEvents: 'none',
-          }}
-        />
-        <div
-          style={{
-            position: 'absolute',
-            top: '20%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            width: '600px',
-            height: '400px',
-            background: 'radial-gradient(circle, rgba(229, 168, 59, 0.18) 0%, rgba(11, 14, 20, 0) 70%)',
-            pointerEvents: 'none',
-            zIndex: 0,
-          }}
-        />
-
-        <div style={{ position: 'relative', zIndex: 1, maxWidth: '980px' }}>
-          {/* Badge */}
-          <div
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-              padding: '6px 18px',
-              borderRadius: '999px',
-              backgroundColor: 'rgba(229, 168, 59, 0.1)',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
-              color: '#E5A83B',
-              fontSize: '13px',
-              fontWeight: '600',
-              marginBottom: '28px',
-              letterSpacing: '0.04em',
-            }}
-          >
-            <Sparkles size={14} color="#E5A83B" />
-            <span>CREATIVE DIGITAL ENGINEERING & PRODUCT STUDIO</span>
-          </div>
-
-          {/* Main Title */}
-          <h1
-            style={{
-              fontSize: '56px',
-              lineHeight: 1.18,
-              fontWeight: 800,
-              color: '#FFFFFF',
-              letterSpacing: '-0.02em',
-              marginBottom: '24px',
-            }}
-          >
-            Empowering Your{' '}
-            <span style={{ color: '#E5A83B' }}>Business Ideas</span> with{' '}
-            <span style={{ color: '#E5A83B' }}>Innovative</span> Software Solutions
-          </h1>
-
-          {/* Subtitle */}
-          <p
-            style={{
-              fontSize: '18px',
-              color: '#9CA3AF',
-              lineHeight: 1.65,
-              maxWidth: '720px',
-              margin: '0 auto 40px',
-            }}
-          >
-            We design and develop websites, mobile apps, and software platforms that solve
-            real-world problems and fuel sustainable market growth.
-          </p>
-
-          {/* CTA Buttons */}
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '20px',
-              flexWrap: 'wrap',
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => onNavigate('hire_us')}
-              style={{
-                backgroundColor: '#E5A83B',
-                color: '#0A0D14',
-                fontWeight: 700,
-                fontSize: '16px',
-                padding: '16px 36px',
-                borderRadius: '8px',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                boxShadow: '0 8px 24px rgba(229, 168, 59, 0.35)',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = '#F4B333';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = '#E5A83B';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <span>Hire Us</span>
-              <ArrowRight size={18} />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => onNavigate('application_form')}
-              style={{
-                backgroundColor: 'transparent',
-                color: '#FFFFFF',
-                fontWeight: 600,
-                fontSize: '16px',
-                padding: '16px 36px',
-                borderRadius: '8px',
-                border: '1px solid #E5A83B',
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '10px',
-                transition: 'all 0.2s ease',
-              }}
-              onMouseOver={(e) => {
-                e.currentTarget.style.backgroundColor = 'rgba(229, 168, 59, 0.12)';
-                e.currentTarget.style.transform = 'translateY(-2px)';
-              }}
-              onMouseOut={(e) => {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.transform = 'translateY(0)';
-              }}
-            >
-              <span>Join Team</span>
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* 2. SECTION: WHAT WE DO */}
-      <section style={{ padding: '100px 80px', maxWidth: '1360px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <h2 style={{ fontSize: '38px', fontWeight: 800, marginBottom: '14px' }}>
-            What We <span style={{ color: '#E5A83B' }}>Do</span>
-          </h2>
-          <p
-            style={{
-              color: '#9CA3AF',
-              fontSize: '16px',
-              maxWidth: '680px',
-              margin: '0 auto',
-              lineHeight: 1.6,
-            }}
-          >
-            We design and develop websites, mobile apps, and software solutions that help businesses
-            grow and solve realworld problems.
-          </p>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src="/assets/logo.png" alt="TitanCode logo" style={{ width: 136, height: 28, objectFit: 'contain' }} />
         </div>
 
-        <div
+        <nav className="tc-homepage-nav" style={{ display: 'flex', alignItems: 'center', gap: 32, fontSize: 18, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <a href="#" style={{ color: '#FFFFFF', fontWeight: 700 }}>Home</a>
+          <a href="#" style={{ color: '#BCAFAF', fontWeight: 500 }}>About Us</a>
+          <a href="#" style={{ color: '#BCAFAF', fontWeight: 500 }}>Services</a>
+          <a href="#" style={{ color: '#BCAFAF', fontWeight: 500 }}>Contact Us</a>
+        </nav>
+
+        <button
+          type="button"
+          onClick={() => onNavigate('hire_us')}
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '30px',
+            backgroundColor: '#DFAE32',
+            color: '#0B0B0C',
+            borderRadius: 6,
+            fontSize: 18,
+            fontWeight: 700,
+            padding: '10px 24px',
+            border: 'none',
+            cursor: 'pointer',
           }}
         >
-          {/* Card 1 */}
+          Hire Us
+        </button>
+      </header>
+
+      <main style={{ position: 'relative' }}>
+        <section
+          style={{
+            width: '100%',
+            maxWidth: '1440px',
+            margin: '0 auto',
+            padding: '44px 60px 0',
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
           <div
             style={{
-              backgroundColor: '#11151F',
-              borderRadius: '16px',
-              padding: '40px 32px',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              transition: 'all 0.25s ease',
+              position: 'absolute',
+              left: 11,
+              top: 176,
+              width: 1440,
+              height: 631,
+              background: 'radial-gradient(circle, rgba(223,174,50,0.42) 0%, rgba(223,174,50,0.12) 25%, rgba(223,174,50,0.02) 60%, transparent 100%)',
+              filter: 'blur(52px)',
+              opacity: 0.9,
+              borderRadius: 24,
+              pointerEvents: 'none',
             }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(229, 168, 59, 0.4)';
-              e.currentTarget.style.transform = 'translateY(-4px)';
+          />
+
+          <div
+            style={{
+              position: 'absolute',
+              inset: '140px 0 auto 0',
+              height: 1038,
+              background: 'linear-gradient(180deg, rgba(11,11,12,0.08), rgba(11,11,12,0.68) 42%, rgba(11,11,12,0.88))',
+              pointerEvents: 'none',
             }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
-              e.currentTarget.style.transform = 'translateY(0)';
+          />
+
+          <div
+            style={{
+              position: 'relative',
+              height: 742,
+              borderRadius: 20,
+              overflow: 'hidden',
+              background: 'linear-gradient(180deg, rgba(12,12,13,0.22), rgba(12,12,13,0.72))',
+              boxShadow: '0 26px 60px rgba(0, 0, 0, 0.42)',
             }}
           >
             <div
               style={{
-                width: '60px',
-                height: '60px',
-                borderRadius: '12px',
-                backgroundColor: '#E5A83B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#0A0D14',
-                marginBottom: '26px',
+                position: 'absolute',
+                inset: 0,
+                background: 'linear-gradient(90deg, rgba(0,0,0,0.38), rgba(0,0,0,0.08) 35%, rgba(0,0,0,0.24)), linear-gradient(180deg, rgba(0,0,0,0.08), rgba(0,0,0,0.28))',
+                pointerEvents: 'none',
               }}
-            >
-              <Globe size={30} strokeWidth={2.2} />
-            </div>
-            <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '14px', color: '#FFFFFF' }}>
-              Web Development
-            </h3>
-            <p style={{ color: '#9CA3AF', fontSize: '15px', lineHeight: 1.65 }}>
-              Modern, responsive websites built for performance and scalability.
-            </p>
+            />
+            <img
+              src="/assets/landingpage1.jpg"
+              alt="TitanCode product interface"
+              style={{
+                display: 'block',
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                filter: 'saturate(0.9) contrast(1.08) brightness(0.75)',
+              }}
+            />
           </div>
 
-          {/* Card 2 */}
           <div
             style={{
-              backgroundColor: '#11151F',
-              borderRadius: '16px',
-              padding: '40px 32px',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              transition: 'all 0.25s ease',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(229, 168, 59, 0.4)';
-              e.currentTarget.style.transform = 'translateY(-4px)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
-              e.currentTarget.style.transform = 'translateY(0)';
+              position: 'absolute',
+              inset: '0 0 auto 0',
+              padding: '100px 0 0',
+              textAlign: 'center',
+              zIndex: 2,
             }}
           >
-            <div
+            <h1
               style={{
-                width: '60px',
-                height: '60px',
-                borderRadius: '12px',
-                backgroundColor: '#E5A83B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#0A0D14',
-                marginBottom: '26px',
+                margin: '0 auto',
+                maxWidth: 1040,
+                fontSize: 66,
+                lineHeight: 1.08,
+                letterSpacing: '-0.04em',
+                fontWeight: 800,
+                color: '#FFFFFF',
+                textAlign: 'center',
               }}
             >
-              <Smartphone size={30} strokeWidth={2.2} />
-            </div>
-            <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '14px', color: '#FFFFFF' }}>
-              Mobile App Development
-            </h3>
-            <p style={{ color: '#9CA3AF', fontSize: '15px', lineHeight: 1.65 }}>
-              High-quality mobile apps designed for seamless user experience.
-            </p>
-          </div>
+              Empowering Your <span style={{ color: '#DFAE32' }}>Business Ideas</span>
+              <br />
+              with <span style={{ color: '#DFAE32' }}>Innovative</span> Software
+              <br />
+              Solutions
+            </h1>
 
-          {/* Card 3 */}
-          <div
-            style={{
-              backgroundColor: '#11151F',
-              borderRadius: '16px',
-              padding: '40px 32px',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              transition: 'all 0.25s ease',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(229, 168, 59, 0.4)';
-              e.currentTarget.style.transform = 'translateY(-4px)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }}
-          >
-            <div
+            <p
               style={{
-                width: '60px',
-                height: '60px',
-                borderRadius: '12px',
-                backgroundColor: '#E5A83B',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#0A0D14',
-                marginBottom: '26px',
+                margin: '30px auto 36px',
+                maxWidth: 730,
+                fontSize: 22,
+                lineHeight: 1.5,
+                color: 'rgba(255,255,255,0.96)',
+                fontWeight: 400,
               }}
             >
-              <Palette size={30} strokeWidth={2.2} />
-            </div>
-            <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '14px', color: '#FFFFFF' }}>
-              UI/UX Design
-            </h3>
-            <p style={{ color: '#9CA3AF', fontSize: '15px', lineHeight: 1.65 }}>
-              User-focused designs that create intuitive and engaging experiences.
+              We design and develop websites, mobile apps, and software platforms
+              <br />
+              that solve real-world problems.
             </p>
-          </div>
-        </div>
-      </section>
 
-      {/* 3. SECTION: WHAT WE OFFER */}
-      <section
-        style={{
-          padding: '100px 80px',
-          backgroundColor: '#0E121B',
-          borderTop: '1px solid rgba(255, 255, 255, 0.04)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-        }}
-      >
-        <div style={{ maxWidth: '1360px', margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-            <h2 style={{ fontSize: '38px', fontWeight: 800, marginBottom: '14px' }}>
-              What We <span style={{ color: '#E5A83B' }}>Offer</span>
+            <div style={{ display: 'flex', justifyContent: 'center', gap: 18, marginBottom: 30 }}>
+              <button
+                type="button"
+                onClick={() => onNavigate('hire_us')}
+                style={{
+                  backgroundColor: '#DFAE32',
+                  color: '#0B0B0C',
+                  borderRadius: 8,
+                  padding: '17px 30px',
+                  fontSize: 23,
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  border: 'none',
+                }}
+              >
+                Hire Us
+              </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('hire_us')}
+                style={{
+                  backgroundColor: 'rgba(11, 11, 12, 0.1)',
+                  color: '#FFFFFF',
+                  border: '1px solid rgba(223, 174, 50, 0.9)',
+                  borderRadius: 8,
+                  padding: '17px 30px',
+                  fontSize: 20,
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Join Team
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section style={{ maxWidth: '1440px', margin: '0 auto', padding: '118px 60px 0' }}>
+          <div style={{ textAlign: 'center', marginBottom: 44 }}>
+            <h2 style={{ fontSize: 55, lineHeight: 1.2, fontWeight: 700, margin: 0 }}>
+              What We <span style={{ color: '#DFAE32' }}>Do</span>
             </h2>
             <p
               style={{
-                color: '#9CA3AF',
-                fontSize: '16px',
-                maxWidth: '720px',
-                margin: '0 auto',
+                margin: '18px auto 0',
+                maxWidth: 680,
+                color: 'rgba(255,255,255,0.82)',
+                fontSize: 18,
                 lineHeight: 1.6,
               }}
             >
-              A range of digital solutions designed to support your business growth and long-term
-              success across different platforms and industries.
+              We design and develop websites, mobile apps, and software solutions that help businesses
+              grow and solve real-world problems.
             </p>
           </div>
 
           <div
             style={{
               display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-              gap: '26px',
+              gridTemplateColumns: 'repeat(3, minmax(180px, 1fr))',
+              gap: 28,
             }}
           >
-            {[
-              {
-                icon: Globe,
-                title: 'Custom Website Development',
-                desc: 'Tailored web experiences built using high-performance frameworks and modern architectures for optimal conversion.',
-              },
-              {
-                icon: Smartphone,
-                title: 'Mobile App Solutions',
-                desc: 'Native iOS and Android applications with fluid gesture control, offline support, and seamless cloud syncing.',
-              },
-              {
-                icon: Palette,
-                title: 'UI/UX Design Services',
-                desc: 'Human-centric user journeys, high-fidelity prototypes, design tokens, and aesthetic micro-interactions.',
-              },
-              {
-                icon: Layers,
-                title: 'Digital Product Development',
-                desc: 'Full-cycle SaaS and digital enterprise engineering from business requirement specs to production delivery.',
-              },
-              {
-                icon: Zap,
-                title: 'System Optimization',
-                desc: 'Code refactoring, database indexing, infrastructure caching, and sub-second API latency tuning.',
-              },
-              {
-                icon: Settings,
-                title: 'Support & Maintenance',
-                desc: 'Continuous uptime monitoring, dependency upgrades, automated backups, and 24/7 technical incident support.',
-              },
-            ].map((item, index) => {
-              const IconComp = item.icon;
+            {whatWeDo.map(({ icon: Icon, title, description }) => (
+              <div
+                key={title}
+                style={{
+                  borderRadius: 30,
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.28)',
+                  minHeight: 306,
+                  padding: '34px 28px 26px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                }}
+              >
+                <div
+                  style={{
+                    width: 78,
+                    height: 78,
+                    borderRadius: 18,
+                    backgroundColor: '#DFAE32',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#0B0B0C',
+                    marginBottom: 20,
+                  }}
+                >
+                  <Icon size={38} strokeWidth={2.2} />
+                </div>
+                <h3 style={{ fontSize: 26, fontWeight: 700, marginBottom: 12 }}>{title}</h3>
+                <p style={{ fontSize: 17, lineHeight: 1.6, color: 'rgba(255,255,255,0.8)' }}>{description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section style={{ maxWidth: '1440px', margin: '0 auto', padding: '116px 60px 0' }}>
+          <div style={{ textAlign: 'center', marginBottom: 44 }}>
+            <h2 style={{ fontSize: 55, lineHeight: 1.2, fontWeight: 700, margin: 0 }}>
+              What We <span style={{ color: '#DFAE32' }}>Offer</span>
+            </h2>
+            <p
+              style={{
+                margin: '18px auto 0',
+                maxWidth: 690,
+                color: 'rgba(255,255,255,0.82)',
+                fontSize: 18,
+                lineHeight: 1.6,
+              }}
+            >
+              A range of digital solutions designed to support your business growth and long-term success
+              across different platforms and industries.
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, minmax(180px, 1fr))',
+              gap: 28,
+            }}
+          >
+            {whatWeOffer.map(({ icon: Icon, title, description }) => (
+              <div
+                key={title}
+                style={{
+                  borderRadius: 30,
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.28)',
+                  minHeight: 296,
+                  padding: '34px 28px 26px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                }}
+              >
+                <div
+                  style={{
+                    width: 78,
+                    height: 78,
+                    borderRadius: 18,
+                    backgroundColor: '#DFAE32',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    marginBottom: 20,
+                    color: '#0B0B0C',
+                  }}
+                >
+                  <Icon size={38} strokeWidth={2.2} />
+                </div>
+                <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 10 }}>{title}</h3>
+                <p style={{ fontSize: 16, lineHeight: 1.6, color: 'rgba(255,255,255,0.8)' }}>{description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section style={{ maxWidth: '1440px', margin: '0 auto', padding: '116px 60px 0' }}>
+          <div style={{ textAlign: 'center', marginBottom: 44 }}>
+            <h2 style={{ fontSize: 55, lineHeight: 1.2, fontWeight: 700, margin: 0 }}>
+              Why <span style={{ color: '#DFAE32' }}>Choose Us</span>
+            </h2>
+            <p
+              style={{
+                margin: '18px auto 0',
+                maxWidth: 690,
+                color: 'rgba(255,255,255,0.82)',
+                fontSize: 18,
+                lineHeight: 1.6,
+              }}
+            >
+              A range of digital solutions designed to support your business growth and long-term success
+              across different platforms and industries.
+            </p>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, minmax(180px, 1fr))',
+              gap: 28,
+            }}
+          >
+            {whyChooseUs.map(({ icon: Icon, title, description, theme }) => {
+              const isLight = theme === 'light';
+              const isGold = theme === 'gold';
+
               return (
                 <div
-                  key={index}
+                  key={title}
                   style={{
-                    backgroundColor: '#131824',
-                    borderRadius: '14px',
-                    padding: '36px 30px',
-                    border: '1px solid rgba(255, 255, 255, 0.05)',
+                    borderRadius: 30,
+                    minHeight: 286,
+                    padding: '34px 28px 26px',
                     display: 'flex',
                     flexDirection: 'column',
-                    alignItems: 'flex-start',
-                    transition: 'all 0.2s ease',
-                  }}
-                  onMouseOver={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(229, 168, 59, 0.35)';
-                    e.currentTarget.style.backgroundColor = '#161D2B';
-                  }}
-                  onMouseOut={(e) => {
-                    e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.05)';
-                    e.currentTarget.style.backgroundColor = '#131824';
+                    border: isLight ? '1px solid rgba(0,0,0,0.08)' : '1px solid rgba(255,255,255,0.2)',
+                    background: isLight ? '#FFFFFF' : isGold ? '#DFAE32' : '#191A1C',
+                    color: isLight ? '#0B0B0C' : '#FFFFFF',
                   }}
                 >
                   <div
                     style={{
-                      width: '52px',
-                      height: '52px',
-                      borderRadius: '10px',
-                      backgroundColor: 'rgba(229, 168, 59, 0.15)',
-                      border: '1px solid rgba(229, 168, 59, 0.3)',
+                      width: 68,
+                      height: 68,
+                      borderRadius: 18,
+                      background: isLight ? '#F3F4F6' : isGold ? '#0B0B0C' : 'rgba(223, 174, 50, 0.14)',
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      color: '#E5A83B',
-                      marginBottom: '22px',
+                      marginBottom: 20,
+                      color: isLight ? '#0B0B0C' : isGold ? '#DFAE32' : '#DFAE32',
                     }}
                   >
-                    <IconComp size={26} />
+                    <Icon size={34} strokeWidth={2.2} />
                   </div>
-                  <h3
+                  <h3 style={{ fontSize: 22, fontWeight: 700, marginBottom: 12, color: isLight ? '#0B0B0C' : '#FFFFFF' }}>
+                    {title}
+                  </h3>
+                  <p
                     style={{
-                      fontSize: '20px',
-                      fontWeight: 700,
-                      marginBottom: '12px',
-                      color: '#FFFFFF',
+                      fontSize: 16,
+                      lineHeight: 1.6,
+                      color: isLight ? '#3f3f46' : isGold ? '#171717' : 'rgba(255,255,255,0.8)',
                     }}
                   >
-                    {item.title}
-                  </h3>
-                  <p style={{ color: '#9CA3AF', fontSize: '14px', lineHeight: 1.65 }}>
-                    {item.desc}
+                    {description}
                   </p>
                 </div>
               );
             })}
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* 4. SECTION: WHY CHOOSE US */}
-      <section style={{ padding: '110px 80px', maxWidth: '1360px', margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: '60px' }}>
-          <h2 style={{ fontSize: '38px', fontWeight: 800, marginBottom: '14px' }}>
-            Why <span style={{ color: '#E5A83B' }}>Choose Us</span>
-          </h2>
-          <p
-            style={{
-              color: '#9CA3AF',
-              fontSize: '16px',
-              maxWidth: '720px',
-              margin: '0 auto',
-              lineHeight: 1.6,
-            }}
-          >
-            A range of digital solutions designed to support your business growth and long-term
-            success across different platforms and industries.
-          </p>
-        </div>
-
-        <div
+        <footer
           style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
-            gap: '30px',
-            alignItems: 'stretch',
+            marginTop: 120,
+            background: '#0B0B0C',
+            borderTop: '1px solid rgba(255,255,255,0.08)',
+            width: '100%',
           }}
         >
-          {/* Card 1: User-Centered Design */}
           <div
             style={{
-              backgroundColor: '#11151F',
-              borderRadius: '16px',
-              padding: '40px 32px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
+              maxWidth: '1440px',
+              margin: '0 auto',
+              padding: '44px 60px 20px',
+              display: 'grid',
+              gridTemplateColumns: '1.5fr 0.7fr 0.9fr',
+              gap: 40,
+              alignItems: 'start',
             }}
           >
-            <div
-              style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '12px',
-                backgroundColor: 'rgba(229, 168, 59, 0.15)',
-                border: '1px solid rgba(229, 168, 59, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#E5A83B',
-                marginBottom: '26px',
-              }}
-            >
-              <Users size={28} />
+            <div>
+              <img src="/assets/logo.png" alt="TitanCode logo" style={{ width: 148, height: 26, objectFit: 'contain', marginBottom: 18 }} />
+              <p style={{ maxWidth: 400, color: 'rgba(255,255,255,0.8)', fontSize: 18, lineHeight: 1.7 }}>
+                We design and develop modern digital solutions that help businesses grow and stand out in
+                today’s competitive world.
+              </p>
+              <div style={{ display: 'flex', gap: 14, marginTop: 24 }}>
+                <span style={{ width: 30, height: 30, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.04)' }}>
+                  <Music2 size={16} />
+                </span>
+                <span style={{ width: 30, height: 30, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.04)', color: '#FFFFFF', fontSize: 12, fontWeight: 800 }}>
+                  in
+                </span>
+                <span style={{ width: 30, height: 30, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.04)', color: '#FFFFFF', fontSize: 12, fontWeight: 800 }}>
+                  X
+                </span>
+                <span style={{ width: 30, height: 30, borderRadius: 999, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(255,255,255,0.04)', color: '#FFFFFF', fontSize: 12, fontWeight: 800 }}>
+                  ◎
+                </span>
+              </div>
             </div>
-            <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '14px', color: '#FFFFFF' }}>
-              User-Centered Design
-            </h3>
-            <p style={{ color: '#9CA3AF', fontSize: '15px', lineHeight: 1.65 }}>
-              We design intuitive and engaging experiences tailored to meet real user needs.
-            </p>
+
+            <div>
+              <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 18 }}>Quick Links</h3>
+              <ul style={{ listStyle: 'none', display: 'grid', gap: 10, padding: 0, margin: 0, color: 'rgba(255,255,255,0.85)' }}>
+                <li>Home</li>
+                <li>About</li>
+                <li>Services</li>
+                <li>FAQs</li>
+                <li>Testimonials</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 18 }}>Contact</h3>
+              <div style={{ display: 'grid', gap: 12 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Phone size={18} color="#FFFFFF" />
+                  <span>+233(0)546606807</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <Mail size={18} color="#FFFFFF" />
+                  <span>Titancode@gmail.com</span>
+                </div>
+              </div>
+            </div>
           </div>
 
-          {/* Card 2: Scalable Solutions (SOLID GOLD CARD from Figma!) */}
-          <div
-            style={{
-              backgroundColor: '#E5A83B',
-              color: '#0A0D14',
-              borderRadius: '16px',
-              padding: '40px 32px',
-              boxShadow: '0 12px 36px rgba(229, 168, 59, 0.35)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-              transform: 'scale(1.02)',
-              position: 'relative',
-              zIndex: 2,
-            }}
-          >
-            <div
-              style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '12px',
-                backgroundColor: '#0A0D14',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#E5A83B',
-                marginBottom: '26px',
-              }}
-            >
-              <TrendingUp size={28} />
-            </div>
-            <h3 style={{ fontSize: '22px', fontWeight: 800, marginBottom: '14px', color: '#0A0D14' }}>
-              Scalable Solutions
-            </h3>
-            <p style={{ color: '#1E232E', fontSize: '15px', lineHeight: 1.65, fontWeight: 500 }}>
-              Our solutions are built to grow with your business and adapt over time.
+          <div style={{ maxWidth: '1440px', margin: '0 auto', padding: '18px 60px 26px' }}>
+            <div style={{ height: 1, background: 'rgba(255,255,255,0.12)', marginBottom: 26 }} />
+            <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.7)', fontSize: 16 }}>
+              © Copyright2026TitanCode. All right reserved
             </p>
           </div>
-
-          {/* Card 3: Reliable Delivery */}
-          <div
-            style={{
-              backgroundColor: '#11151F',
-              borderRadius: '16px',
-              padding: '40px 32px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'flex-start',
-            }}
-          >
-            <div
-              style={{
-                width: '56px',
-                height: '56px',
-                borderRadius: '12px',
-                backgroundColor: 'rgba(229, 168, 59, 0.15)',
-                border: '1px solid rgba(229, 168, 59, 0.3)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#E5A83B',
-                marginBottom: '26px',
-              }}
-            >
-              <ShieldCheck size={28} />
-            </div>
-            <h3 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '14px', color: '#FFFFFF' }}>
-              Reliable Delivery
-            </h3>
-            <p style={{ color: '#9CA3AF', fontSize: '15px', lineHeight: 1.65 }}>
-              We deliver high-quality results on time with a strong focus on performance.
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. BOTTOM CTA BANNER */}
-      <section
-        style={{
-          padding: '80px',
-          background: 'linear-gradient(180deg, #0B0E14 0%, #121824 100%)',
-          textAlign: 'center',
-          borderTop: '1px solid rgba(229, 168, 59, 0.2)',
-        }}
-      >
-        <div style={{ maxWidth: '800px', margin: '0 auto' }}>
-          <h2 style={{ fontSize: '36px', fontWeight: 800, marginBottom: '16px' }}>
-            Ready to Build Something <span style={{ color: '#E5A83B' }}>Extraordinary?</span>
-          </h2>
-          <p style={{ color: '#9CA3AF', fontSize: '16px', marginBottom: '32px', lineHeight: 1.6 }}>
-            Partner with TitanCode to turn your product vision into high-impact digital reality.
-          </p>
-          <div style={{ display: 'flex', justifyContent: 'center', gap: '16px' }}>
-            <button
-              type="button"
-              onClick={() => onNavigate('hire_us')}
-              style={{
-                backgroundColor: '#E5A83B',
-                color: '#0A0D14',
-                fontWeight: 700,
-                fontSize: '15px',
-                padding: '14px 32px',
-                borderRadius: '8px',
-                border: 'none',
-                cursor: 'pointer',
-              }}
-            >
-              Start A Project
-            </button>
-            <button
-              type="button"
-              onClick={() => onNavigate('contact_us')}
-              style={{
-                backgroundColor: 'transparent',
-                color: '#FFFFFF',
-                fontWeight: 600,
-                fontSize: '15px',
-                padding: '14px 32px',
-                borderRadius: '8px',
-                border: '1px solid rgba(255, 255, 255, 0.2)',
-                cursor: 'pointer',
-              }}
-            >
-              Contact Team
-            </button>
-          </div>
-        </div>
-      </section>
+        </footer>
+      </main>
     </div>
   );
 };

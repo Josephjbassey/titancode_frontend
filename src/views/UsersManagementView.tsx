@@ -41,7 +41,7 @@ const INITIAL_USERS: PlatformUser[] = [
     bankAccount: 'GB29 NWBK 6016 1331 9268 19',
     bankName: 'NatWest Bank UK',
     totalEarnings: 84200,
-    avatar: '/assets/team_munis.png',
+    avatar: '/assets/munis.jpg',
     joinedDate: '2024-01-10',
   },
   {
@@ -58,7 +58,7 @@ const INITIAL_USERS: PlatformUser[] = [
     bankAccount: '0123456789',
     bankName: 'Guaranty Trust Bank',
     totalEarnings: 34500,
-    avatar: '/assets/team_joseph.png',
+    avatar: '/assets/joseph.jpg',
     joinedDate: '2024-02-15',
   },
   {
@@ -75,7 +75,7 @@ const INITIAL_USERS: PlatformUser[] = [
     bankAccount: '9876543210',
     bankName: 'Standard Chartered Bank',
     totalEarnings: 28900,
-    avatar: '/assets/team_benedicta.png',
+    avatar: '/assets/benedicta.png',
     joinedDate: '2024-03-01',
   },
   {
@@ -92,7 +92,7 @@ const INITIAL_USERS: PlatformUser[] = [
     bankAccount: '4455667788',
     bankName: 'Access Bank PLC',
     totalEarnings: 31200,
-    avatar: '/assets/team_olukayode.png',
+    avatar: '/assets/blessing.jpg',
     joinedDate: '2024-02-01',
   },
   {
@@ -109,7 +109,7 @@ const INITIAL_USERS: PlatformUser[] = [
     bankAccount: 'US89 WIRE 0210 0002 1',
     bankName: 'JPMorgan Chase NY',
     totalEarnings: 0,
-    avatar: '/assets/admin_avatar.png',
+    avatar: '/assets/dashprofile.jpg',
     joinedDate: '2026-01-20',
   },
 ];
@@ -173,11 +173,11 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
         <div
           style={{
             backgroundColor: '#11151F',
-            border: '1px solid rgba(229, 168, 59, 0.3)',
+            border: '1px solid rgba(223, 174, 50, 0.3)',
             padding: '8px 16px',
             borderRadius: '8px',
             fontSize: '13px',
-            color: '#E5A83B',
+            color: '#dfae32',
             fontWeight: 700,
           }}
         >
@@ -206,9 +206,9 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
                 padding: '7px 14px',
                 borderRadius: '6px',
                 border: '1px solid',
-                borderColor: roleFilter === r ? '#E5A83B' : 'rgba(255, 255, 255, 0.08)',
-                backgroundColor: roleFilter === r ? 'rgba(229, 168, 59, 0.15)' : '#11151F',
-                color: roleFilter === r ? '#E5A83B' : '#9CA3AF',
+                borderColor: roleFilter === r ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
+                backgroundColor: roleFilter === r ? 'rgba(223, 174, 50, 0.15)' : '#11151F',
+                color: roleFilter === r ? '#dfae32' : '#9CA3AF',
                 fontSize: '12px',
                 fontWeight: 600,
                 cursor: 'pointer',
@@ -300,7 +300,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
                       fontWeight: 700,
                       backgroundColor:
                         user.role === 'CEO'
-                          ? 'rgba(229, 168, 59, 0.2)'
+                          ? 'rgba(223, 174, 50, 0.2)'
                           : user.role === 'Admin'
                           ? 'rgba(168, 85, 247, 0.2)'
                           : user.role === 'Manager'
@@ -308,7 +308,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
                           : 'rgba(255, 255, 255, 0.08)',
                       color:
                         user.role === 'CEO'
-                          ? '#E5A83B'
+                          ? '#dfae32'
                           : user.role === 'Admin'
                           ? '#C084FC'
                           : user.role === 'Manager'
@@ -336,7 +336,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
                   </span>
                 </td>
                 <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{user.country}</td>
-                <td style={{ padding: '14px 18px', fontWeight: 700, color: '#E5A83B' }}>
+                <td style={{ padding: '14px 18px', fontWeight: 700, color: '#dfae32' }}>
                   ${user.totalEarnings.toLocaleString()}
                 </td>
                 <td style={{ padding: '14px 18px', textAlign: 'right' }}>
@@ -384,7 +384,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '600px',
               width: '100%',
@@ -398,13 +398,13 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
                 <img
                   src={selectedUser.avatar}
                   alt={selectedUser.name}
-                  style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #E5A83B' }}
+                  style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #dfae32' }}
                 />
                 <div>
                   <h3 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
                     {selectedUser.name}
                   </h3>
-                  <div style={{ color: '#E5A83B', fontSize: '13px', fontWeight: 600 }}>
+                  <div style={{ color: '#dfae32', fontSize: '13px', fontWeight: 600 }}>
                     {selectedUser.role} ● {selectedUser.department}
                   </div>
                   <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '2px' }}>
@@ -423,13 +423,13 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
 
             {/* Profile Info Cards */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
-              <div style={{ backgroundColor: '#0B0E14', padding: '14px', borderRadius: '8px' }}>
+              <div style={{ backgroundColor: '#161617', padding: '14px', borderRadius: '8px' }}>
                 <div style={{ color: '#9CA3AF', fontSize: '11px' }}>Contact Email</div>
                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF', marginTop: '4px' }}>
                   {selectedUser.email}
                 </div>
               </div>
-              <div style={{ backgroundColor: '#0B0E14', padding: '14px', borderRadius: '8px' }}>
+              <div style={{ backgroundColor: '#161617', padding: '14px', borderRadius: '8px' }}>
                 <div style={{ color: '#9CA3AF', fontSize: '11px' }}>Phone / Location</div>
                 <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF', marginTop: '4px' }}>
                   {selectedUser.phone} ({selectedUser.country})
@@ -438,8 +438,8 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
             </div>
 
             {/* Bank KYC Details */}
-            <div style={{ backgroundColor: '#0B0E14', padding: '16px', borderRadius: '10px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#E5A83B', fontSize: '13px', fontWeight: 700, marginBottom: '8px' }}>
+            <div style={{ backgroundColor: '#161617', padding: '16px', borderRadius: '10px', marginBottom: '20px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#dfae32', fontSize: '13px', fontWeight: 700, marginBottom: '8px' }}>
                 <CreditCard size={16} />
                 <span>Settlement Bank Details (KYC Verified)</span>
               </div>
@@ -463,7 +463,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
                   target="_blank"
                   rel="noreferrer"
                   style={{
-                    color: '#E5A83B',
+                    color: '#dfae32',
                     fontSize: '13px',
                     display: 'flex',
                     alignItems: 'center',
@@ -501,7 +501,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
                 type="button"
                 onClick={() => setSelectedUser(null)}
                 style={{
-                  backgroundColor: '#E5A83B',
+                  backgroundColor: '#dfae32',
                   color: '#0A0D14',
                   fontWeight: 700,
                   padding: '10px 22px',

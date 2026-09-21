@@ -176,9 +176,9 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                     padding: '8px 14px',
                     borderRadius: '8px',
                     border: '1px solid',
-                    borderColor: tab === t ? '#E5A83B' : 'rgba(255, 255, 255, 0.08)',
-                    backgroundColor: tab === t ? 'rgba(229, 168, 59, 0.15)' : '#11151F',
-                    color: tab === t ? '#E5A83B' : '#9CA3AF',
+                    borderColor: tab === t ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
+                    backgroundColor: tab === t ? 'rgba(223, 174, 50, 0.15)' : '#11151F',
+                    color: tab === t ? '#dfae32' : '#9CA3AF',
                     fontSize: '12px',
                     fontWeight: 600,
                     cursor: 'pointer',
@@ -243,7 +243,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                   <div style={{ fontWeight: 700, color: '#FFFFFF' }}>{app.applicantName}</div>
                   <div style={{ color: '#9CA3AF', fontSize: '12px' }}>{app.email}</div>
                 </td>
-                <td style={{ padding: '14px 18px', color: '#E5A83B', fontWeight: 600 }}>{app.department}</td>
+                <td style={{ padding: '14px 18px', color: '#dfae32', fontWeight: 600 }}>{app.department}</td>
                 <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{app.experienceYears} Years</td>
                 <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{app.appliedDate}</td>
                 <td style={{ padding: '14px 18px' }}>
@@ -258,13 +258,13 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                           ? 'rgba(16, 185, 129, 0.15)'
                           : app.status === 'Rejected'
                           ? 'rgba(239, 68, 68, 0.15)'
-                          : 'rgba(229, 168, 59, 0.15)',
+                          : 'rgba(223, 174, 50, 0.15)',
                       color:
                         app.status === 'Approved'
                           ? '#10B981'
                           : app.status === 'Rejected'
                           ? '#EF4444'
-                          : '#E5A83B',
+                          : '#dfae32',
                     }}
                   >
                     ● {app.status}
@@ -278,7 +278,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                       setSelectedApp(app);
                     }}
                     style={{
-                      backgroundColor: '#E5A83B',
+                      backgroundColor: '#dfae32',
                       color: '#0A0D14',
                       fontWeight: 700,
                       border: 'none',
@@ -316,7 +316,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
           <div
             style={{
               backgroundColor: '#11151F',
-              border: '1px solid rgba(229, 168, 59, 0.3)',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '600px',
               width: '100%',
@@ -326,7 +326,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
               <div>
-                <span style={{ color: '#E5A83B', fontSize: '12px', fontWeight: 700 }}>
+                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>
                   {selectedApp.id} ● {selectedApp.department}
                 </span>
                 <h3 style={{ fontSize: '22px', fontWeight: 800, margin: '4px 0 0', color: '#FFFFFF' }}>
@@ -347,11 +347,11 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
 
             {/* Candidate details */}
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '18px' }}>
-              <div style={{ backgroundColor: '#0B0E14', padding: '12px', borderRadius: '8px', fontSize: '13px' }}>
+              <div style={{ backgroundColor: '#161617', padding: '12px', borderRadius: '8px', fontSize: '13px' }}>
                 <div style={{ color: '#9CA3AF', fontSize: '11px' }}>Email Address</div>
                 <div style={{ fontWeight: 600, color: '#FFFFFF', marginTop: '2px' }}>{selectedApp.email}</div>
               </div>
-              <div style={{ backgroundColor: '#0B0E14', padding: '12px', borderRadius: '8px', fontSize: '13px' }}>
+              <div style={{ backgroundColor: '#161617', padding: '12px', borderRadius: '8px', fontSize: '13px' }}>
                 <div style={{ color: '#9CA3AF', fontSize: '11px' }}>Phone Number</div>
                 <div style={{ fontWeight: 600, color: '#FFFFFF', marginTop: '2px' }}>{selectedApp.phone}</div>
               </div>
@@ -368,9 +368,9 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#E5A83B',
+                    color: '#dfae32',
                     padding: '8px 14px',
                     borderRadius: '6px',
                     fontSize: '12px',
@@ -392,9 +392,9 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                     display: 'flex',
                     alignItems: 'center',
                     gap: '6px',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#E5A83B',
+                    color: '#dfae32',
                     padding: '8px 14px',
                     borderRadius: '6px',
                     fontSize: '12px',
@@ -412,7 +412,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
             {/* Statement */}
             <div style={{ marginBottom: '20px' }}>
               <div style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '6px' }}>Applicant Statement:</div>
-              <p style={{ backgroundColor: '#0B0E14', padding: '14px', borderRadius: '8px', color: '#D1D5DB', fontSize: '13px', lineHeight: 1.6 }}>
+              <p style={{ backgroundColor: '#161617', padding: '14px', borderRadius: '8px', color: '#D1D5DB', fontSize: '13px', lineHeight: 1.6 }}>
                 {selectedApp.coverNote}
               </p>
             </div>
@@ -430,7 +430,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                   onChange={(e) => setReviewNoteInput(e.target.value)}
                   style={{
                     width: '100%',
-                    backgroundColor: '#0B0E14',
+                    backgroundColor: '#161617',
                     border: '1px solid rgba(255, 255, 255, 0.1)',
                     borderRadius: '8px',
                     padding: '10px 14px',
@@ -490,7 +490,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                     type="button"
                     onClick={() => setSelectedApp(null)}
                     style={{
-                      backgroundColor: '#E5A83B',
+                      backgroundColor: '#dfae32',
                       color: '#0A0D14',
                       fontWeight: 700,
                       padding: '10px 24px',

@@ -50,7 +50,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
 
   return (
     <div style={{
-      backgroundColor: '#121620',
+      backgroundColor: '#232324',
       border: '1px solid rgba(255, 255, 255, 0.08)',
       borderRadius: '16px',
       padding: '28px',
@@ -70,7 +70,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
         {/* Benedicta Avatar with Yellow Edit Pencil Badge (Figma) */}
         <div style={{ position: 'relative', width: '76px', height: '76px' }}>
           <img
-            src="/assets/benedicta_avatar_lg.png"
+            src="/assets/benedicta.png"
             alt="Profile Avatar"
             style={{
               width: '76px',
@@ -89,9 +89,9 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
               width: '24px',
               height: '24px',
               borderRadius: '50%',
-              backgroundColor: '#E5A83B',
+              backgroundColor: '#dfae32',
               color: '#000000',
-              border: '2px solid #121620',
+              border: '2px solid #232324',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -238,7 +238,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
                   name="gender"
                   checked={gender === 'Male'}
                   onChange={() => setGender('Male')}
-                  style={{ accentColor: '#E5A83B', cursor: 'pointer' }}
+                  style={{ accentColor: '#dfae32', cursor: 'pointer' }}
                 />
                 Male
               </label>
@@ -248,7 +248,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
                   name="gender"
                   checked={gender === 'Female'}
                   onChange={() => setGender('Female')}
-                  style={{ accentColor: '#E5A83B', cursor: 'pointer' }}
+                  style={{ accentColor: '#dfae32', cursor: 'pointer' }}
                 />
                 Female
               </label>
@@ -266,7 +266,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#E5A83B',
+                  color: '#dfae32',
                   fontSize: '11px',
                   cursor: 'pointer',
                   padding: 0,
@@ -385,13 +385,13 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
               height: '44px',
               padding: '0 28px',
               borderRadius: '9999px',
-              backgroundColor: '#E5A83B',
+              backgroundColor: '#dfae32',
               color: '#000000',
               fontSize: '14px',
               fontWeight: '700',
               border: 'none',
               cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(229, 168, 59, 0.3)',
+              boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
             }}
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
