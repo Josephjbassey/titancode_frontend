@@ -32,7 +32,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
       >
         {/* Brand Logo */}
         <div
-          onClick={() => onNavigate('services')}
+          onClick={() => onNavigate('home')}
           style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
         >
           <img
@@ -46,11 +46,11 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
         <nav style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
           <button
             type="button"
-            onClick={() => onNavigate('services')}
+            onClick={() => onNavigate('home')}
             style={{
               fontSize: '15px',
-              fontWeight: currentView === 'services' ? '700' : '500',
-              color: currentView === 'services' ? '#FFFFFF' : '#9CA3AF',
+              fontWeight: currentView === 'home' ? '700' : '500',
+              color: currentView === 'home' ? '#FFFFFF' : '#9CA3AF',
               transition: 'color 0.2s ease',
               border: 'none',
               background: 'none',
@@ -61,11 +61,11 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => onNavigate('services')}
+            onClick={() => onNavigate('about_us')}
             style={{
               fontSize: '15px',
-              fontWeight: '500',
-              color: '#9CA3AF',
+              fontWeight: currentView === 'about_us' ? '700' : '500',
+              color: currentView === 'about_us' ? '#FFFFFF' : '#9CA3AF',
               transition: 'color 0.2s ease',
               border: 'none',
               background: 'none',
@@ -157,7 +157,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           {/* Column 1: Brand & Socials */}
           <div>
             <div
-              onClick={() => onNavigate('services')}
+              onClick={() => onNavigate('home')}
               style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '18px' }}
             >
               <img
@@ -273,46 +273,46 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <button
                 type="button"
-                onClick={() => onNavigate('services')}
-                style={{ textAlign: 'left', color: '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
+                onClick={() => onNavigate('home')}
+                style={{ textAlign: 'left', color: currentView === 'home' ? '#E5A83B' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                onMouseOut={(e) => (e.currentTarget.style.color = '#9CA3AF')}
+                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'home' ? '#E5A83B' : '#9CA3AF')}
               >
                 Home
               </button>
               <button
                 type="button"
-                onClick={() => onNavigate('services')}
-                style={{ textAlign: 'left', color: '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
+                onClick={() => onNavigate('about_us')}
+                style={{ textAlign: 'left', color: currentView === 'about_us' ? '#E5A83B' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                onMouseOut={(e) => (e.currentTarget.style.color = '#9CA3AF')}
+                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'about_us' ? '#E5A83B' : '#9CA3AF')}
               >
                 About
               </button>
               <button
                 type="button"
                 onClick={() => onNavigate('services')}
-                style={{ textAlign: 'left', color: '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
+                style={{ textAlign: 'left', color: currentView === 'services' ? '#E5A83B' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                onMouseOut={(e) => (e.currentTarget.style.color = '#9CA3AF')}
+                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'services' ? '#E5A83B' : '#9CA3AF')}
               >
                 Services
               </button>
               <button
                 type="button"
                 onClick={() => onNavigate('faqs')}
-                style={{ textAlign: 'left', color: '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
+                style={{ textAlign: 'left', color: currentView === 'faqs' ? '#E5A83B' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                onMouseOut={(e) => (e.currentTarget.style.color = '#9CA3AF')}
+                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'faqs' ? '#E5A83B' : '#9CA3AF')}
               >
                 FAQs
               </button>
               <button
                 type="button"
                 onClick={() => onNavigate('testimonials')}
-                style={{ textAlign: 'left', color: '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
+                style={{ textAlign: 'left', color: currentView === 'testimonials' ? '#E5A83B' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-                onMouseOut={(e) => (e.currentTarget.style.color = '#9CA3AF')}
+                onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'testimonials' ? '#E5A83B' : '#9CA3AF')}
               >
                 Testimonies
               </button>

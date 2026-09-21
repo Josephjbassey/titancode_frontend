@@ -8,7 +8,12 @@ import {
   Settings,
   LogOut,
   UserCog,
-  MessageSquare,
+  Wallet,
+  FileText,
+  Building2,
+  Layers,
+  Sliders,
+  FolderPlus,
 } from 'lucide-react';
 import type { UserRole } from '../types';
 
@@ -25,22 +30,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
   userRole = 'Member',
   onLogout,
 }) => {
-  // Member Nav vs Admin Nav based on Figma
   const memberNavItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'projects', label: 'Projects', icon: FolderGit2 },
     { id: 'tasks', label: 'My Task', icon: CheckSquare },
     { id: 'meetings', label: 'Meetings', icon: Video },
+    { id: 'financials', label: 'My Wallet', icon: Wallet },
   ];
 
   const adminNavItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'clients', label: 'Clients', icon: Users },
-    { id: 'staff', label: 'Staff Management', icon: UserCog },
-    { id: 'chat', label: 'Chat Room', icon: MessageSquare },
+    { id: 'clients', label: 'Clients CRM', icon: Users },
+    { id: 'projects', label: 'Projects', icon: FolderGit2 },
+    { id: 'tasks', label: 'Sprint Tasks', icon: CheckSquare },
+    { id: 'meetings', label: 'Meetings', icon: Video },
+    { id: 'users_management', label: 'Staff Directory', icon: UserCog },
+    { id: 'applications_management', label: 'Applications', icon: FileText },
+    { id: 'departments', label: 'Departments', icon: Building2 },
+    { id: 'financials', label: 'Financials Hub', icon: Wallet },
+    { id: 'revenue_products', label: 'Products & Revenue', icon: Layers },
+    { id: 'system_settings', label: 'System Settings', icon: Sliders },
   ];
 
-  const navItems = userRole === 'Admin' ? adminNavItems : memberNavItems;
+  const clientNavItems = [
+    { id: 'client_projects', label: 'My Projects', icon: FolderGit2 },
+    { id: 'client_request_project', label: 'Request Project', icon: FolderPlus },
+    { id: 'meetings', label: 'Meetings', icon: Video },
+  ];
+
+  const navItems =
+    userRole === 'Admin' || userRole === 'CEO'
+      ? adminNavItems
+      : userRole === 'Client'
+      ? clientNavItems
+      : memberNavItems;
 
   const isSettingsActive = 
     currentView === 'settings' ||

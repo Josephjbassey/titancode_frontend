@@ -18,6 +18,19 @@ import { ContactUsView } from './views/public/ContactUsView';
 import { FaqsView } from './views/public/FaqsView';
 import { TestimonialsView } from './views/public/TestimonialsView';
 import { ApplicationFormView } from './views/public/ApplicationFormView';
+import { HomepageView } from './views/public/HomepageView';
+import { AboutUsView } from './views/public/AboutUsView';
+import { ProjectsView } from './views/ProjectsView';
+import { TasksView } from './views/TasksView';
+import { MeetingsView } from './views/MeetingsView';
+import { LiveMeetingRoomView } from './views/LiveMeetingRoomView';
+import { UsersManagementView } from './views/UsersManagementView';
+import { ApplicationsManagementView } from './views/ApplicationsManagementView';
+import { DepartmentsView } from './views/DepartmentsView';
+import { FinancialsView } from './views/FinancialsView';
+import { RevenueProductsView } from './views/RevenueProductsView';
+import { ClientRequestProjectView } from './views/ClientRequestProjectView';
+import { SystemSettingsView } from './views/SystemSettingsView';
 import { NotificationModal } from './components/NotificationModal';
 import { Modal } from './components/Modal';
 import { OtpInput } from './components/OtpInput';
@@ -27,6 +40,17 @@ import { Layers, Shield } from 'lucide-react';
 import './App.css';
 
 export type ScreenId =
+  | 'home'
+  | 'about_us'
+  | 'services'
+  | 'hire_us'
+  | 'contact_us'
+  | 'faqs'
+  | 'testimonials'
+  | 'application_form'
+  | 'application_required'
+  | 'application_email_exists'
+  | 'application_submitted'
   | 'sign_in'
   | 'sign_up'
   | 'qualification'
@@ -36,25 +60,28 @@ export type ScreenId =
   | 'successful_password'
   | 'dashboard'
   | 'clients'
+  | 'projects'
+  | 'tasks'
+  | 'meetings'
+  | 'meeting_room'
+  | 'users_management'
+  | 'applications_management'
+  | 'departments'
+  | 'financials'
+  | 'revenue_products'
+  | 'client_request_project'
+  | 'client_projects'
+  | 'system_settings'
   | 'profile_settings'
   | 'password_settings'
   | 'change_password'
   | 'incorrect_current_password'
   | 'confirm_password_otp'
   | 'incorrect_code_toast'
-  | 'password_changed_success_toast'
-  | 'services'
-  | 'hire_us'
-  | 'contact_us'
-  | 'faqs'
-  | 'testimonials'
-  | 'application_form'
-  | 'application_required'
-  | 'application_email_exists'
-  | 'application_submitted';
+  | 'password_changed_success_toast';
 
 export function App() {
-  const [currentView, setCurrentView] = useState<ScreenId>('services');
+  const [currentView, setCurrentView] = useState<ScreenId>('home');
   const [currentUser, setCurrentUser] = useState<User>(MOCK_MEMBER_USER);
   const [settingsTab, setSettingsTab] = useState<'profile' | 'password' | 'notifications'>('profile');
 
@@ -62,6 +89,8 @@ export function App() {
   const [standaloneOtp, setStandaloneOtp] = useState('12345');
 
   const screensList: { id: ScreenId; label: string; number: number }[] = [
+    { id: 'home', label: 'Home (Hero, Offerings, Why Us, CTA)', number: 0 },
+    { id: 'about_us', label: 'About Us (Story, Mission & Vision, Leadership)', number: 0 },
     { id: 'services', label: '17. Services (Full Marketing Page)', number: 17 },
     { id: 'hire_us', label: '18. Hire Us (Inquiry Form)', number: 18 },
     { id: 'contact_us', label: '19. Contact Us (Direct Reachout)', number: 19 },
@@ -80,6 +109,17 @@ export function App() {
     { id: 'successful_password', label: '7. Successful Password (Confirmation)', number: 7 },
     { id: 'dashboard', label: '8. Team / Member Dashboard (KPIs, Tasks, Donut)', number: 8 },
     { id: 'clients', label: '9. Clients CRM (Metrics, Table, Inquiries)', number: 9 },
+    { id: 'projects', label: '26. Projects Management (Escrow Payout, Subtasks)', number: 26 },
+    { id: 'tasks', label: '27. Tasks & Kanban Board (Sprint Lifecycle)', number: 27 },
+    { id: 'meetings', label: '28. Meetings Schedule (Upcoming/Live)', number: 28 },
+    { id: 'meeting_room', label: '29. Live Meeting Room (WebRTC Video Grid & Chat)', number: 29 },
+    { id: 'users_management', label: '30. Users Directory (Roles, Bank Details, Status)', number: 30 },
+    { id: 'applications_management', label: '31. Applicants Tracking ATS (Review & Approve)', number: 31 },
+    { id: 'departments', label: '32. Departments Hub (Heads, Active Projects)', number: 32 },
+    { id: 'financials', label: '33. Financials & Wallet (Escrow Splits, Cashflow)', number: 33 },
+    { id: 'revenue_products', label: '34. Revenue Products Telemetry (API Keys, MRR)', number: 34 },
+    { id: 'client_request_project', label: '35. Client Request Project (Commissioning Form)', number: 35 },
+    { id: 'system_settings', label: '36. System Settings (Commission, Currency, Webhooks)', number: 36 },
     { id: 'profile_settings', label: '10. Profile Settings (Sumsub KYC, Avatar)', number: 10 },
     { id: 'password_settings', label: '11. Password Settings (Status & Auth)', number: 11 },
     { id: 'change_password', label: '12. Change Password (Sessions Manager)', number: 12 },
@@ -101,6 +141,18 @@ export function App() {
   const isWorkspaceView = [
     'dashboard',
     'clients',
+    'projects',
+    'tasks',
+    'meetings',
+    'meeting_room',
+    'users_management',
+    'applications_management',
+    'departments',
+    'financials',
+    'revenue_products',
+    'client_request_project',
+    'client_projects',
+    'system_settings',
     'profile_settings',
     'password_settings',
     'change_password',
@@ -108,6 +160,8 @@ export function App() {
   ].includes(currentView);
 
   const isPublicView = [
+    'home',
+    'about_us',
     'services',
     'hire_us',
     'contact_us',
@@ -124,6 +178,8 @@ export function App() {
       {/* 1. PUBLIC MARKETING & APPLICATION PAGES */}
       {isPublicView ? (
         <PublicLayout currentView={currentView} onNavigate={setCurrentView}>
+          {currentView === 'home' && <HomepageView onNavigate={setCurrentView} />}
+          {currentView === 'about_us' && <AboutUsView onNavigate={setCurrentView} />}
           {currentView === 'services' && <ServicesView onNavigate={setCurrentView} />}
           {currentView === 'hire_us' && <HireUsView onNavigate={setCurrentView} />}
           {currentView === 'contact_us' && <ContactUsView onNavigate={setCurrentView} />}
@@ -176,6 +232,45 @@ export function App() {
               {currentView === 'dashboard' && <TeamDashboardView />}
 
               {currentView === 'clients' && <ClientsView />}
+
+              {currentView === 'projects' && <ProjectsView onNavigate={setCurrentView} />}
+
+              {currentView === 'tasks' && <TasksView onNavigate={setCurrentView} />}
+
+              {currentView === 'meetings' && (
+                <MeetingsView
+                  onNavigate={setCurrentView}
+                  onJoinRoom={() => setCurrentView('meeting_room')}
+                />
+              )}
+
+              {currentView === 'meeting_room' && (
+                <LiveMeetingRoomView onLeave={() => setCurrentView('meetings')} />
+              )}
+
+              {currentView === 'users_management' && (
+                <UsersManagementView onNavigate={setCurrentView} />
+              )}
+
+              {currentView === 'applications_management' && (
+                <ApplicationsManagementView onNavigate={setCurrentView} />
+              )}
+
+              {currentView === 'departments' && <DepartmentsView onNavigate={setCurrentView} />}
+
+              {currentView === 'financials' && <FinancialsView onNavigate={setCurrentView} />}
+
+              {currentView === 'revenue_products' && (
+                <RevenueProductsView onNavigate={setCurrentView} />
+              )}
+
+              {(currentView === 'client_request_project' || currentView === 'client_projects') && (
+                <ClientRequestProjectView onNavigate={setCurrentView} />
+              )}
+
+              {currentView === 'system_settings' && (
+                <SystemSettingsView onNavigate={setCurrentView} />
+              )}
 
               {(currentView === 'profile_settings' || currentView === 'password_settings') && (
                 <SettingsLayout

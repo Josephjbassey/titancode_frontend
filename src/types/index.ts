@@ -3,7 +3,7 @@
  * Designed to strictly mirror backend Pydantic models and upcoming API endpoints.
  */
 
-export type UserRole = 'Member' | 'Admin' | 'Client' | 'Project Manager' | 'Team Lead';
+export type UserRole = 'Member' | 'Admin' | 'Client' | 'Project Manager' | 'Team Lead' | 'CEO';
 
 export type KycStatus = 'not_verified' | 'pending' | 'verified' | 'rejected';
 
