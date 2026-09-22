@@ -29,12 +29,53 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
   return (
     <div style={{ backgroundColor: 'var(--tc-figma-black, #0B0B0C)', color: '#FFFFFF', paddingBottom: '120px' }}>
       {/* 1. HERO BANNER */}
-      <section style={{ width: '100%', position: 'relative', overflow: 'hidden' }}>
-        <img
-          src="/assets/hireushero_bg.jpg"
-          alt="Hire Us"
-          style={{ width: '100%', maxHeight: '580px', objectFit: 'cover', display: 'block' }}
-        />
+      <section
+        style={{
+          width: '100%',
+          position: 'relative',
+          overflow: 'hidden',
+          padding: '120px 40px 110px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          backgroundImage: 'linear-gradient(rgba(11, 11, 12, 0.72), rgba(11, 11, 12, 0.88)), url(/assets/hireushero_bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div style={{ maxWidth: '840px', margin: '0 auto' }}>
+          <h1
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '64px',
+              fontWeight: 800,
+              lineHeight: '100%',
+              letterSpacing: '-0.5px',
+              color: '#FFFFFF',
+              marginBottom: '20px',
+            }}
+          >
+            Hire <span style={{ color: 'var(--tc-figma-gold, #DFAE32)' }}>Us</span>
+          </h1>
+
+          <p
+            style={{
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: '20px',
+              fontWeight: 500,
+              lineHeight: '32px',
+              letterSpacing: '0%',
+              textAlign: 'center',
+              color: '#9CA3AF',
+              maxWidth: '680px',
+              margin: '0 auto',
+            }}
+          >
+            Tell us about yourself let’s build something great together
+          </p>
+        </div>
       </section>
 
       {/* 2. FORM SECTION */}

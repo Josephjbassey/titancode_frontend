@@ -70,8 +70,8 @@ export const TestimonialsView: React.FC<TestimonialsViewProps> = ({ onNavigate: 
               }}
             >
               <div>
-                {/* 5 Stars on Top Left matching Figma */}
-                <div style={{ display: 'flex', justifyContent: 'flex-start', gap: '5px', marginBottom: '24px' }}>
+                {/* 5 Stars on Top Right matching Figma */}
+                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '5px', marginBottom: '24px' }}>
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
@@ -92,7 +92,7 @@ export const TestimonialsView: React.FC<TestimonialsViewProps> = ({ onNavigate: 
                     fontFamily: "'Poppins', sans-serif",
                   }}
                 >
-                  "{t.quote}"
+                  {t.quote}
                 </p>
               </div>
 
@@ -113,7 +113,7 @@ export const TestimonialsView: React.FC<TestimonialsViewProps> = ({ onNavigate: 
                   <h4 style={{ fontSize: '16px', fontWeight: '700', color: '#FFFFFF', marginBottom: '4px' }}>
                     {t.name}
                   </h4>
-                  <p style={{ fontSize: '13px', color: '#DFAE32' }}>
+                  <p style={{ fontSize: '13px', color: '#9CA3AF' }}>
                     {t.role}
                   </p>
                 </div>

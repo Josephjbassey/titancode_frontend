@@ -19,7 +19,7 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
       subtitle="Select your role"
     >
       <div className="tc-fade-in">
-        {/* Two Side-by-Side Role Cards */}
+        {/* Two Side-by-Side Role Cards matching Figma Frame 597:44 */}
         <div style={{
           display: 'grid',
           gridTemplateColumns: '1fr 1fr',
@@ -30,7 +30,7 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
           <div
             onClick={() => setSelectedRole('Member')}
             style={{
-              padding: '24px 18px',
+              padding: '24px 20px',
               borderRadius: '16px',
               backgroundColor: 'rgba(255, 255, 255, 0.04)',
               border: `2px solid ${selectedRole === 'Member' ? '#dfae32' : 'rgba(255, 255, 255, 0.1)'}`,
@@ -38,22 +38,37 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              minHeight: '150px',
+              minHeight: '144px',
               transition: 'all 0.2s ease',
-              position: 'relative',
             }}
           >
-            {/* Top row with Icon and Radio Check */}
+            {/* Top row: Squircle Gold Icon Container matching Figma Frame 2147223471 */}
+            <div style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '12px',
+              backgroundColor: '#dfae32',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Users size={22} color="#0b0b0c" strokeWidth={2.4} />
+            </div>
+
+            {/* Bottom row: Label on left, Radio check on right */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              marginTop: '28px',
             }}>
-              <div style={{
-                color: selectedRole === 'Member' ? '#dfae32' : '#9CA3AF',
+              <span style={{
+                fontSize: '18px',
+                fontWeight: '700',
+                color: '#FFFFFF',
               }}>
-                <Users size={28} />
-              </div>
+                Member
+              </span>
 
               <div style={{
                 width: '20px',
@@ -69,23 +84,13 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
                 {selectedRole === 'Member' && <Check size={13} strokeWidth={3} />}
               </div>
             </div>
-
-            {/* Label */}
-            <div style={{
-              fontSize: '18px',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              marginTop: '16px',
-            }}>
-              Member
-            </div>
           </div>
 
           {/* Client Card */}
           <div
             onClick={() => setSelectedRole('Client')}
             style={{
-              padding: '24px 18px',
+              padding: '24px 20px',
               borderRadius: '16px',
               backgroundColor: 'rgba(255, 255, 255, 0.04)',
               border: `2px solid ${selectedRole === 'Client' ? '#dfae32' : 'rgba(255, 255, 255, 0.1)'}`,
@@ -93,22 +98,37 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
-              minHeight: '150px',
+              minHeight: '144px',
               transition: 'all 0.2s ease',
-              position: 'relative',
             }}
           >
-            {/* Top row with Icon and Radio Check */}
+            {/* Top row: Squircle Gold Icon Container matching Figma Frame 2147223472 */}
+            <div style={{
+              width: '42px',
+              height: '42px',
+              borderRadius: '12px',
+              backgroundColor: '#dfae32',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <Briefcase size={22} color="#0b0b0c" strokeWidth={2.4} />
+            </div>
+
+            {/* Bottom row: Label on left, Radio check on right */}
             <div style={{
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'space-between',
+              marginTop: '28px',
             }}>
-              <div style={{
-                color: selectedRole === 'Client' ? '#dfae32' : '#9CA3AF',
+              <span style={{
+                fontSize: '18px',
+                fontWeight: '700',
+                color: '#FFFFFF',
               }}>
-                <Briefcase size={28} />
-              </div>
+                Client
+              </span>
 
               <div style={{
                 width: '20px',
@@ -123,16 +143,6 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
               }}>
                 {selectedRole === 'Client' && <Check size={13} strokeWidth={3} />}
               </div>
-            </div>
-
-            {/* Label */}
-            <div style={{
-              fontSize: '18px',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              marginTop: '16px',
-            }}>
-              Client
             </div>
           </div>
         </div>

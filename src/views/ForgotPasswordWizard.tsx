@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Mail, Eye, EyeOff, ArrowLeft, Check } from 'lucide-react';
+import { Mail, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { AuthLayout } from '../components/AuthLayout';
 import { OtpInput } from '../components/OtpInput';
 import { NotificationModal } from '../components/NotificationModal';
@@ -97,44 +97,39 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
     }
   };
 
-  // Helper for 3 step indicator dots
+  // Helper for 3 step indicator dots matching Figma bottom-left placement Frame 171 (x=120, y=957)
   const renderStepIndicator = (activeStep: number) => {
     return (
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        gap: '12px',
-        marginBottom: '28px',
-      }}>
-        {[1, 2, 3].map((num, idx) => {
-          const isDoneOrActive = num <= activeStep;
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'flex-start',
+          gap: '16px',
+          marginTop: '40px',
+        }}
+      >
+        {[1, 2, 3].map((num) => {
+          const isActive = num === activeStep;
           return (
-            <React.Fragment key={num}>
-              {idx > 0 && (
-                <div style={{
-                  width: '32px',
-                  height: '2px',
-                  backgroundColor: num <= activeStep ? '#dfae32' : 'rgba(255, 255, 255, 0.15)',
-                  transition: 'background-color 0.3s ease',
-                }} />
-              )}
-              <div style={{
-                width: '32px',
-                height: '32px',
+            <div
+              key={num}
+              style={{
+                width: '44px',
+                height: '44px',
                 borderRadius: '50%',
-                backgroundColor: isDoneOrActive ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
-                color: isDoneOrActive ? '#000000' : 'rgba(255, 255, 255, 0.5)',
+                backgroundColor: isActive ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
+                color: isActive ? '#000000' : 'rgba(255, 255, 255, 0.5)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                fontSize: '13px',
+                fontSize: '15px',
                 fontWeight: '700',
                 transition: 'all 0.3s ease',
-              }}>
-                {num}
-              </div>
-            </React.Fragment>
+              }}
+            >
+              {num}
+            </div>
           );
         })}
       </div>
@@ -145,7 +140,6 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
   if (step === 1) {
     return (
       <AuthLayout>
-        {renderStepIndicator(1)}
         <div style={{ marginBottom: '24px' }}>
           <h1 style={{
             fontSize: '26px',
@@ -268,6 +262,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
             Back to login
           </button>
         </form>
+        {renderStepIndicator(1)}
       </AuthLayout>
     );
   }
@@ -276,12 +271,11 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
   if (step === 2) {
     return (
       <AuthLayout>
-        {renderStepIndicator(2)}
         <div style={{ marginBottom: '24px' }}>
           <h1 style={{
             fontSize: '26px',
             fontWeight: '700',
-            color: '#FFFFFF',
+            color: '#dfae32',
             marginBottom: '6px',
             letterSpacing: '-0.3px',
           }}>
@@ -392,6 +386,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
             Back to login
           </button>
         </form>
+        {renderStepIndicator(2)}
 
         <NotificationModal
           isOpen={showErrorModal}
@@ -410,7 +405,6 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
   if (step === 3) {
     return (
       <AuthLayout>
-        {renderStepIndicator(3)}
         <div style={{ marginBottom: '24px' }}>
           <h1 style={{
             fontSize: '26px',
@@ -592,43 +586,30 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
             Back to login
           </button>
         </form>
+        {renderStepIndicator(3)}
       </AuthLayout>
     );
   }
 
-  // Step 4: Successful Password (Figma Screen 7)
+  // Step 4: Successful Password (Figma Frame 406:158)
   return (
     <AuthLayout>
-      <div className="tc-fade-in" style={{ textAlign: 'center', padding: '16px 0' }}>
-        <div style={{
-          width: '72px',
-          height: '72px',
-          borderRadius: '50%',
-          backgroundColor: '#dfae32',
-          color: '#000000',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 24px',
-          boxShadow: '0 8px 24px rgba(223, 174, 50, 0.3)',
-        }}>
-          <Check size={38} strokeWidth={3} />
-        </div>
-
+      <div className="tc-fade-in" style={{ padding: '30px 0 10px', textAlign: 'left' }}>
         <h1 style={{
-          fontSize: '24px',
+          fontSize: '28px',
           fontWeight: '700',
           color: '#FFFFFF',
-          marginBottom: '8px',
+          marginBottom: '14px',
           letterSpacing: '-0.3px',
+          lineHeight: '1.3',
         }}>
           Your password has been set successfully
         </h1>
 
         <p style={{
-          fontSize: '14px',
+          fontSize: '15px',
           color: '#9CA3AF',
-          marginBottom: '32px',
+          marginBottom: '36px',
         }}>
           Password updated successfully
         </p>
@@ -639,6 +620,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
           onClick={onDone}
           style={{
             width: '100%',
+            maxWidth: '350px',
             height: '46px',
             borderRadius: '9999px',
             backgroundColor: '#dfae32',

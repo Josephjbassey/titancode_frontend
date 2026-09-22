@@ -36,7 +36,7 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
               marginBottom: '20px',
             }}
           >
-            About Us
+            About <span style={{ color: 'var(--tc-figma-gold, #DFAE32)' }}>Us</span>
           </h1>
 
           <p
@@ -57,8 +57,31 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
         </div>
       </section>
 
-      {/* 2. SECTION: ABOUT TITANCODE WITH SHOWCASE IMAGES */}
-      <section style={{ padding: '60px 60px 100px', maxWidth: '1360px', margin: '0 auto' }}>
+      {/* 2. SECTION: ABOUT US WITH SHOWCASE IMAGES & BADGE */}
+      <section style={{ padding: '80px 60px 100px', maxWidth: '1360px', margin: '0 auto' }}>
+        {/* Frame 2085660695: Badge ● ABOUT US ● */}
+        <div style={{ marginBottom: '40px' }}>
+          <span
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              gap: '12px',
+              padding: '10px 24px',
+              borderRadius: '9999px',
+              border: '1px solid rgba(255, 255, 255, 0.2)',
+              fontSize: '14px',
+              fontWeight: 700,
+              letterSpacing: '1.5px',
+              color: '#FFFFFF',
+              fontFamily: "'Inter', sans-serif",
+            }}
+          >
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#DFAE32' }} />
+            ABOUT US
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#DFAE32' }} />
+          </span>
+        </div>
+
         <div
           style={{
             display: 'grid',
@@ -67,44 +90,7 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
             alignItems: 'center',
           }}
         >
-          {/* Left Text */}
-          <div>
-            <h2
-              style={{
-                fontSize: '36px',
-                fontWeight: 800,
-                color: '#FFFFFF',
-                marginBottom: '24px',
-              }}
-            >
-              About TitanCode
-            </h2>
-            <p
-              style={{
-                color: '#9CA3AF',
-                fontSize: '16px',
-                lineHeight: 1.8,
-                marginBottom: '20px',
-              }}
-            >
-              TitanCode is a modern digital solutions platform built to help teams and businesses
-              work smarter. We focus on creating tools that simplify project management, improve
-              collaboration, and enhance productivity.
-            </p>
-            <p
-              style={{
-                color: '#9CA3AF',
-                fontSize: '16px',
-                lineHeight: 1.8,
-              }}
-            >
-              Our approach combines clean design with powerful functionality, making it easy for
-              users to manage tasks, track progress, and achieve better results without unnecessary
-              complexity.
-            </p>
-          </div>
-
-          {/* Right Image Showcase: aboutus_1.jpg & aboutus_2.jpg */}
+          {/* Left Column: Image Showcase aboutus_1.jpg & aboutus_2.jpg matching Figma x=60, 452 */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div style={{ borderRadius: '16px', overflow: 'hidden', height: '360px', boxShadow: '0 12px 30px rgba(0,0,0,0.5)' }}>
               <img
@@ -130,6 +116,20 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
                 }}
               />
             </div>
+          </div>
+
+          {/* Right Column: Narrative Text matching Figma text id="259:10" */}
+          <div>
+            <p
+              style={{
+                color: '#9CA3AF',
+                fontSize: '18px',
+                lineHeight: 1.85,
+                fontFamily: "'Poppins', sans-serif",
+              }}
+            >
+              TitanCode is a modern digital solutions platform built to help teams and businesses work smarter. We focus on creating tools that simplify project management, improve collaboration, and enhance productivity. Our approach combines clean design with powerful functionality, making it easy for users to manage tasks, track progress, and achieve better results without unnecessary complexity.
+            </p>
           </div>
         </div>
       </section>
@@ -165,16 +165,15 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
                 width: '56px',
                 height: '56px',
                 borderRadius: '12px',
-                backgroundColor: '#DFAE324D',
-                border: '1px solid rgba(223, 174, 50, 0.3)',
+                backgroundColor: '#DFAE32',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#DDC998',
+                color: '#0B0B0C',
                 marginBottom: '26px',
               }}
             >
-              <Target size={28} />
+              <Target size={28} strokeWidth={2.4} />
             </div>
             <h3 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '16px', color: '#FFFFFF' }}>
               Our Mission
@@ -202,16 +201,15 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
                 width: '56px',
                 height: '56px',
                 borderRadius: '12px',
-                backgroundColor: '#DFAE324D',
-                border: '1px solid rgba(223, 174, 50, 0.3)',
+                backgroundColor: '#DFAE32',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                color: '#DDC998',
+                color: '#0B0B0C',
                 marginBottom: '26px',
               }}
             >
-              <Eye size={28} />
+              <Eye size={28} strokeWidth={2.4} />
             </div>
             <h3 style={{ fontSize: '26px', fontWeight: 800, marginBottom: '16px', color: '#FFFFFF' }}>
               Our Vision
@@ -229,7 +227,7 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
       <section style={{ padding: '0 60px 140px', maxWidth: '1360px', margin: '0 auto' }}>
         <div style={{ textAlign: 'center', marginBottom: '50px' }}>
           <h2 style={{ fontSize: '40px', fontWeight: 800, marginBottom: '10px', color: '#FFFFFF' }}>
-            Our Team
+            Our <span style={{ color: 'var(--tc-figma-gold, #DFAE32)' }}>Team</span>
           </h2>
           <p style={{ color: '#9CA3AF', fontSize: '16px' }}>
             Meet our team

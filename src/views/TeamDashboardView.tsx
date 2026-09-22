@@ -55,7 +55,6 @@ export const TeamDashboardView: React.FC = () => {
         <div
           className="figma-card"
           style={{
-            borderTop: '3px solid #DDC998',
             borderRadius: '16px',
             padding: '20px',
             display: 'flex',
@@ -91,7 +90,6 @@ export const TeamDashboardView: React.FC = () => {
         <div
           className="figma-card"
           style={{
-            borderTop: '3px solid #DDC998',
             borderRadius: '16px',
             padding: '20px',
             display: 'flex',
@@ -133,7 +131,7 @@ export const TeamDashboardView: React.FC = () => {
               textAlign: 'left',
             }}
           >
-            View all tasks &gt;
+            View all tasks →
           </button>
         </div>
 
@@ -141,7 +139,6 @@ export const TeamDashboardView: React.FC = () => {
         <div
           className="figma-card"
           style={{
-            borderTop: '3px solid #DDC998',
             borderRadius: '16px',
             padding: '20px',
             display: 'flex',
@@ -183,7 +180,7 @@ export const TeamDashboardView: React.FC = () => {
               textAlign: 'left',
             }}
           >
-            View all meetings &gt;
+            View all meetings →
           </button>
         </div>
 
@@ -191,7 +188,6 @@ export const TeamDashboardView: React.FC = () => {
         <div
           className="figma-card"
           style={{
-            borderTop: '3px solid #DDC998',
             borderRadius: '16px',
             padding: '20px',
             display: 'flex',
@@ -233,7 +229,7 @@ export const TeamDashboardView: React.FC = () => {
               textAlign: 'left',
             }}
           >
-            View all payments &gt;
+            View all payments →
           </button>
         </div>
       </div>

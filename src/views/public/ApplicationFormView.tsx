@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { ScreenId } from '../../App';
-import { AlertCircle, Check, ChevronDown } from 'lucide-react';
+import { AlertCircle, Check, ChevronDown, X } from 'lucide-react';
 
 export type ApplicationState = 'default' | 'required' | 'email_exists' | 'submitted';
 
@@ -407,7 +407,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
         </form>
       </div>
 
-      {/* MODAL POPUP: Submitted Application matching Figma Submitted Application.png (background: #FFFFFF1A, border: 1px solid #FFFFFF26) */}
+      {/* MODAL POPUP: Submitted Application matching Figma Submitted Application.png */}
       {appState === 'submitted' && (
         <div
           onClick={() => setAppState('default')}
@@ -415,7 +415,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
             position: 'fixed',
             inset: 0,
             backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(8px)',
+            backdropFilter: 'blur(6px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -426,11 +426,8 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            className="figma-card"
             style={{
-              backgroundColor: 'var(--tc-figma-card-bg, #FFFFFF1A)',
-              border: '1px solid var(--tc-figma-card-border, #FFFFFF26)',
-              backdropFilter: 'blur(20px)',
+              backgroundColor: '#dfae32',
               borderRadius: '24px',
               padding: '60px 48px',
               maxWidth: '560px',
@@ -439,22 +436,42 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
               boxShadow: '0 24px 60px rgba(0, 0, 0, 0.6)',
               animation: 'tcModalIn 0.25s ease-out',
               cursor: 'default',
+              position: 'relative',
             }}
           >
-            {/* Circle with Checkmark Icon */}
+            {/* Top Right Close 'x' */}
+            <button
+              type="button"
+              onClick={() => setAppState('default')}
+              style={{
+                position: 'absolute',
+                top: '20px',
+                right: '20px',
+                background: 'none',
+                border: 'none',
+                color: '#000000',
+                cursor: 'pointer',
+                padding: '6px',
+                display: 'flex',
+              }}
+            >
+              <X size={22} strokeWidth={2.5} />
+            </button>
+
+            {/* Dark Circle with Gold Checkmark Icon */}
             <div
               style={{
-                width: '84px',
-                height: '84px',
+                width: '88px',
+                height: '88px',
                 borderRadius: '50%',
-                backgroundColor: 'var(--tc-figma-gold, #DFAE32)',
+                backgroundColor: '#0b0b0c',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
                 margin: '0 auto 28px',
               }}
             >
-              <Check size={44} color="#0B0B0C" strokeWidth={3} />
+              <Check size={46} color="#dfae32" strokeWidth={3} />
             </div>
 
             {/* Heading */}
@@ -462,7 +479,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
               style={{
                 fontSize: '32px',
                 fontWeight: '800',
-                color: '#FFFFFF',
+                color: '#000000',
                 marginBottom: '16px',
                 letterSpacing: '-0.5px',
                 fontFamily: "'Inter', sans-serif",
@@ -475,33 +492,16 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
             <p
               style={{
                 fontSize: '16px',
-                color: '#E5E7EB',
+                color: '#1F2937',
                 lineHeight: '1.6',
-                maxWidth: '440px',
-                margin: '0 auto 28px',
-                fontWeight: '400',
+                maxWidth: '460px',
+                margin: '0 auto',
+                fontWeight: '500',
                 fontFamily: "'Poppins', sans-serif",
               }}
             >
               Thank you for applying! We have received your application and we will be in touch soon.
             </p>
-
-            <button
-              onClick={() => setAppState('default')}
-              style={{
-                backgroundColor: 'var(--tc-figma-gold, #DFAE32)',
-                color: '#0B0B0C',
-                border: 'none',
-                borderRadius: '8px',
-                padding: '12px 36px',
-                fontSize: '15px',
-                fontWeight: '700',
-                cursor: 'pointer',
-                fontFamily: "'Poppins', sans-serif",
-              }}
-            >
-              Close
-            </button>
           </div>
         </div>
       )}

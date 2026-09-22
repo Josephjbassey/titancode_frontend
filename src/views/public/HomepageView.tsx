@@ -81,7 +81,7 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
       icon: Users,
       title: 'User-Centered Design',
       description: 'We design intuitive and engaging experiences tailored to meet real user needs.',
-      theme: 'light',
+      theme: 'dark',
     },
     {
       icon: TrendingUp,
@@ -546,12 +546,52 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
 
             <div>
               <h3 style={{ fontSize: 20, fontWeight: 700, marginBottom: 18 }}>Quick Links</h3>
-              <ul style={{ listStyle: 'none', display: 'grid', gap: 10, padding: 0, margin: 0, color: 'rgba(255,255,255,0.85)' }}>
-                <li>Home</li>
-                <li>About</li>
-                <li>Services</li>
-                <li>FAQs</li>
-                <li>Testimonials</li>
+              <ul style={{ listStyle: 'none', display: 'grid', gap: 10, padding: 0, margin: 0 }}>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('home')}
+                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', padding: 0, cursor: 'pointer', fontSize: 16 }}
+                  >
+                    Home
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('about_us')}
+                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', padding: 0, cursor: 'pointer', fontSize: 16 }}
+                  >
+                    About
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('services')}
+                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', padding: 0, cursor: 'pointer', fontSize: 16 }}
+                  >
+                    Services
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('faqs')}
+                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', padding: 0, cursor: 'pointer', fontSize: 16 }}
+                  >
+                    FAQs
+                  </button>
+                </li>
+                <li>
+                  <button
+                    type="button"
+                    onClick={() => onNavigate('testimonials')}
+                    style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.85)', padding: 0, cursor: 'pointer', fontSize: 16 }}
+                  >
+                    Testimonies
+                  </button>
+                </li>
               </ul>
             </div>
 

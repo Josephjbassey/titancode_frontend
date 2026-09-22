@@ -20,12 +20,53 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
   return (
     <div style={{ backgroundColor: 'var(--tc-figma-black, #0B0B0C)', color: '#FFFFFF', paddingBottom: '100px' }}>
       {/* 1. HERO BANNER */}
-      <section style={{ width: '100%', position: 'relative', overflow: 'hidden' }}>
-        <img
-          src="/assets/servicesHero_bg.jpg"
-          alt="Our Services"
-          style={{ width: '100%', maxHeight: '580px', objectFit: 'cover', display: 'block' }}
-        />
+      <section
+        style={{
+          width: '100%',
+          position: 'relative',
+          overflow: 'hidden',
+          padding: '120px 40px 110px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          textAlign: 'center',
+          backgroundImage: 'linear-gradient(rgba(11, 11, 12, 0.72), rgba(11, 11, 12, 0.88)), url(/assets/servicesHero_bg.jpg)',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        }}
+      >
+        <div style={{ maxWidth: '840px', margin: '0 auto' }}>
+          <h1
+            style={{
+              fontFamily: "'Inter', sans-serif",
+              fontSize: '64px',
+              fontWeight: 800,
+              lineHeight: '100%',
+              letterSpacing: '-0.5px',
+              color: '#FFFFFF',
+              marginBottom: '20px',
+            }}
+          >
+            Our <span style={{ color: 'var(--tc-figma-gold, #DFAE32)' }}>Services</span>
+          </h1>
+
+          <p
+            style={{
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: '20px',
+              fontWeight: 500,
+              lineHeight: '32px',
+              letterSpacing: '0%',
+              textAlign: 'center',
+              color: '#9CA3AF',
+              maxWidth: '680px',
+              margin: '0 auto',
+            }}
+          >
+            Comprehensive digital solutions tailored to meet your business needs and drive growth.
+          </p>
+        </div>
       </section>
 
       {/* 2. SERVICES SECTION */}
