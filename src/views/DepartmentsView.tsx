@@ -1,86 +1,79 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Plus,
   X,
-  ChevronRight,
-  FolderGit2,
+  Building2,
+  ArrowRight,
+  Search,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
-
-interface Department {
-  id: string;
-  name: string;
-  description: string;
-  manager: { name: string; avatar: string };
-  assistant: { name: string; avatar: string };
-  memberCount: number;
-  activeProjects: string[];
-}
-
-const INITIAL_DEPARTMENTS: Department[] = [
-  {
-    id: 'DEP-01',
-    name: 'Fullstack & Backend Engineering',
-    description: 'High-availability server infrastructure, microservices, cloud deployments, and resilient database architectures.',
-    manager: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-    assistant: { name: 'David Mensah', avatar: '/assets/dashprofile.jpg' },
-    memberCount: 12,
-    activeProjects: ['TitanCore SaaS Cloud Engine', 'OmniTrade Crypto Arbitrage Bot'],
-  },
-  {
-    id: 'DEP-02',
-    name: 'UI/UX & Product Design',
-    description: 'Enterprise design systems, interactive prototypes, user journey mapping, and conversion-optimized aesthetics.',
-    manager: { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
-    assistant: { name: 'Sarah Al-Mansoor', avatar: '/assets/dashprofile.jpg' },
-    memberCount: 8,
-    activeProjects: ['Aurelia FinTech Mobile App', 'PulseHealth Telemedicine Portal'],
-  },
-  {
-    id: 'DEP-03',
-    name: 'Product Management & QA',
-    description: 'Sprint planning, user story grooming, client milestone alignment, and automated regression testing.',
-    manager: { name: 'Olukayode Tioluwanimi', avatar: '/assets/blessing.jpg' },
-    assistant: { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
-    memberCount: 6,
-    activeProjects: ['Aurelia FinTech Mobile App', 'TitanCore SaaS Cloud Engine'],
-  },
-];
+import { api, MOCK_DEPARTMENTS } from '../services/api';
+import type { DepartmentInfo } from '../types';
 
 interface DepartmentsViewProps {
   onNavigate?: (view: ScreenId) => void;
 }
 
-export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
-  const [departments, setDepartments] = useState<Department[]>(INITIAL_DEPARTMENTS);
-  const [selectedDept, setSelectedDept] = useState<Department | null>(null);
+export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) => {
+  const [departments, setDepartments] = useState<DepartmentInfo[]>(MOCK_DEPARTMENTS);
+  const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+
+  // New Department form
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
+  const [newCategory, setNewCategory] = useState<DepartmentInfo['category']>('Engineering');
+  const [newManager, setNewManager] = useState('Joseph John');
+
+  useEffect(() => {
+    async function loadDepts() {
+      const data = await api.getDepartments();
+      setDepartments(data);
+    }
+    loadDepts();
+  }, []);
 
   const handleCreate = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newName.trim()) return;
 
-    const newDept: Department = {
-      id: `DEP-0${departments.length + 1}`,
+    const newDept: DepartmentInfo = {
+      id: `DEP-${departments.length + 1 < 10 ? '0' : ''}${departments.length + 1}`,
+      code: newName.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 12),
       name: newName,
-      description: newDesc || 'Specialized division of TitanCode.',
-      manager: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-      assistant: { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
-      memberCount: 1,
-      activeProjects: [],
+      description: newDesc || 'Specialized division of TitanCode Technologies.',
+      manager_name: newManager,
+      manager_avatar: '/assets/joseph.jpg',
+      manager_email: `${newName.toLowerCase().split(' ')[0]}@titancode.tech`,
+      member_count: 4,
+      active_projects_count: 2,
+      monthly_budget: 6000000,
+      currency: 'NGN',
+      profit_pool_share_percent: 4,
+      category: newCategory,
     };
 
-    setDepartments([...departments, newDept]);
+    setDepartments([newDept, ...departments]);
     setShowCreateModal(false);
     setNewName('');
     setNewDesc('');
   };
 
+  const categories = ['All', 'Engineering', 'Product', 'Growth', 'Operations', 'Finance'];
+
+  const filtered = departments.filter((d) => {
+    const matchesCat = selectedCategory === 'All' || d.category === selectedCategory;
+    const matchesSearch =
+      d.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      d.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      d.manager_name.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCat && matchesSearch;
+  });
+
   return (
-    <div style={{ color: '#FFFFFF' }}>
-      {/* Header */}
+    <div style={{ color: '#FFFFFF', maxWidth: '1440px', margin: '0 auto' }}>
+      {/* 1. HEADER */}
       <div
         style={{
           display: 'flex',
@@ -92,30 +85,58 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
         }}
       >
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
-            Departments
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
+            <span
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px',
+                padding: '4px 10px',
+                borderRadius: '9999px',
+                backgroundColor: 'rgba(223, 174, 50, 0.15)',
+                color: '#dfae32',
+                fontSize: '12px',
+                fontWeight: 700,
+                letterSpacing: '0.05em',
+                textTransform: 'uppercase',
+              }}
+            >
+              <Building2 size={13} />
+              Organizational Matrix
+            </span>
+            <span
+              style={{
+                padding: '4px 10px',
+                borderRadius: '9999px',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                color: '#9CA3AF',
+                fontSize: '12px',
+                fontWeight: 600,
+              }}
+            >
+              {departments.length} Active Startup Departments
+            </span>
+          </div>
+          <h1 style={{ fontSize: '28px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+            TitanCode Tech Firm Departments
           </h1>
           <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
-            Functional divisions, appointed managers, assistants, and squad allocations.
+            Functional business units, appointed department heads, 70/30 profit distributions, and project allocations.
           </p>
         </div>
 
         <button
           type="button"
           onClick={() => setShowCreateModal(true)}
+          className="tc-btn tc-btn-primary"
           style={{
-            backgroundColor: '#dfae32',
-            color: '#0A0D14',
-            fontWeight: 700,
-            fontSize: '14px',
-            padding: '11px 22px',
-            borderRadius: '8px',
-            border: 'none',
-            cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
+            padding: '11px 22px',
+            borderRadius: '10px',
+            fontWeight: 700,
+            fontSize: '14px',
           }}
         >
           <Plus size={18} strokeWidth={2.5} />
@@ -123,227 +144,234 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
         </button>
       </div>
 
-      {/* Departments Grid */}
+      {/* 2. FILTER TABS & SEARCH BAR */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginBottom: '24px',
+          flexWrap: 'wrap',
+          gap: '12px',
+        }}
+      >
+        {/* Category Pills */}
+        <div style={{ display: 'flex', gap: '6px', background: 'rgba(255, 255, 255, 0.04)', padding: '4px', borderRadius: '10px' }}>
+          {categories.map((cat) => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setSelectedCategory(cat)}
+              style={{
+                padding: '6px 14px',
+                borderRadius: '8px',
+                border: 'none',
+                backgroundColor: selectedCategory === cat ? '#dfae32' : 'transparent',
+                color: selectedCategory === cat ? '#000000' : '#9CA3AF',
+                fontSize: '12px',
+                fontWeight: selectedCategory === cat ? 700 : 500,
+                cursor: 'pointer',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        {/* Search Input */}
+        <div style={{ position: 'relative', width: '280px' }}>
+          <Search
+            size={16}
+            style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF' }}
+          />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search departments or leads..."
+            style={{
+              width: '100%',
+              padding: '9px 12px 9px 36px',
+              borderRadius: '10px',
+              backgroundColor: '#161618',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              color: '#FFFFFF',
+              fontSize: '13px',
+              outline: 'none',
+            }}
+          />
+        </div>
+      </div>
+
+      {/* 3. DEPARTMENTS GRID */}
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
-          gap: '24px',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+          gap: '20px',
+          marginBottom: '32px',
         }}
       >
-        {departments.map((dept) => (
+        {filtered.map((dept) => (
           <div
             key={dept.id}
-            onClick={() => setSelectedDept(dept)}
             style={{
-              backgroundColor: '#11151F',
+              backgroundColor: '#161618',
               borderRadius: '16px',
-              padding: '28px',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
+              padding: '24px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
+              transition: 'transform 0.15s ease, border-color 0.15s ease',
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(223, 174, 50, 0.35)';
-              e.currentTarget.style.transform = 'translateY(-3px)';
+              e.currentTarget.style.borderColor = 'rgba(223, 174, 50, 0.4)';
+              e.currentTarget.style.transform = 'translateY(-2px)';
             }}
             onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
+              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
               e.currentTarget.style.transform = 'translateY(0)';
             }}
           >
             <div>
-              {/* Header Badge */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
-                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>{dept.id}</span>
+              {/* Top Meta Line */}
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+                <span style={{ color: '#dfae32', fontSize: '11px', fontWeight: 800, letterSpacing: '0.05em' }}>
+                  {dept.id} • {dept.code.toUpperCase()}
+                </span>
                 <span
                   style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    padding: '4px 10px',
-                    borderRadius: '999px',
-                    fontSize: '12px',
-                    color: '#9CA3AF',
+                    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+                    padding: '3px 8px',
+                    borderRadius: '6px',
+                    fontSize: '11px',
+                    color: '#D1D5DB',
+                    fontWeight: 600,
                   }}
                 >
-                  {dept.memberCount} Staff Members
+                  {dept.category}
                 </span>
               </div>
 
-              <h3 style={{ fontSize: '20px', fontWeight: 800, color: '#FFFFFF', marginBottom: '10px' }}>
+              {/* Department Title */}
+              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', margin: '0 0 8px' }}>
                 {dept.name}
               </h3>
-              <p style={{ color: '#9CA3AF', fontSize: '13px', lineHeight: 1.6, marginBottom: '22px' }}>
+
+              <p style={{ color: '#9CA3AF', fontSize: '13px', lineHeight: 1.5, margin: '0 0 18px' }}>
                 {dept.description}
               </p>
 
-              {/* Leadership Row */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
-                <div style={{ backgroundColor: '#161617', padding: '12px', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Department Manager</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-                    <img
-                      src={dept.manager.avatar}
-                      alt={dept.manager.name}
-                      style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }}
-                    />
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#FFFFFF' }}>{dept.manager.name}</span>
+              {/* Department Head & Staff Meta */}
+              <div
+                style={{
+                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                  border: '1px solid rgba(255, 255, 255, 0.04)',
+                  borderRadius: '10px',
+                  padding: '12px',
+                  marginBottom: '16px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                  <img
+                    src={dept.manager_avatar}
+                    alt={dept.manager_name}
+                    style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }}
+                  />
+                  <div>
+                    <div style={{ fontSize: '10px', color: '#dfae32', fontWeight: 700, textTransform: 'uppercase' }}>
+                      Lead
+                    </div>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
+                      {dept.manager_name}
+                    </div>
                   </div>
                 </div>
 
-                <div style={{ backgroundColor: '#161617', padding: '12px', borderRadius: '8px' }}>
-                  <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Assistant Lead</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '6px' }}>
-                    <img
-                      src={dept.assistant.avatar}
-                      alt={dept.assistant.name}
-                      style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }}
-                    />
-                    <span style={{ fontSize: '12px', fontWeight: 700, color: '#FFFFFF' }}>{dept.assistant.name}</span>
+                <div style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
+                    {dept.member_count} Staff
+                  </div>
+                  <div style={{ fontSize: '11px', color: '#9CA3AF' }}>
+                    {dept.active_projects_count} Active Projects
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Active Projects Footer */}
+            {/* Bottom Row: Profit Share & Open Dashboard Button */}
             <div
               style={{
-                borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-                paddingTop: '14px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
-                fontSize: '12px',
-                color: '#9CA3AF',
+                paddingTop: '14px',
+                borderTop: '1px solid rgba(255, 255, 255, 0.04)',
               }}
             >
-              <span>{dept.activeProjects.length} Active Client Projects</span>
-              <span style={{ color: '#dfae32', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '2px' }}>
-                <span>Inspect</span>
-                <ChevronRight size={14} />
-              </span>
+              <div>
+                <span style={{ fontSize: '11px', color: '#9CA3AF' }}>Profit Pool Share: </span>
+                <span style={{ fontSize: '13px', fontWeight: 800, color: '#10B981' }}>
+                  {dept.profit_pool_share_percent}%
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => onNavigate && onNavigate('manager_dashboard')}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  backgroundColor: 'rgba(223, 174, 50, 0.15)',
+                  color: '#dfae32',
+                  border: '1px solid rgba(223, 174, 50, 0.3)',
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                }}
+              >
+                Dept Dashboard <ArrowRight size={12} />
+              </button>
             </div>
           </div>
         ))}
       </div>
 
-      {/* DETAIL MODAL */}
-      {selectedDept && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px',
-          }}
-          onClick={() => setSelectedDept(null)}
-        >
-          <div
-            style={{
-              backgroundColor: '#11151F',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
-              borderRadius: '16px',
-              maxWidth: '540px',
-              width: '100%',
-              padding: '28px',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
-              <div>
-                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>{selectedDept.id}</span>
-                <h3 style={{ fontSize: '20px', fontWeight: 800, margin: '4px 0 0', color: '#FFFFFF' }}>
-                  {selectedDept.name}
-                </h3>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelectedDept(null)}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
-              >
-                <X size={20} />
-              </button>
-            </div>
-
-            <p style={{ color: '#9CA3AF', fontSize: '14px', lineHeight: 1.6, marginBottom: '20px' }}>
-              {selectedDept.description}
-            </p>
-
-            <div style={{ backgroundColor: '#161617', padding: '16px', borderRadius: '10px', marginBottom: '20px' }}>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: '#dfae32', marginBottom: '10px' }}>
-                Active Client Projects Assigned:
-              </div>
-              {selectedDept.activeProjects.length > 0 ? (
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                  {selectedDept.activeProjects.map((p, i) => (
-                    <div key={i} style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '13px', color: '#FFFFFF' }}>
-                      <FolderGit2 size={14} color="#dfae32" />
-                      <span>{p}</span>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div style={{ color: '#9CA3AF', fontSize: '13px' }}>No active projects assigned yet.</div>
-              )}
-            </div>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                onClick={() => setSelectedDept(null)}
-                style={{
-                  backgroundColor: '#dfae32',
-                  color: '#0A0D14',
-                  fontWeight: 700,
-                  padding: '10px 24px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
-              >
-                Close
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* CREATE MODAL */}
+      {/* 4. MODAL: CREATE DEPARTMENT */}
       {showCreateModal && (
         <div
           style={{
             position: 'fixed',
             inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(5px)',
+            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+            backdropFilter: 'blur(6px)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            zIndex: 1000,
+            zIndex: 100,
             padding: '20px',
           }}
-          onClick={() => setShowCreateModal(false)}
         >
           <div
             style={{
-              backgroundColor: '#11151F',
+              backgroundColor: '#1C1C1E',
               border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
-              maxWidth: '500px',
-              width: '100%',
               padding: '28px',
+              maxWidth: '480px',
+              width: '100%',
             }}
-            onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
+              <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
                 Create New Department
               </h3>
               <button
@@ -357,21 +385,21 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
 
             <form onSubmit={handleCreate}>
               <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
-                  Department Name
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+                  Department Name *
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. AI Research & Machine Learning"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
+                  placeholder="e.g. Developer Experience (DX)"
                   style={{
                     width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    padding: '12px 14px',
                     borderRadius: '8px',
-                    padding: '10px 14px',
+                    backgroundColor: '#121214',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     color: '#FFFFFF',
                     fontSize: '14px',
                     outline: 'none',
@@ -379,39 +407,97 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
                 />
               </div>
 
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+                  Category
+                </label>
+                <select
+                  value={newCategory}
+                  onChange={(e) => setNewCategory(e.target.value as DepartmentInfo['category'])}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: '8px',
+                    backgroundColor: '#121214',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#FFFFFF',
+                    fontSize: '13px',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="Engineering">Engineering</option>
+                  <option value="Product">Product</option>
+                  <option value="Growth">Growth</option>
+                  <option value="Operations">Operations</option>
+                  <option value="Finance">Finance</option>
+                </select>
+              </div>
+
+              <div style={{ marginBottom: '16px' }}>
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+                  Appoint Department Head
+                </label>
+                <select
+                  value={newManager}
+                  onChange={(e) => setNewManager(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '12px 14px',
+                    borderRadius: '8px',
+                    backgroundColor: '#121214',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    color: '#FFFFFF',
+                    fontSize: '13px',
+                    outline: 'none',
+                  }}
+                >
+                  <option value="Joseph John">Joseph John</option>
+                  <option value="Benedicta Atagamen">Benedicta Atagamen</option>
+                  <option value="Alex Morgan">Alex Morgan</option>
+                  <option value="Munis Samuel">Munis Samuel</option>
+                  <option value="Dr. Chinedu Eze">Dr. Chinedu Eze</option>
+                  <option value="Emeka Nwosu">Emeka Nwosu</option>
+                  <option value="Zainab Bello">Zainab Bello</option>
+                  <option value="Barr. Ngozi Okeke">Barr. Ngozi Okeke</option>
+                  <option value="Blessing Adewale">Blessing Adewale</option>
+                </select>
+              </div>
+
               <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
-                  Mission & Responsibilities
+                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+                  Mandate & Description
                 </label>
                 <textarea
                   rows={3}
-                  placeholder="Summarize the core focus and engineering remit..."
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
+                  placeholder="Describe functional objectives, tools and key metrics..."
                   style={{
                     width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
+                    padding: '12px 14px',
                     borderRadius: '8px',
-                    padding: '10px 14px',
+                    backgroundColor: '#121214',
+                    border: '1px solid rgba(255, 255, 255, 0.1)',
                     color: '#FFFFFF',
-                    fontSize: '14px',
+                    fontSize: '13px',
                     outline: 'none',
                     resize: 'none',
                   }}
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
                   style={{
-                    backgroundColor: 'transparent',
-                    color: '#9CA3AF',
-                    padding: '10px 16px',
+                    padding: '10px 18px',
                     borderRadius: '8px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                    color: '#FFFFFF',
                     border: 'none',
+                    fontSize: '13px',
+                    fontWeight: 600,
                     cursor: 'pointer',
                   }}
                 >
@@ -419,14 +505,12 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = () => {
                 </button>
                 <button
                   type="submit"
+                  className="tc-btn tc-btn-primary"
                   style={{
-                    backgroundColor: '#dfae32',
-                    color: '#0A0D14',
-                    fontWeight: 700,
                     padding: '10px 22px',
                     borderRadius: '8px',
-                    border: 'none',
-                    cursor: 'pointer',
+                    fontSize: '13px',
+                    fontWeight: 700,
                   }}
                 >
                   Create Department

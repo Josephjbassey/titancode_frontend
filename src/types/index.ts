@@ -3,7 +3,17 @@
  * Designed to strictly mirror backend Pydantic models and upcoming API endpoints.
  */
 
-export type UserRole = 'Member' | 'Admin' | 'Client' | 'Project Manager' | 'Team Lead' | 'CEO';
+export type UserRole =
+  | 'Member'
+  | 'Admin'
+  | 'Client'
+  | 'Project Manager'
+  | 'Team Lead'
+  | 'CEO'
+  | 'Manager'
+  | 'Assistant'
+  | 'HR'
+  | 'Applicant';
 
 export type KycStatus = 'not_verified' | 'pending' | 'verified' | 'rejected';
 
@@ -45,6 +55,85 @@ export interface ClientRecord {
   status: 'Active' | 'Lead' | 'Pending' | 'Closed';
   contract_value?: number;
   currency?: string;
+  created_at: string;
+}
+
+export interface InboundLead {
+  id: number;
+  client_name: string;
+  email: string;
+  phone: string;
+  company: string;
+  budget_range: string;
+  project_title: string;
+  service_category: string;
+  description: string;
+  status: 'new' | 'contacted' | 'qualified' | 'converted' | 'archived';
+  whatsapp_ready: boolean;
+  assigned_department?: string;
+  created_at: string;
+}
+
+export interface DepartmentInfo {
+  id: string;
+  name: string;
+  code: string;
+  description: string;
+  manager_name: string;
+  manager_avatar: string;
+  manager_email: string;
+  assistant_name?: string;
+  assistant_avatar?: string;
+  member_count: number;
+  active_projects_count: number;
+  monthly_budget: number;
+  currency: string;
+  profit_pool_share_percent: number;
+  category: 'Engineering' | 'Product' | 'Growth' | 'Operations' | 'Finance';
+}
+
+export interface TeamMemberWorkload {
+  id: number;
+  name: string;
+  role: string;
+  avatar: string;
+  department: string;
+  active_tasks_count: number;
+  completed_tasks_count: number;
+  allocation_status: 'Optimal' | 'High' | 'Overloaded' | 'Available';
+  current_project: string;
+  seniority: 'Principal' | 'Senior' | 'Mid-Level' | 'Junior' | 'Intern';
+  hours_logged_this_sprint: number;
+}
+
+export interface ClientMilestone {
+  id: number;
+  project_id: number;
+  title: string;
+  description: string;
+  amount: number;
+  currency: string;
+  due_date: string;
+  status: 'pending' | 'in_progress' | 'ready_for_review' | 'approved' | 'paid';
+  deliverables: string[];
+  stripe_invoice_url?: string;
+}
+
+export interface ApplicantRecord {
+  id: number;
+  applicant_name: string;
+  email: string;
+  phone: string;
+  department_id: number;
+  department_name: string;
+  experience_years: number;
+  github_url?: string;
+  portfolio_url?: string;
+  cv_filename?: string;
+  skills: string[];
+  status: 'pending' | 'under_review' | 'interview_scheduled' | 'approved' | 'rejected';
+  rejection_reason?: string;
+  cooldown_until?: string;
   created_at: string;
 }
 
@@ -105,7 +194,6 @@ export interface Wallet {
   currency: 'NGN' | 'USD';
   total_earned: number;
   pending_payout: number;
-  // Option B: Hybrid Split Accounting
   monthly_salary_accrued?: number;
   project_bonus_accrued?: number;
   corporate_treasury_split_percent?: number;

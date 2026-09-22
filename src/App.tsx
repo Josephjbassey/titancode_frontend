@@ -31,11 +31,24 @@ import { FinancialsView } from './views/FinancialsView';
 import { RevenueProductsView } from './views/RevenueProductsView';
 import { ClientRequestProjectView } from './views/ClientRequestProjectView';
 import { SystemSettingsView } from './views/SystemSettingsView';
+import { HrDashboardView } from './views/HrDashboardView';
+import { ManagerDashboardView } from './views/ManagerDashboardView';
+import { CeoDashboardView } from './views/CeoDashboardView';
+import { ClientDashboardView } from './views/ClientDashboardView';
+import { ApplicantDashboardView } from './views/ApplicantDashboardView';
 import { NotificationModal } from './components/NotificationModal';
 import { Modal } from './components/Modal';
 import { OtpInput } from './components/OtpInput';
-import { MOCK_MEMBER_USER, MOCK_ADMIN_USER } from './services/api';
-import type { User } from './types';
+import {
+  MOCK_MEMBER_USER,
+  MOCK_ADMIN_USER,
+  MOCK_CEO_USER,
+  MOCK_HR_USER,
+  MOCK_MANAGER_USER,
+  MOCK_CLIENT_USER,
+  MOCK_APPLICANT_USER,
+} from './services/api';
+import type { User, UserRole } from './types';
 import { Layers, Shield } from 'lucide-react';
 import './App.css';
 
@@ -59,6 +72,11 @@ export type ScreenId =
   | 'forgot_password_3'
   | 'successful_password'
   | 'dashboard'
+  | 'manager_dashboard'
+  | 'hr_dashboard'
+  | 'ceo_dashboard'
+  | 'client_dashboard'
+  | 'applicant_dashboard'
   | 'clients'
   | 'projects'
   | 'tasks'
@@ -108,6 +126,11 @@ export function App() {
     { id: 'forgot_password_3', label: '6. Forgot Password 3 (Set Password)', number: 6 },
     { id: 'successful_password', label: '7. Successful Password (Confirmation)', number: 7 },
     { id: 'dashboard', label: '8. Team / Member Dashboard (KPIs, Tasks, Donut)', number: 8 },
+    { id: 'manager_dashboard', label: '37. Dept Head / Lead Dashboard (All 17 Tech Depts)', number: 37 },
+    { id: 'hr_dashboard', label: '38. HR Concierge (Inbound Leads & WhatsApp)', number: 38 },
+    { id: 'ceo_dashboard', label: '39. CEO Executive & 70/30 Treasury Overview', number: 39 },
+    { id: 'client_dashboard', label: '40. Client Portal (Milestones & Escrow)', number: 40 },
+    { id: 'applicant_dashboard', label: '41. Applicant Status (Frames 17-20: Review, Approved, Rejected)', number: 41 },
     { id: 'clients', label: '9. Clients CRM (Metrics, Table, Inquiries)', number: 9 },
     { id: 'projects', label: '26. Projects Management (Escrow Payout, Subtasks)', number: 26 },
     { id: 'tasks', label: '27. Tasks & Kanban Board (Sprint Lifecycle)', number: 27 },
@@ -129,17 +152,48 @@ export function App() {
     { id: 'password_changed_success_toast', label: '16. Password Changed Successfully (Solid Gold Alert)', number: 16 },
   ];
 
-  const handleRoleToggle = () => {
-    if (currentUser.role === 'Member') {
-      setCurrentUser(MOCK_ADMIN_USER);
-    } else {
-      setCurrentUser(MOCK_MEMBER_USER);
+  const handleRoleSelect = (role: UserRole) => {
+    switch (role) {
+      case 'Manager':
+      case 'Team Lead':
+      case 'Project Manager':
+        setCurrentUser(MOCK_MANAGER_USER);
+        setCurrentView('manager_dashboard');
+        break;
+      case 'HR':
+        setCurrentUser(MOCK_HR_USER);
+        setCurrentView('hr_dashboard');
+        break;
+      case 'CEO':
+        setCurrentUser(MOCK_CEO_USER);
+        setCurrentView('ceo_dashboard');
+        break;
+      case 'Client':
+        setCurrentUser(MOCK_CLIENT_USER);
+        setCurrentView('client_dashboard');
+        break;
+      case 'Applicant':
+        setCurrentUser(MOCK_APPLICANT_USER);
+        setCurrentView('applicant_dashboard');
+        break;
+      case 'Admin':
+        setCurrentUser(MOCK_ADMIN_USER);
+        break;
+      default:
+        setCurrentUser(MOCK_MEMBER_USER);
+        setCurrentView('dashboard');
+        break;
     }
   };
 
   // Determine view group
   const isWorkspaceView = [
     'dashboard',
+    'manager_dashboard',
+    'hr_dashboard',
+    'ceo_dashboard',
+    'client_dashboard',
+    'applicant_dashboard',
     'clients',
     'projects',
     'tasks',
@@ -233,6 +287,26 @@ export function App() {
 
             <main style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
               {currentView === 'dashboard' && <TeamDashboardView />}
+
+              {currentView === 'manager_dashboard' && (
+                <ManagerDashboardView onNavigate={setCurrentView} />
+              )}
+
+              {currentView === 'hr_dashboard' && (
+                <HrDashboardView onNavigate={setCurrentView} />
+              )}
+
+              {currentView === 'ceo_dashboard' && (
+                <CeoDashboardView onNavigate={setCurrentView} />
+              )}
+
+              {currentView === 'client_dashboard' && (
+                <ClientDashboardView onNavigate={setCurrentView} />
+              )}
+
+              {currentView === 'applicant_dashboard' && (
+                <ApplicantDashboardView onNavigate={setCurrentView} />
+              )}
 
               {currentView === 'clients' && <ClientsView />}
 
@@ -487,27 +561,32 @@ export function App() {
 
         <div style={{ height: '16px', width: '1px', backgroundColor: 'var(--tc-border-subtle)', margin: '0 4px' }} />
 
-        <button
-          type="button"
-          onClick={handleRoleToggle}
-          title="Toggle current user role between Member and Admin"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            padding: '3px 8px',
-            borderRadius: 'var(--tc-radius-sm)',
-            backgroundColor: currentUser.role === 'Admin' ? 'var(--tc-brand-gold-light)' : 'rgba(255, 255, 255, 0.08)',
-            color: currentUser.role === 'Admin' ? 'var(--tc-brand-gold)' : '#FFFFFF',
-            fontSize: '11px',
-            fontWeight: '600',
-            border: 'none',
-            cursor: 'pointer',
-          }}
-        >
-          <Shield size={12} />
-          <span>{currentUser.role}</span>
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+          <Shield size={12} style={{ color: 'var(--tc-brand-gold)' }} />
+          <select
+            value={currentUser.role}
+            onChange={(e) => handleRoleSelect(e.target.value as UserRole)}
+            style={{
+              padding: '3px 8px',
+              borderRadius: 'var(--tc-radius-sm)',
+              backgroundColor: 'rgba(255, 255, 255, 0.08)',
+              color: '#dfae32',
+              fontSize: '11px',
+              fontWeight: '700',
+              border: '1px solid rgba(223, 174, 50, 0.3)',
+              cursor: 'pointer',
+              outline: 'none',
+            }}
+          >
+            <option value="Member">Role: Member</option>
+            <option value="Manager">Role: Manager / Lead</option>
+            <option value="HR">Role: HR Concierge</option>
+            <option value="CEO">Role: CEO / Exec</option>
+            <option value="Client">Role: Client</option>
+            <option value="Applicant">Role: Applicant</option>
+            <option value="Admin">Role: Admin</option>
+          </select>
+        </div>
       </div>
     </div>
   );

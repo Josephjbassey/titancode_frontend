@@ -89,13 +89,13 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
               required
               style={{
                 width: '100%',
-                height: '46px',
-                borderRadius: '8px',
+                height: '58px',
+                borderRadius: '12px',
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 color: '#FFFFFF',
-                padding: '0 44px 0 16px',
-                fontSize: '14px',
+                padding: '0 44px 0 18px',
+                fontSize: '15px',
                 outline: 'none',
                 transition: 'border-color 0.2s',
               }}
@@ -104,7 +104,7 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
             />
             <span style={{
               position: 'absolute',
-              right: '14px',
+              right: '16px',
               top: '50%',
               transform: 'translateY(-50%)',
               color: 'rgba(255, 255, 255, 0.4)',
@@ -136,13 +136,13 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
               required
               style={{
                 width: '100%',
-                height: '46px',
-                borderRadius: '8px',
+                height: '58px',
+                borderRadius: '12px',
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 color: '#FFFFFF',
-                padding: '0 44px 0 16px',
-                fontSize: '14px',
+                padding: '0 44px 0 18px',
+                fontSize: '15px',
                 outline: 'none',
                 transition: 'border-color 0.2s',
               }}
@@ -151,7 +151,7 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
             />
             <span style={{
               position: 'absolute',
-              right: '14px',
+              right: '16px',
               top: '50%',
               transform: 'translateY(-50%)',
               color: 'rgba(255, 255, 255, 0.4)',
@@ -183,13 +183,13 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
               required
               style={{
                 width: '100%',
-                height: '46px',
-                borderRadius: '8px',
+                height: '58px',
+                borderRadius: '12px',
                 backgroundColor: 'rgba(255, 255, 255, 0.05)',
                 border: '1px solid rgba(255, 255, 255, 0.12)',
                 color: '#FFFFFF',
-                padding: '0 44px 0 16px',
-                fontSize: '14px',
+                padding: '0 44px 0 18px',
+                fontSize: '15px',
                 outline: 'none',
                 transition: 'border-color 0.2s',
               }}
@@ -201,7 +201,7 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
               onClick={() => setShowPassword(!showPassword)}
               style={{
                 position: 'absolute',
-                right: '14px',
+                right: '16px',
                 top: '50%',
                 transform: 'translateY(-50%)',
                 background: 'none',
@@ -233,8 +233,9 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
               onChange={(e) => setAgreeTerms(e.target.checked)}
               style={{
                 accentColor: '#dfae32',
-                width: '15px',
-                height: '15px',
+                width: '16px',
+                height: '16px',
+                borderRadius: '4px',
                 cursor: 'pointer',
               }}
             />
@@ -244,17 +245,17 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
           </label>
         </div>
 
-        {/* Submit Solid Gold Pill Button */}
+        {/* Submit Solid Gold Button (Matching Figma Frame 149 height=52) */}
         <button
           type="submit"
           disabled={isLoading}
           style={{
             width: '100%',
-            height: '46px',
+            height: '52px',
             borderRadius: '9999px',
             backgroundColor: '#dfae32',
             color: '#000000',
-            fontSize: '15px',
+            fontSize: '16px',
             fontWeight: '700',
             border: 'none',
             cursor: 'pointer',
