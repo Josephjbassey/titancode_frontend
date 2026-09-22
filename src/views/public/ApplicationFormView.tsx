@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import type { ScreenId } from '../../App';
 import { AlertCircle, Check, ChevronDown } from 'lucide-react';
 
@@ -14,10 +14,6 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
   onNavigate: _onNavigate,
 }) => {
   const [appState, setAppState] = useState<ApplicationState>(initialState);
-
-  useEffect(() => {
-    setAppState(initialState);
-  }, [initialState]);
 
   const [formData, setFormData] = useState({
     firstName: '',

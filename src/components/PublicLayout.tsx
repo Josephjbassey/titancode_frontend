@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { ScreenId } from '../App';
 import { Phone, Mail } from 'lucide-react';
 
@@ -13,6 +13,13 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
   currentView,
   onNavigate,
 }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const navigate = (view: ScreenId) => {
+    setIsMenuOpen(false);
+    onNavigate(view);
+  };
+
   return (
     <div
       className="tc-public-layout"
@@ -22,19 +29,18 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
         flexDirection: 'column',
         backgroundColor: '#0b0b0c',
         color: '#FFFFFF',
-        backgroundImage: 'radial-gradient(circle at top left, rgba(223,174,50,0.18), transparent 35%), radial-gradient(circle at right center, rgba(255,255,255,0.05), transparent 25%)',
       }}
     >
       {/* PUBLIC NAVBAR */}
       <header
         style={{
-          minHeight: '92px',
+          minHeight: '154px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
           gap: '16px',
           flexWrap: 'wrap',
-          padding: '18px 80px',
+          padding: '40px 60px',
           backgroundColor: 'rgba(11, 11, 12, 0.88)',
           borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
           backdropFilter: 'blur(12px)',
@@ -45,7 +51,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
       >
         {/* Brand Logo */}
         <div
-          onClick={() => onNavigate('home')}
+          onClick={() => navigate('home')}
           style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
         >
           <img
@@ -56,10 +62,21 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
         </div>
 
         {/* Center Nav Links */}
-        <nav className="tc-public-nav" style={{ display: 'flex', alignItems: 'center', gap: '40px', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <button
+          type="button"
+          className="tc-mobile-menu-button"
+          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={isMenuOpen}
+          onClick={() => setIsMenuOpen((open) => !open)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+        <nav className={`tc-public-nav${isMenuOpen ? ' is-open' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '40px', flexWrap: 'wrap', justifyContent: 'center' }}>
           <button
             type="button"
-            onClick={() => onNavigate('home')}
+            onClick={() => navigate('home')}
             style={{
               fontSize: '15px',
               fontWeight: currentView === 'home' ? '700' : '500',
@@ -74,7 +91,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => onNavigate('about_us')}
+            onClick={() => navigate('about_us')}
             style={{
               fontSize: '15px',
               fontWeight: currentView === 'about_us' ? '700' : '500',
@@ -89,7 +106,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => onNavigate('services')}
+            onClick={() => navigate('services')}
             style={{
               fontSize: '15px',
               fontWeight: currentView === 'services' ? '700' : '500',
@@ -104,7 +121,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           </button>
           <button
             type="button"
-            onClick={() => onNavigate('contact_us')}
+            onClick={() => navigate('contact_us')}
             style={{
               fontSize: '15px',
               fontWeight: currentView === 'contact_us' ? '700' : '500',
@@ -120,10 +137,10 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
         </nav>
 
         {/* Right CTA Button */}
-        <div>
+        <div className="tc-public-cta">
           <button
             type="button"
-            onClick={() => onNavigate('hire_us')}
+            onClick={() => navigate('hire_us')}
             style={{
               backgroundColor: '#dfae32',
               color: '#0b0b0c',
@@ -170,7 +187,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           {/* Column 1: Brand & Socials */}
           <div>
             <div
-              onClick={() => onNavigate('home')}
+              onClick={() => navigate('home')}
               style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '18px' }}
             >
               <img
@@ -286,7 +303,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
             <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <button
                 type="button"
-                onClick={() => onNavigate('home')}
+                onClick={() => navigate('home')}
                 style={{ textAlign: 'left', color: currentView === 'home' ? '#dfae32' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
                 onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'home' ? '#dfae32' : '#9CA3AF')}
@@ -295,7 +312,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => onNavigate('about_us')}
+                onClick={() => navigate('about_us')}
                 style={{ textAlign: 'left', color: currentView === 'about_us' ? '#dfae32' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
                 onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'about_us' ? '#dfae32' : '#9CA3AF')}
@@ -304,7 +321,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => onNavigate('services')}
+                onClick={() => navigate('services')}
                 style={{ textAlign: 'left', color: currentView === 'services' ? '#dfae32' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
                 onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'services' ? '#dfae32' : '#9CA3AF')}
@@ -313,7 +330,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => onNavigate('faqs')}
+                onClick={() => navigate('faqs')}
                 style={{ textAlign: 'left', color: currentView === 'faqs' ? '#dfae32' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
                 onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'faqs' ? '#dfae32' : '#9CA3AF')}
@@ -322,7 +339,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
               </button>
               <button
                 type="button"
-                onClick={() => onNavigate('testimonials')}
+                onClick={() => navigate('testimonials')}
                 style={{ textAlign: 'left', color: currentView === 'testimonials' ? '#dfae32' : '#9CA3AF', fontSize: '14px', transition: 'color 0.2s', border: 'none', background: 'none', cursor: 'pointer' }}
                 onMouseOver={(e) => (e.currentTarget.style.color = '#FFFFFF')}
                 onMouseOut={(e) => (e.currentTarget.style.color = currentView === 'testimonials' ? '#dfae32' : '#9CA3AF')}

@@ -17,7 +17,10 @@ import type {
   SumsubVerificationInitResponse,
 } from '../types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const configuredApiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
+const API_BASE_URL = configuredApiUrl.endsWith('/api/v1')
+  ? configuredApiUrl
+  : `${configuredApiUrl}/api/v1`;
 
 // Mock current logged-in employee/member
 export const MOCK_MEMBER_USER: User = {
@@ -298,7 +301,8 @@ class ApiService {
       if (response.ok) {
         const data = await response.json();
         this.setToken(data.access_token);
-        return data;
+        const user = await this.getCurrentUser();
+        return { ...data, user };
       }
     } catch {
       // Graceful fallback to mock response
@@ -319,7 +323,7 @@ class ApiService {
   async getCurrentUser(): Promise<User> {
     try {
       if (this.token) {
-        const res = await fetch(`${API_BASE_URL}/auth/me`, {
+        const res = await fetch(`${API_BASE_URL}/auth/profile`, {
           headers: { Authorization: `Bearer ${this.token}` },
         });
         if (res.ok) return await res.json();
@@ -380,10 +384,13 @@ class ApiService {
   // --- DASHBOARD / TASKS ---
   async getTasks(): Promise<Task[]> {
     try {
-      const res = await fetch(`${API_BASE_URL}/tasks/my-tasks`, {
+      const res = await fetch(`${API_BASE_URL}/tasks/?limit=100`, {
         headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        return Array.isArray(data) ? data : data.items;
+      }
     } catch {
       // fallback
     }
@@ -392,10 +399,25 @@ class ApiService {
 
   async getUpcomingMeeting(): Promise<Meeting> {
     try {
-      const res = await fetch(`${API_BASE_URL}/meetings/upcoming`, {
+      const res = await fetch(`${API_BASE_URL}/meetings/?limit=1`, {
         headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
       });
-      if (res.ok) return await res.json();
+      if (res.ok) {
+        const data = await res.json();
+        const meeting = (Array.isArray(data) ? data : data.items)?.[0];
+        if (meeting) {
+          const scheduledAt = new Date(meeting.scheduled_at);
+          return {
+            id: meeting.id,
+            title: meeting.title,
+            date: scheduledAt.toLocaleDateString(),
+            time: scheduledAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            duration_minutes: 0,
+            meet_url: meeting.meeting_link || '',
+            attendees: [],
+          };
+        }
+      }
     } catch {
       // fallback
     }

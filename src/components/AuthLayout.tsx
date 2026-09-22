@@ -8,27 +8,31 @@ interface AuthLayoutProps {
 
 export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitle }) => {
   return (
-    <div style={{
+    <div className="tc-auth-shell" style={{
       minHeight: '100vh',
       display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      padding: '42px',
       backgroundColor: 'var(--tc-bg-primary)',
       color: 'var(--tc-text-primary)',
       fontFamily: 'var(--tc-font-sans)',
     }}>
+      <div className="tc-auth-card">
       {/* Left Form Column */}
-      <div style={{
+      <div className="tc-auth-form-column" style={{
         flex: '1 1 50%',
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'center',
         alignItems: 'center',
         padding: '40px 24px',
-        minHeight: '100vh',
+        minHeight: '0',
         overflowY: 'auto',
       }}>
         <div style={{
           width: '100%',
-          maxWidth: '420px',
+          maxWidth: '384px',
         }}>
           {/* Exact TitanCode Logo */}
           <div style={{ marginBottom: '28px' }}>
@@ -89,7 +93,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
           position: 'relative',
           width: '100%',
           maxWidth: '620px',
-          height: 'calc(100vh - 56px)',
+          height: '100%',
           borderRadius: '24px',
           overflow: 'hidden',
           backgroundColor: '#232324',
@@ -141,11 +145,36 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
           </div>
         </div>
       </div>
+      </div>
 
       <style>{`
+        .tc-auth-card {
+          width: min(100%, 940px);
+          min-height: 508px;
+          display: flex;
+          overflow: hidden;
+          border: 1px solid rgba(255, 255, 255, 0.2);
+          border-radius: 18px;
+          background: #0b0b0c;
+        }
+        .tc-auth-form-column {
+          flex: 0 0 50%;
+        }
         @media (min-width: 960px) {
           .tc-auth-hero-column {
             display: flex !important;
+          }
+        }
+        @media (max-width: 959px) {
+          .tc-auth-shell {
+            padding: 24px 16px !important;
+          }
+          .tc-auth-card {
+            min-height: calc(100vh - 48px);
+            border-radius: 14px;
+          }
+          .tc-auth-form-column {
+            flex-basis: 100%;
           }
         }
       `}</style>

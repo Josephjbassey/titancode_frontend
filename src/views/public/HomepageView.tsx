@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { ScreenId } from '../../App';
 import {
   Globe,
@@ -20,6 +20,11 @@ interface HomepageViewProps {
 }
 
 export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = (view: ScreenId) => {
+    setIsMenuOpen(false);
+    onNavigate(view);
+  };
   const whatWeDo = [
     {
       icon: Globe,
@@ -114,16 +119,28 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
           <img src="/assets/logo.png" alt="TitanCode logo" style={{ width: 136, height: 28, objectFit: 'contain' }} />
         </div>
 
-        <nav className="tc-homepage-nav" style={{ display: 'flex', alignItems: 'center', gap: 32, fontSize: 18, flexWrap: 'wrap', justifyContent: 'center' }}>
-          <a href="#" style={{ color: '#FFFFFF', fontWeight: 700 }}>Home</a>
-          <a href="#" style={{ color: '#BCAFAF', fontWeight: 500 }}>About Us</a>
-          <a href="#" style={{ color: '#BCAFAF', fontWeight: 500 }}>Services</a>
-          <a href="#" style={{ color: '#BCAFAF', fontWeight: 500 }}>Contact Us</a>
+        <button
+          type="button"
+          className="tc-mobile-menu-button"
+          aria-label={isMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={isMenuOpen}
+          onClick={() => setIsMenuOpen((open) => !open)}
+        >
+          <span />
+          <span />
+          <span />
+        </button>
+        <nav className={`tc-homepage-nav${isMenuOpen ? ' is-open' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: 32, fontSize: 18, flexWrap: 'wrap', justifyContent: 'center' }}>
+          <button type="button" onClick={() => navigate('home')} style={{ color: '#FFFFFF', fontWeight: 700 }}>Home</button>
+          <button type="button" onClick={() => navigate('about_us')} style={{ color: '#BCAFAF', fontWeight: 500 }}>About Us</button>
+          <button type="button" onClick={() => navigate('services')} style={{ color: '#BCAFAF', fontWeight: 500 }}>Services</button>
+          <button type="button" onClick={() => navigate('contact_us')} style={{ color: '#BCAFAF', fontWeight: 500 }}>Contact Us</button>
         </nav>
 
         <button
           type="button"
-          onClick={() => onNavigate('hire_us')}
+          className="tc-homepage-cta"
+          onClick={() => navigate('hire_us')}
           style={{
             backgroundColor: '#DFAE32',
             color: '#0B0B0C',
@@ -252,7 +269,7 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
             <div style={{ display: 'flex', justifyContent: 'center', gap: 18, marginBottom: 30 }}>
               <button
                 type="button"
-                onClick={() => onNavigate('hire_us')}
+                onClick={() => navigate('hire_us')}
                 style={{
                   backgroundColor: '#DFAE32',
                   color: '#0B0B0C',
@@ -268,7 +285,7 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
               </button>
               <button
                 type="button"
-                onClick={() => onNavigate('hire_us')}
+                onClick={() => navigate('hire_us')}
                 style={{
                   backgroundColor: 'rgba(11, 11, 12, 0.1)',
                   color: '#FFFFFF',

@@ -177,8 +177,10 @@ export function App() {
     <div className="tc-app-container">
       {/* 1. PUBLIC MARKETING & APPLICATION PAGES */}
       {isPublicView ? (
+        currentView === 'home' ? (
+          <HomepageView onNavigate={setCurrentView} />
+        ) : (
         <PublicLayout currentView={currentView} onNavigate={setCurrentView}>
-          {currentView === 'home' && <HomepageView onNavigate={setCurrentView} />}
           {currentView === 'about_us' && <AboutUsView onNavigate={setCurrentView} />}
           {currentView === 'services' && <ServicesView onNavigate={setCurrentView} />}
           {currentView === 'hire_us' && <HireUsView onNavigate={setCurrentView} />}
@@ -186,18 +188,19 @@ export function App() {
           {currentView === 'faqs' && <FaqsView onNavigate={setCurrentView} />}
           {currentView === 'testimonials' && <TestimonialsView onNavigate={setCurrentView} />}
           {currentView === 'application_form' && (
-            <ApplicationFormView initialState="default" onNavigate={setCurrentView} />
+            <ApplicationFormView key={currentView} initialState="default" onNavigate={setCurrentView} />
           )}
           {currentView === 'application_required' && (
-            <ApplicationFormView initialState="required" onNavigate={setCurrentView} />
+            <ApplicationFormView key={currentView} initialState="required" onNavigate={setCurrentView} />
           )}
           {currentView === 'application_email_exists' && (
-            <ApplicationFormView initialState="email_exists" onNavigate={setCurrentView} />
+            <ApplicationFormView key={currentView} initialState="email_exists" onNavigate={setCurrentView} />
           )}
           {currentView === 'application_submitted' && (
-            <ApplicationFormView initialState="submitted" onNavigate={setCurrentView} />
+            <ApplicationFormView key={currentView} initialState="submitted" onNavigate={setCurrentView} />
           )}
         </PublicLayout>
+        )
       ) : isWorkspaceView ? (
         /* 2. AUTHENTICATED WORKSPACE WITH SIDEBAR & HEADER */
         <div style={{ display: 'flex', width: '100%', minHeight: '100vh' }}>

@@ -25,8 +25,6 @@ export const DonutChart: React.FC<DonutChartProps> = ({
   const radius = (size - thickness) / 2;
   const circumference = 2 * Math.PI * radius;
 
-  let accumulatedPercent = 0;
-
   return (
     <div style={{
       display: 'flex',
@@ -54,8 +52,10 @@ export const DonutChart: React.FC<DonutChartProps> = ({
           />
           {slices.map((slice, index) => {
             const strokeDasharray = `${(slice.value / total) * circumference} ${circumference}`;
+            const accumulatedPercent = slices
+              .slice(0, index)
+              .reduce((sum, previousSlice) => sum + previousSlice.value / total, 0);
             const strokeDashoffset = -accumulatedPercent * circumference;
-            accumulatedPercent += slice.value / total;
 
             return (
               <circle

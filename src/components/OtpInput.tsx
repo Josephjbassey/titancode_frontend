@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef } from 'react';
 
 interface OtpInputProps {
   length?: number;
@@ -13,26 +13,19 @@ export const OtpInput: React.FC<OtpInputProps> = ({
   onChange,
   hasError = false,
 }) => {
-  const [digits, setDigits] = useState<string[]>(() => {
+  const digits = (() => {
     const arr = value.split('').slice(0, length);
     while (arr.length < length) arr.push('');
     return arr;
-  });
+  })();
 
   const inputsRef = useRef<(HTMLInputElement | null)[]>([]);
-
-  useEffect(() => {
-    const arr = value.split('').slice(0, length);
-    while (arr.length < length) arr.push('');
-    setDigits(arr);
-  }, [value, length]);
 
   const handleChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value.replace(/[^0-9]/g, '');
     if (!val) {
       const newDigits = [...digits];
       newDigits[index] = '';
-      setDigits(newDigits);
       onChange(newDigits.join(''));
       return;
     }
@@ -40,7 +33,6 @@ export const OtpInput: React.FC<OtpInputProps> = ({
     const char = val[val.length - 1];
     const newDigits = [...digits];
     newDigits[index] = char;
-    setDigits(newDigits);
     onChange(newDigits.join(''));
 
     if (index < length - 1) {
@@ -61,7 +53,6 @@ export const OtpInput: React.FC<OtpInputProps> = ({
 
     const newDigits = pasted.split('');
     while (newDigits.length < length) newDigits.push('');
-    setDigits(newDigits);
     onChange(newDigits.join(''));
 
     const nextFocusIdx = Math.min(pasted.length, length - 1);

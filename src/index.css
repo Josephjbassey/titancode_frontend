@@ -44,7 +44,9 @@
   --tc-status-purple-bg: rgba(139, 92, 246, 0.14);
 
   /* Typography & Layout */
-  --tc-font-sans: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --tc-font-sans: 'Inter', 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --tc-font-body: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --tc-font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --tc-radius-sm: 6px;
   --tc-radius-md: 10px;
   --tc-radius-lg: 16px;
@@ -73,7 +75,7 @@ html, body {
   min-height: 100%;
   background-color: var(--tc-bg-primary);
   color: var(--tc-text-primary);
-  font-family: var(--tc-font-sans);
+  font-family: var(--tc-font-body);
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
@@ -238,9 +240,28 @@ input, textarea, select {
  flex: 1;
 }
 
+.tc-mobile-menu-button {
+ display: none;
+ width: 30px;
+ height: 30px;
+ flex-direction: column;
+ align-items: center;
+ justify-content: center;
+ gap: 4px;
+ color: var(--tc-text-primary);
+}
+
+.tc-mobile-menu-button span {
+ width: 18px;
+ height: 2px;
+ border-radius: 999px;
+ background: currentColor;
+}
+
 @media (max-width: 900px) {
  .tc-public-layout header {
-   padding: 18px 24px !important;
+   min-height: 96px;
+   padding: 24px !important;
  }
 
  .tc-public-layout .tc-public-nav {
@@ -267,23 +288,70 @@ input, textarea, select {
 }
 
 @media (max-width: 640px) {
+ .tc-mobile-menu-button {
+   display: inline-flex;
+ }
+
  .tc-public-layout header {
-   justify-content: center !important;
+   justify-content: space-between !important;
+   min-height: 76px;
+   padding: 18px 20px !important;
+ }
+
+ .tc-public-layout .tc-public-cta,
+ .tc-homepage .tc-homepage-cta {
+   display: none;
  }
 
  .tc-public-layout .tc-public-nav {
-   gap: 12px 18px !important;
-   font-size: 0.9rem;
+   display: none !important;
+   position: absolute;
+   top: 76px;
+   left: 16px;
+   right: 16px;
+   padding: 16px;
+   flex-direction: column;
+   align-items: stretch;
+   gap: 12px !important;
+   background: var(--tc-bg-card);
+   border: 1px solid var(--tc-border-subtle);
+   border-radius: var(--tc-radius-md);
+   box-shadow: var(--tc-shadow-lg);
+  }
+
+ .tc-public-layout .tc-public-nav.is-open {
+   display: flex !important;
  }
 
  .tc-homepage .tc-homepage-header {
-   justify-content: center !important;
-   padding-left: 18px !important;
-   padding-right: 18px !important;
+   justify-content: space-between !important;
+   min-height: 76px;
+   padding: 18px !important;
  }
 
  .tc-homepage .tc-homepage-nav {
-   gap: 12px 18px !important;
+   display: none !important;
+   position: absolute;
+   top: 64px;
+   left: 16px;
+   right: 16px;
+   padding: 16px;
+   flex-direction: column;
+   align-items: stretch;
+   gap: 12px !important;
+   background: var(--tc-bg-card);
+   border: 1px solid var(--tc-border-subtle);
+   border-radius: var(--tc-radius-md);
+   box-shadow: var(--tc-shadow-lg);
+ }
+
+ .tc-homepage .tc-homepage-nav.is-open {
+   display: flex !important;
+ }
+
+ .tc-homepage .tc-homepage-nav button,
+ .tc-public-layout .tc-public-nav button {
+   text-align: left;
    font-size: 0.9rem;
  }
 
@@ -568,4 +636,3 @@ input, textarea, select {
   letter-spacing: 0% !important;
   text-align: center !important;
 }
-
