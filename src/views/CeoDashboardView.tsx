@@ -76,7 +76,7 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
   };
 
   return (
-    <div style={{ color: '#FFFFFF', maxWidth: '1440px', margin: '0 auto' }}>
+    <div style={{ color: '#FFFFFF', width: '100%' }}>
       {/* 1. EXECUTIVE HEADER */}
       <div
         style={{
@@ -182,8 +182,8 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
         {/* Metric 1: Total Gross Revenue */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '22px',
           }}
@@ -217,8 +217,8 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
         {/* Metric 2: 70% Member Developer Pool */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '22px',
           }}
@@ -249,8 +249,8 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
         {/* Metric 3: 30% Corporate Treasury Reserves */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '22px',
           }}
@@ -281,8 +281,8 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
         {/* Metric 4: Cash Runway & Net Burn */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '22px',
           }}
@@ -314,14 +314,14 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
       {/* 3. 70/30 CONCIERGE SPLIT VISUAL BREAKDOWN */}
       <div
         style={{
-          backgroundColor: '#161618',
-          border: '1px solid rgba(223, 174, 50, 0.3)',
+          backgroundColor: '#FFFFFF1A',
+          border: '1px solid #FFFFFF26',
           borderRadius: '16px',
           padding: '24px',
           marginBottom: '28px',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px', flexWrap: 'wrap', gap: '12px' }}>
           <div>
             <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
               The 70/30 Concierge Model Distribution Ratio
@@ -330,10 +330,10 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
               Every client payment automatically splits: 70% locked to executing project squad, 30% to corporate treasury.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '16px', fontSize: '13px', fontWeight: 600 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '12px', fontWeight: 600 }}>
             <span style={{ color: '#dfae32', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#dfae32' }} />
-              Developer Squad (70%)
+              Developer Squad Pool (70%)
             </span>
             <span style={{ color: '#3B82F6', display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#3B82F6' }} />
@@ -567,8 +567,8 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
         {/* Left Card: Executive Capital Approvals Queue */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '24px',
           }}
@@ -669,8 +669,8 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
         {/* Right Card: Corporate Governance, SOC2 & Regulatory Scorecard */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '24px',
           }}

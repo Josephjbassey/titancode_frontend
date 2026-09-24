@@ -58,36 +58,38 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
       </section>
 
       {/* 2. SECTION: ABOUT US WITH SHOWCASE IMAGES & BADGE */}
-      <section style={{ padding: '80px 60px 100px', maxWidth: '1360px', margin: '0 auto' }}>
-        {/* Frame 2085660695: Badge ● ABOUT US ● */}
+      <section className="tc-public-content-shell" style={{ padding: '80px 60px 100px' }}>
+        {/* Frame 2085660695: Badge ● ABOUT US ● (Gold background with black text and black dots) */}
         <div style={{ marginBottom: '40px' }}>
           <span
             style={{
               display: 'inline-flex',
-              alignItems: 'center',
+              alignItems: 'stretch',
               gap: '12px',
               padding: '10px 24px',
               borderRadius: '9999px',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              backgroundColor: '#DFAE32',
+              color: '#0B0B0C',
               fontSize: '14px',
-              fontWeight: 700,
+              fontWeight: 800,
               letterSpacing: '1.5px',
-              color: '#FFFFFF',
               fontFamily: "'Inter', sans-serif",
+              boxShadow: '0 4px 18px rgba(223, 174, 50, 0.4)',
             }}
           >
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#DFAE32' }} />
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#0B0B0C' }} />
             ABOUT US
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#DFAE32' }} />
+            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#0B0B0C' }} />
           </span>
         </div>
 
         <div
+          className="tc-about-intro-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: '1.1fr 1fr',
             gap: '60px',
-            alignItems: 'center',
+            alignItems: 'stretch',
           }}
         >
           {/* Left Column: Image Showcase aboutus_1.jpg & aboutus_2.jpg matching Figma x=60, 452 */}
@@ -119,7 +121,7 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
           </div>
 
           {/* Right Column: Narrative Text matching Figma text id="259:10" */}
-          <div>
+          <div style={{ display: 'flex', alignItems: 'center' }}>
             <p
               style={{
                 color: '#9CA3AF',
@@ -135,14 +137,9 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
       </section>
 
       {/* 3. SECTION: MISSION & VISION */}
-      <section
-        style={{
-          padding: '40px 60px 120px',
-          maxWidth: '1360px',
-          margin: '0 auto',
-        }}
-      >
+      <section className="tc-public-content-shell" style={{ padding: '40px 60px 120px' }}>
         <div
+          className="tc-about-mission-grid"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(2, 1fr)',
@@ -151,6 +148,7 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
         >
           {/* Card 1: Our Mission */}
           <div
+            className="tc-about-team-grid"
             style={{
               backgroundColor: '#FFFFFF1A',
               borderRadius: '18px',
@@ -224,7 +222,7 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
       </section>
 
       {/* 4. SECTION: OUR TEAM */}
-      <section style={{ padding: '0 60px 140px', maxWidth: '1360px', margin: '0 auto' }}>
+      <section className="tc-public-content-shell" style={{ padding: '0 60px 140px' }}>
         <div style={{ textAlign: 'center', marginBottom: '50px' }}>
           <h2 style={{ fontSize: '40px', fontWeight: 800, marginBottom: '10px', color: '#FFFFFF' }}>
             Our <span style={{ color: 'var(--tc-figma-gold, #DFAE32)' }}>Team</span>
@@ -321,4 +319,3 @@ export const AboutUsView: React.FC<AboutUsViewProps> = ({ onNavigate: _onNavigat
     </div>
   );
 };
-

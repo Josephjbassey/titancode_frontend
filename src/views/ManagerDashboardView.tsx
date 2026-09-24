@@ -102,7 +102,7 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
       : departments.filter((d) => d.category === selectedCategory);
 
   return (
-    <div style={{ color: '#FFFFFF', maxWidth: '1440px', margin: '0 auto' }}>
+    <div style={{ color: '#FFFFFF', width: '100%' }}>
       {/* 1. TOP HEADER & DEPARTMENT SELECTOR */}
       <div
         style={{
@@ -251,8 +251,8 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
         {/* Leadership Card */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '20px',
             display: 'flex',
@@ -292,8 +292,8 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
         {/* Metric 1: Active Sprint Tasks */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '20px',
             display: 'flex',
@@ -329,8 +329,8 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
         {/* Metric 2: Department Roster & Capacity */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '20px',
             display: 'flex',
@@ -366,8 +366,8 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
         {/* Metric 3: Profit Share & Monthly Budget */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '20px',
             display: 'flex',
@@ -404,8 +404,8 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
       {/* 3. MAIN SECTION: SPRINT ROSTER & WORKLOAD TABLE */}
       <div
         style={{
-          backgroundColor: '#161618',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundColor: '#FFFFFF1A',
+          border: '1px solid #FFFFFF26',
           borderRadius: '16px',
           padding: '24px',
           marginBottom: '28px',
@@ -634,8 +634,8 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
         {/* Left Card: Department Technical Deliverables & QA Sign-Off */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '24px',
           }}
@@ -743,8 +743,8 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
         {/* Right Card: Technical Candidate Screening Pipeline for this Department */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '24px',
           }}

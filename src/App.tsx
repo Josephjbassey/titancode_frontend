@@ -102,6 +102,7 @@ export function App() {
   const [currentView, setCurrentView] = useState<ScreenId>('home');
   const [currentUser, setCurrentUser] = useState<User>(MOCK_MEMBER_USER);
   const [settingsTab, setSettingsTab] = useState<'profile' | 'password' | 'notifications'>('profile');
+  const [showPreviewBar, setShowPreviewBar] = useState(false);
 
   // Interactive standalone modal previews for Screens 14, 15, 16
   const [standaloneOtp, setStandaloneOtp] = useState('12345');
@@ -283,9 +284,10 @@ export function App() {
                 setCurrentView('profile_settings');
                 setSettingsTab('notifications');
               }}
+              onRoleChange={handleRoleSelect}
             />
 
-            <main style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
+            <main className="tc-workspace-main" style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
               {currentView === 'dashboard' && <TeamDashboardView />}
 
               {currentView === 'manager_dashboard' && (
@@ -535,59 +537,107 @@ export function App() {
         actionText="Back to Settings"
       />
 
-      {/* FLOATING PILL SCREEN & ROLE SWITCHER */}
-      <div className="tc-screen-switcher">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--tc-brand-gold)' }}>
-          <Layers size={16} />
-          <span style={{ fontSize: '12px', fontWeight: '700' }}>Figma Preview:</span>
-        </div>
-
-        <select
-          value={currentView}
-          onChange={(e) => {
-            const val = e.target.value as ScreenId;
-            setCurrentView(val);
-            if (val === 'profile_settings') setSettingsTab('profile');
-            if (val === 'password_settings' || val === 'change_password' || val === 'incorrect_current_password') setSettingsTab('password');
+      {/* FLOATING PILL SCREEN & ROLE SWITCHER (Collapsible for Testing) */}
+      {!showPreviewBar ? (
+        <button
+          type="button"
+          onClick={() => setShowPreviewBar(true)}
+          style={{
+            position: 'fixed',
+            bottom: '18px',
+            right: '18px',
+            backgroundColor: '#161618',
+            border: '1px solid rgba(223, 174, 50, 0.4)',
+            color: '#dfae32',
+            borderRadius: '9999px',
+            padding: '8px 16px',
+            fontSize: '12px',
+            fontWeight: 700,
+            display: 'flex',
+            alignItems: 'center',
+            gap: '8px',
+            cursor: 'pointer',
+            zIndex: 9999,
+            boxShadow: '0 4px 20px rgba(0, 0, 0, 0.6)',
+            transition: 'all 0.2s ease',
           }}
-          style={{ maxWidth: '300px' }}
+          title="Open screen selector for design review"
         >
-          {screensList.map((s) => (
-            <option key={s.id} value={s.id}>
-              {s.label}
-            </option>
-          ))}
-        </select>
+          <Layers size={14} />
+          <span>Figma Navigator</span>
+        </button>
+      ) : (
+        <div className="tc-screen-switcher">
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--tc-brand-gold)' }}>
+            <Layers size={16} />
+            <span style={{ fontSize: '12px', fontWeight: '700' }}>Figma Preview:</span>
+          </div>
 
-        <div style={{ height: '16px', width: '1px', backgroundColor: 'var(--tc-border-subtle)', margin: '0 4px' }} />
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-          <Shield size={12} style={{ color: 'var(--tc-brand-gold)' }} />
           <select
-            value={currentUser.role}
-            onChange={(e) => handleRoleSelect(e.target.value as UserRole)}
-            style={{
-              padding: '3px 8px',
-              borderRadius: 'var(--tc-radius-sm)',
-              backgroundColor: 'rgba(255, 255, 255, 0.08)',
-              color: '#dfae32',
-              fontSize: '11px',
-              fontWeight: '700',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
-              cursor: 'pointer',
-              outline: 'none',
+            value={currentView}
+            onChange={(e) => {
+              const val = e.target.value as ScreenId;
+              setCurrentView(val);
+              if (val === 'profile_settings') setSettingsTab('profile');
+              if (val === 'password_settings' || val === 'change_password' || val === 'incorrect_current_password') setSettingsTab('password');
             }}
+            style={{ maxWidth: '300px' }}
           >
-            <option value="Member">Role: Member</option>
-            <option value="Manager">Role: Manager / Lead</option>
-            <option value="HR">Role: HR Concierge</option>
-            <option value="CEO">Role: CEO / Exec</option>
-            <option value="Client">Role: Client</option>
-            <option value="Applicant">Role: Applicant</option>
-            <option value="Admin">Role: Admin</option>
+            {screensList.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.label}
+              </option>
+            ))}
           </select>
+
+          <div style={{ height: '16px', width: '1px', backgroundColor: 'var(--tc-border-subtle)', margin: '0 4px' }} />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <Shield size={12} style={{ color: 'var(--tc-brand-gold)' }} />
+            <select
+              value={currentUser.role}
+              onChange={(e) => handleRoleSelect(e.target.value as UserRole)}
+              style={{
+                padding: '3px 8px',
+                borderRadius: 'var(--tc-radius-sm)',
+                backgroundColor: 'rgba(255, 255, 255, 0.08)',
+                color: '#dfae32',
+                fontSize: '11px',
+                fontWeight: '700',
+                border: '1px solid rgba(223, 174, 50, 0.3)',
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              <option value="Member">Role: Member</option>
+              <option value="Manager">Role: Manager / Lead</option>
+              <option value="HR">Role: HR Concierge</option>
+              <option value="CEO">Role: CEO / Exec</option>
+              <option value="Client">Role: Client</option>
+              <option value="Applicant">Role: Applicant</option>
+              <option value="Admin">Role: Admin</option>
+            </select>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setShowPreviewBar(false)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#9CA3AF',
+              fontSize: '16px',
+              cursor: 'pointer',
+              padding: '0 4px',
+              marginLeft: '4px',
+              lineHeight: 1,
+            }}
+            title="Minimize preview navigator for testing"
+          >
+            ✕
+          </button>
         </div>
-      </div>
+      )}
     </div>
   );
 }

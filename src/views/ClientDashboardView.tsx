@@ -52,7 +52,7 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
   const totalPaid = completedMilestones.reduce((sum, m) => sum + m.amount, 0);
 
   return (
-    <div style={{ color: '#FFFFFF', maxWidth: '1440px', margin: '0 auto' }}>
+    <div style={{ color: '#FFFFFF', width: '100%' }}>
       {/* 1. WELCOME CLIENT BANNER WITH WHATSAPP CONCIERGE */}
       <div
         style={{
@@ -166,8 +166,8 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
         {/* Metric 1: Contracted Projects */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '20px',
           }}
@@ -184,8 +184,8 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
         {/* Metric 2: Milestones Progress */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '20px',
           }}
@@ -202,8 +202,8 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
         {/* Metric 3: Total Deliverables */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '20px',
           }}
@@ -220,8 +220,8 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
         {/* Metric 4: Settlement Status */}
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '20px',
           }}
@@ -239,8 +239,8 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
       {/* 3. MILESTONES & DELIVERABLE TIMELINE TRACKER */}
       <div
         style={{
-          backgroundColor: '#161618',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
+          backgroundColor: '#FFFFFF1A',
+          border: '1px solid #FFFFFF26',
           borderRadius: '16px',
           padding: '24px',
           marginBottom: '28px',

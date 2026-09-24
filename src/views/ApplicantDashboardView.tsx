@@ -56,12 +56,12 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
   };
 
   return (
-    <div style={{ color: '#FFFFFF', maxWidth: '1000px', margin: '0 auto' }}>
+    <div style={{ color: '#FFFFFF', width: '100%' }}>
       {/* State Switcher Previewer Banner */}
       <div
         style={{
-          backgroundColor: '#161618',
-          border: '1px solid rgba(223, 174, 50, 0.3)',
+          backgroundColor: '#FFFFFF1A',
+          border: '1px solid #FFFFFF26',
           borderRadius: '12px',
           padding: '12px 20px',
           marginBottom: '24px',
@@ -112,8 +112,8 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
       {activeState === 'under_review' && (
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '32px',
           }}
@@ -246,8 +246,8 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
       {activeState === 'approved' && (
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(16, 185, 129, 0.3)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '32px',
           }}
@@ -406,8 +406,8 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
       {activeState === 'rejected' && (
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(239, 68, 68, 0.2)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '32px',
           }}
@@ -504,8 +504,8 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
       {activeState === 'reapply' && (
         <div
           style={{
-            backgroundColor: '#161618',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
+            backgroundColor: '#FFFFFF1A',
+            border: '1px solid #FFFFFF26',
             borderRadius: '16px',
             padding: '32px',
           }}

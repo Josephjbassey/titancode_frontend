@@ -27,7 +27,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        backgroundColor: '#0b0b0c',
+        backgroundColor: 'var(--tc-figma-black)',
         color: '#FFFFFF',
       }}
     >
@@ -41,8 +41,8 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           gap: '16px',
           flexWrap: 'wrap',
           padding: '40px 60px',
-          backgroundColor: 'rgba(11, 11, 12, 0.88)',
-          borderBottom: '1px solid rgba(255, 255, 255, 0.05)',
+          backgroundColor: 'rgba(11, 11, 12, 0.96)',
+          borderBottom: '1px solid var(--tc-figma-card-border)',
           backdropFilter: 'blur(12px)',
           position: 'sticky',
           top: 0,
@@ -54,11 +54,9 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           onClick={() => navigate('home')}
           style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}
         >
-          <img
-            src="/assets/logo.png"
-            alt="TitanCode Logo"
-            style={{ height: '36px', objectFit: 'contain' }}
-          />
+          <div className="tc-logo-crop" aria-label="TitanCode Logo">
+            <img src="/assets/logo.png" alt="" />
+          </div>
         </div>
 
         {/* Center Nav Links */}
@@ -168,7 +166,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
       {/* PUBLIC FOOTER */}
       <footer
         style={{
-          backgroundColor: '#0b0b0c',
+          backgroundColor: 'var(--tc-figma-black)',
           borderTop: '0.4px solid #DFAE32',
           padding: '70px 80px 30px',
         }}
@@ -190,11 +188,9 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
               onClick={() => navigate('home')}
               style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '18px' }}
             >
-              <img
-                src="/assets/logo.png"
-                alt="TitanCode"
-                style={{ height: '32px', objectFit: 'contain' }}
-              />
+              <div className="tc-logo-crop" aria-label="TitanCode">
+                <img src="/assets/logo.png" alt="" />
+              </div>
             </div>
             <p
               style={{
@@ -217,7 +213,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  backgroundColor: 'var(--tc-icon-bg)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -238,7 +234,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  backgroundColor: 'var(--tc-icon-bg)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -259,7 +255,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  backgroundColor: 'var(--tc-icon-bg)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -280,7 +276,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
                   width: '32px',
                   height: '32px',
                   borderRadius: '50%',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  backgroundColor: 'var(--tc-icon-bg)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',

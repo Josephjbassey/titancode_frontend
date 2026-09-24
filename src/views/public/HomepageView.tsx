@@ -103,7 +103,7 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
         className="tc-homepage-header"
         style={{
           width: '100%',
-          maxWidth: '1440px',
+          maxWidth: 'none',
           margin: '0 auto',
           padding: '28px 60px 0',
           display: 'flex',
@@ -116,7 +116,9 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          <img src="/assets/logo.png" alt="TitanCode logo" style={{ width: 136, height: 28, objectFit: 'contain' }} />
+          <div className="tc-logo-crop" aria-label="TitanCode logo" style={{ width: '158px', height: '38px' }}>
+            <img src="/assets/logo.png" alt="" />
+          </div>
         </div>
 
         <button
@@ -160,7 +162,7 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
         <section
           style={{
             width: '100%',
-            maxWidth: '1440px',
+            maxWidth: 'none',
             margin: '0 auto',
             padding: '44px 60px 0',
             position: 'relative',
@@ -303,7 +305,7 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
           </div>
         </section>
 
-        <section style={{ maxWidth: '1440px', margin: '0 auto', padding: '118px 60px 0' }}>
+        <section style={{ width: '100%', margin: '0 auto', padding: '118px clamp(24px, 4vw, 60px) 0' }}>
           <div style={{ textAlign: 'center', marginBottom: 44 }}>
             <h2 style={{ fontSize: 55, lineHeight: 1.2, fontWeight: 700, margin: 0 }}>
               What We <span style={{ color: '#DFAE32' }}>Do</span>
@@ -523,7 +525,9 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
             }}
           >
             <div>
-              <img src="/assets/logo.png" alt="TitanCode logo" style={{ width: 148, height: 26, objectFit: 'contain', marginBottom: 18 }} />
+              <div className="tc-logo-crop" aria-label="TitanCode logo" style={{ marginBottom: 18 }}>
+                <img src="/assets/logo.png" alt="" />
+              </div>
               <p style={{ maxWidth: 400, color: 'rgba(255,255,255,0.8)', fontSize: 18, lineHeight: 1.7 }}>
                 We design and develop modern digital solutions that help businesses grow and stand out in
                 today’s competitive world.

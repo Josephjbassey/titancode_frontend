@@ -36,7 +36,7 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
   };
 
   return (
-    <div style={{ backgroundColor: 'var(--tc-figma-black, #0B0B0C)', color: '#FFFFFF', paddingBottom: '120px' }}>
+    <div style={{ backgroundColor: 'var(--tc-figma-black)', color: '#FFFFFF', paddingBottom: '120px' }}>
       {/* 1. HERO BANNER */}
       <section
         style={{
@@ -113,11 +113,12 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                     width: '44px',
                     height: '44px',
                     borderRadius: '8px',
-                    backgroundColor: '#DFAE324D',
+                    backgroundColor: '#111214',
+                    border: '1px solid rgba(223, 174, 50, 0.24)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#DDC998',
+                    color: '#DFAE32',
                   }}
                 >
                   <Mail size={20} />
@@ -131,11 +132,12 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                     width: '44px',
                     height: '44px',
                     borderRadius: '8px',
-                    backgroundColor: '#DFAE324D',
+                    backgroundColor: '#111214',
+                    border: '1px solid rgba(223, 174, 50, 0.24)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#DDC998',
+                    color: '#DFAE32',
                   }}
                 >
                   <Phone size={20} />
@@ -149,11 +151,12 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                     width: '44px',
                     height: '44px',
                     borderRadius: '8px',
-                    backgroundColor: '#DFAE324D',
+                    backgroundColor: '#111214',
+                    border: '1px solid rgba(223, 174, 50, 0.24)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: '#DDC998',
+                    color: '#DFAE32',
                   }}
                 >
                   <MapPin size={20} />
@@ -163,49 +166,17 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
             </div>
           </div>
 
-          {/* Right Column: Contact Form with corner gradient border matching Figma */}
+          {/* Right Column: Contact Form with exact golden linear gradient corner accents from Figma */}
           <div
             style={{
               position: 'relative',
-              padding: '40px',
+              padding: '44px',
               borderRadius: '16px',
-              backgroundColor: '#FFFFFF1A',
-              border: '1px solid #FFFFFF26',
+              backgroundColor: 'var(--tc-figma-black)',
+              border: '1px solid var(--tc-figma-card-border)',
+              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
             }}
           >
-            {/* Top decorative corner gradient border from Figma */}
-            <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                right: 0,
-                width: '97px',
-                height: '88px',
-                pointerEvents: 'none',
-                background: 'linear-gradient(305.42deg, rgba(223, 174, 50, 0) 61.55%, #DFAE32 100%)',
-                borderTopRightRadius: '16px',
-                maskImage: 'radial-gradient(circle at top right, black 60%, transparent 100%)',
-                WebkitMaskImage: 'radial-gradient(circle at top right, black 60%, transparent 100%)',
-                opacity: 0.8,
-              }}
-            />
-            {/* Bottom decorative corner gradient border from Figma */}
-            <div
-              style={{
-                position: 'absolute',
-                bottom: 0,
-                left: 0,
-                width: '97px',
-                height: '88px',
-                pointerEvents: 'none',
-                background: 'linear-gradient(125.42deg, rgba(223, 174, 50, 0) 61.55%, #DFAE32 100%)',
-                borderBottomLeftRadius: '16px',
-                maskImage: 'radial-gradient(circle at bottom left, black 60%, transparent 100%)',
-                WebkitMaskImage: 'radial-gradient(circle at bottom left, black 60%, transparent 100%)',
-                opacity: 0.8,
-              }}
-            />
-
             {submitted && (
               <div
                 style={{
@@ -241,8 +212,8 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                       width: '100%',
                       height: '58px',
                       borderRadius: '9999px',
-                      backgroundColor: '#232324',
-                      border: '1px solid #FFFFFF59',
+                      backgroundColor: 'var(--tc-bg-input)',
+                      border: '1px solid var(--tc-figma-input-border)',
                       color: '#FFFFFF',
                       padding: '0 28px',
                       fontSize: '15px',
@@ -265,8 +236,8 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                       width: '100%',
                       height: '58px',
                       borderRadius: '9999px',
-                      backgroundColor: '#232324',
-                      border: '1px solid #FFFFFF59',
+                      backgroundColor: 'var(--tc-bg-input)',
+                      border: '1px solid var(--tc-figma-input-border)',
                       color: '#FFFFFF',
                       padding: '0 28px',
                       fontSize: '15px',
@@ -291,8 +262,8 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                     width: '100%',
                     height: '58px',
                     borderRadius: '9999px',
-                    backgroundColor: '#232324',
-                    border: '1px solid #FFFFFF59',
+                    backgroundColor: 'var(--tc-bg-input)',
+                    border: '1px solid var(--tc-figma-input-border)',
                     color: '#FFFFFF',
                     padding: '0 28px',
                     fontSize: '15px',
@@ -312,7 +283,7 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                     width: '100%',
                     height: '58px',
                     borderRadius: '9999px',
-                    backgroundColor: '#232324',
+                    backgroundColor: 'var(--tc-bg-input)',
                     border: dropdownOpen ? '1px solid #DFAE32' : '1px solid #FFFFFF59',
                     color: '#FFFFFF',
                     padding: '0 28px',
@@ -343,7 +314,7 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                       top: '66px',
                       right: 0,
                       width: '260px',
-                      backgroundColor: '#232324',
+                      backgroundColor: 'var(--tc-bg-input)',
                       border: '1px solid rgba(223, 174, 50, 0.4)',
                       borderRadius: '14px',
                       padding: '10px 0',
@@ -387,7 +358,7 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                   style={{
                     width: '100%',
                     borderRadius: '20px',
-                    backgroundColor: '#232324',
+                    backgroundColor: 'var(--tc-bg-input)',
                     border: '1px solid #FFFFFF59',
                     color: '#FFFFFF',
                     padding: '22px 28px',

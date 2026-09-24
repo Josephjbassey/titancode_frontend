@@ -83,8 +83,7 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
         flexDirection: 'column',
         gap: '28px',
         paddingBottom: '48px',
-        maxWidth: '1240px',
-        margin: '0 auto',
+        width: '100%',
       }}
       className="tc-fade-in"
     >

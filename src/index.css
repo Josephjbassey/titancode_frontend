@@ -1,14 +1,20 @@
+@import './styles/auth.css';
+@import './styles/dashboards.css';
+@import './styles/public.css';
+
 :root {
   /* Colors - exact Figma palette */
   --tc-bg-primary: #0b0b0c;
-  --tc-bg-card: #232324;
-  --tc-bg-card-hover: #2a2a2b;
-  --tc-bg-surface-elevated: #232324;
-  --tc-bg-input: #161617;
-  --tc-bg-input-focus: #1c1c1d;
+  --tc-bg-card: #111214;
+  --tc-bg-card-hover: #17191d;
+  --tc-bg-surface-elevated: #111214;
+  --tc-bg-input: #121417;
+  --tc-bg-input-focus: #171b20;
+  --tc-icon-bg: rgba(223, 174, 50, 0.12);
+  --tc-icon-bg-active: rgba(223, 174, 50, 0.30);
   
-  --tc-border-subtle: #202022;
-  --tc-border-subtle-hover: #3e3e42;
+  --tc-border-subtle: rgba(255, 255, 255, 0.08);
+  --tc-border-subtle-hover: rgba(223, 174, 50, 0.35);
   --tc-border-focus: #dfae32;
 
   --tc-brand-gold: #DFAE32;
@@ -131,6 +137,10 @@ input, textarea, select {
   background-color: var(--tc-bg-primary);
 }
 
+.tc-workspace-main {
+  background-color: var(--tc-bg-primary);
+}
+
 .tc-card {
   background: var(--tc-bg-card);
   border: 1px solid var(--tc-border-subtle);
@@ -225,7 +235,68 @@ input, textarea, select {
 }
 
 .tc-public-layout {
+ flex: 1 1 auto;
+ width: 100%;
+ min-width: 0;
  overflow-x: hidden;
+}
+
+.tc-homepage {
+ flex: 1 1 auto;
+ width: 100%;
+ min-width: 0;
+ overflow-x: hidden;
+}
+
+.tc-public-layout > main {
+ width: 100%;
+ min-width: 0;
+}
+
+.tc-public-layout > main > * {
+ width: 100%;
+ min-width: 0;
+}
+
+.tc-public-content-shell {
+ width: 100%;
+ max-width: none;
+ margin-inline: auto;
+}
+
+/* The source logo is a square canvas with transparent padding; crop that
+  canvas to the horizontal logo slot used by the Figma layouts. */
+.tc-logo-crop {
+ position: relative;
+ width: var(--tc-logo-width, 158px);
+ height: var(--tc-logo-height, 38px);
+ overflow: hidden;
+ flex: 0 0 auto;
+}
+
+.tc-logo-crop > img {
+ position: absolute;
+ top: -235.92%;
+ left: -18.68%;
+ width: 141.84%;
+ height: 582.52%;
+ max-width: none;
+ object-fit: fill;
+ display: block;
+}
+
+.tc-logo-crop--auth {
+ --tc-logo-width: 172px;
+ --tc-logo-height: 42px;
+}
+
+.tc-logo-crop--sidebar {
+ --tc-logo-width: 158px;
+ --tc-logo-height: 38px;
+}
+
+.tc-public-form-card {
+ background: var(--tc-figma-black);
 }
 
 .tc-public-layout .tc-public-nav {
@@ -288,6 +359,30 @@ input, textarea, select {
 }
 
 @media (max-width: 640px) {
+ .tc-public-content-shell {
+   padding-left: 20px !important;
+   padding-right: 20px !important;
+ }
+
+ .tc-about-intro-grid,
+ .tc-about-mission-grid,
+ .tc-about-team-grid {
+   grid-template-columns: 1fr !important;
+   gap: 28px !important;
+ }
+
+ .tc-process-steps {
+   flex-direction: column !important;
+   align-items: center !important;
+   gap: 22px !important;
+ }
+
+ .tc-process-steps > div[style*="flex: 0 0 70px"] {
+   flex: 0 0 auto !important;
+   padding-top: 0 !important;
+   transform: rotate(90deg);
+ }
+
  .tc-mobile-menu-button {
    display: inline-flex;
  }

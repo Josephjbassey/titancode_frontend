@@ -1,24 +1,26 @@
 import React from 'react';
-import { Search, Bell } from 'lucide-react';
-import type { User } from '../types';
+import { Search, Bell, Shield } from 'lucide-react';
+import type { User, UserRole } from '../types';
 
 interface HeaderProps {
   user: User;
   onOpenProfile?: () => void;
   onOpenNotifications?: () => void;
+  onRoleChange?: (role: UserRole) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   user,
   onOpenProfile,
   onOpenNotifications,
+  onRoleChange,
 }) => {
   return (
     <header
       style={{
         height: '100px',
-        backgroundColor: '#0b0b0c',
-        borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
+        backgroundColor: 'var(--tc-figma-black)',
+        borderBottom: '1px solid var(--tc-figma-card-border)',
         padding: '0 36px',
         display: 'flex',
         alignItems: 'center',
@@ -55,8 +57,8 @@ export const Header: React.FC<HeaderProps> = ({
           style={{
             width: '100%',
             height: '36px',
-            backgroundColor: '#232324',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'var(--tc-bg-input)',
+            border: '1px solid var(--tc-figma-card-border)',
             borderRadius: '9999px',
             padding: '0 18px 0 42px',
             color: '#FFFFFF',
@@ -66,17 +68,49 @@ export const Header: React.FC<HeaderProps> = ({
           }}
           onFocus={(e) => {
             e.target.style.borderColor = '#dfae32';
-            e.target.style.backgroundColor = '#2a2a2b';
+            e.target.style.backgroundColor = 'var(--tc-bg-input-focus)';
           }}
           onBlur={(e) => {
-            e.target.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-            e.target.style.backgroundColor = '#232324';
+            e.target.style.borderColor = 'var(--tc-figma-card-border)';
+            e.target.style.backgroundColor = 'var(--tc-bg-input)';
           }}
         />
       </div>
 
-      {/* Right Controls: Bell and Avatar (Figma Rectangle 265 & Ellipse 9) */}
+      {/* Right Controls: Role Switcher, Bell, and Avatar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        {/* Workspace Role Switcher */}
+        {onRoleChange && (
+          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <Shield size={14} style={{ color: '#DFAE32' }} />
+            <select
+              value={user.role}
+              onChange={(e) => onRoleChange(e.target.value as UserRole)}
+              aria-label="Switch Active Workspace Role"
+              style={{
+                height: '34px',
+                padding: '0 10px',
+                borderRadius: '8px',
+                backgroundColor: 'var(--tc-bg-input)',
+                color: '#DFAE32',
+                border: '1px solid rgba(223, 174, 50, 0.4)',
+                fontSize: '12px',
+                fontWeight: 700,
+                cursor: 'pointer',
+                outline: 'none',
+              }}
+            >
+              <option value="Member">Role: Member</option>
+              <option value="Manager">Role: Manager / Lead</option>
+              <option value="HR">Role: HR Concierge</option>
+              <option value="CEO">Role: CEO / Exec</option>
+              <option value="Client">Role: Client</option>
+              <option value="Applicant">Role: Applicant</option>
+              <option value="Admin">Role: Admin</option>
+            </select>
+          </div>
+        )}
+
         {/* Notification Bell (Figma Rectangle 265: 34px x 34px) */}
         <button
           type="button"
@@ -87,8 +121,8 @@ export const Header: React.FC<HeaderProps> = ({
             width: '34px',
             height: '34px',
             borderRadius: '10px',
-            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
+            backgroundColor: 'var(--tc-icon-bg)',
+            border: '1px solid var(--tc-figma-card-border)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
@@ -96,8 +130,8 @@ export const Header: React.FC<HeaderProps> = ({
             cursor: 'pointer',
             transition: 'all 0.15s ease',
           }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)')}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)')}
+          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--tc-icon-bg-active)')}
+          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--tc-icon-bg)')}
         >
           <Bell size={17} />
           {/* Notification pink dot */}
@@ -138,7 +172,7 @@ export const Header: React.FC<HeaderProps> = ({
               borderRadius: '50%',
               overflow: 'hidden',
               border: '2px solid rgba(223, 174, 50, 0.4)',
-              backgroundColor: '#232324',
+              backgroundColor: 'var(--tc-bg-input)',
               boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
             }}
           >

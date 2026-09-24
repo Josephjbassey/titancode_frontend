@@ -10,6 +10,7 @@ import {
   CirclePaletteIcon,
   CircleMonitorIcon,
   CircleVerifiedIcon,
+  FlourishArrowIcon,
 } from '../../components/FigmaIcons';
 
 interface ServicesViewProps {
@@ -80,6 +81,7 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
 
         {/* 4 Cards Grid */}
         <div
+          className="tc-process-steps"
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
@@ -220,17 +222,9 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          {/* Curved connector 1 */}
+          {/* Figma process connector 1 */}
           <div style={{ flex: '0 0 70px', paddingTop: '35px' }}>
-            <svg width="70" height="24" viewBox="0 0 70 24" fill="none">
-              <path
-                d="M 5 20 Q 35 -5 65 14"
-                stroke="#DFAE32"
-                strokeWidth="2"
-                fill="none"
-              />
-              <polygon points="63,9 68,15 60,16" fill="#DFAE32" />
-            </svg>
+            <FlourishArrowIcon width="166" height="22" style={{ width: '100%', height: '22px' }} />
           </div>
 
           {/* Step 2: Design */}
@@ -262,17 +256,9 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          {/* Curved connector 2 */}
+          {/* Figma process connector 2 */}
           <div style={{ flex: '0 0 70px', paddingTop: '35px' }}>
-            <svg width="70" height="24" viewBox="0 0 70 24" fill="none">
-              <path
-                d="M 5 20 Q 35 -5 65 14"
-                stroke="#DFAE32"
-                strokeWidth="2"
-                fill="none"
-              />
-              <polygon points="63,9 68,15 60,16" fill="#DFAE32" />
-            </svg>
+            <FlourishArrowIcon width="166" height="22" style={{ width: '100%', height: '22px' }} />
           </div>
 
           {/* Step 3: Develop */}
@@ -304,17 +290,9 @@ export const ServicesView: React.FC<ServicesViewProps> = ({ onNavigate }) => {
             </p>
           </div>
 
-          {/* Curved connector 3 */}
+          {/* Figma process connector 3 */}
           <div style={{ flex: '0 0 70px', paddingTop: '35px' }}>
-            <svg width="70" height="24" viewBox="0 0 70 24" fill="none">
-              <path
-                d="M 5 20 Q 35 -5 65 14"
-                stroke="#DFAE32"
-                strokeWidth="2"
-                fill="none"
-              />
-              <polygon points="63,9 68,15 60,16" fill="#DFAE32" />
-            </svg>
+            <FlourishArrowIcon width="166" height="22" style={{ width: '100%', height: '22px' }} />
           </div>
 
           {/* Step 4: Deliver */}

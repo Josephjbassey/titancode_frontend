@@ -66,7 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { id: 'tasks', label: 'All Tasks', icon: CheckSquare },
     { id: 'users_management', label: 'Staff Directory', icon: UserCog },
     { id: 'applications_management', label: 'Applications ATS', icon: FileText },
-    { id: 'departments', label: 'Departments (14)', icon: Building2 },
+    { id: 'departments', label: 'Departments (17)', icon: Building2 },
     { id: 'financials', label: 'Financials Hub', icon: Wallet },
     { id: 'revenue_products', label: 'Products & Revenue', icon: Layers },
     { id: 'system_settings', label: 'System Settings', icon: Sliders },
@@ -108,8 +108,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
       style={{
         width: '280px',
         height: '100vh',
-        backgroundColor: '#0b0b0c',
-        borderRight: '1px solid rgba(255, 255, 255, 0.08)',
+        backgroundColor: 'var(--tc-figma-black)',
+        borderRight: '1px solid var(--tc-figma-card-border)',
         display: 'flex',
         flexDirection: 'column',
         position: 'sticky',
@@ -130,14 +130,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
           borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
         }}
       >
-        <img
-          src="/assets/logo.png"
-          alt="TitanCode"
-          style={{
-            height: '32px',
-            objectFit: 'contain',
-          }}
-        />
+        <div
+          className="tc-logo-crop tc-logo-crop--sidebar"
+          role="img"
+          aria-label="TitanCode"
+          style={{ cursor: 'pointer' }}
+          onClick={() => onNavigate(userRole === 'Admin' || userRole === 'CEO' ? 'ceo_dashboard' : 'dashboard')}
+        >
+          <img src="/assets/logo.png" alt="" />
+        </div>
       </div>
 
       {/* Navigation Links */}
@@ -186,7 +187,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   gap: '14px',
                   padding: '10px 14px',
                   borderRadius: '12px',
-                  backgroundColor: isActive ? 'rgba(223, 174, 50, 0.12)' : 'transparent',
+                  backgroundColor: isActive ? 'var(--tc-icon-bg-active)' : 'transparent',
                   color: isActive ? '#FFFFFF' : '#9CA3AF',
                   fontWeight: isActive ? 600 : 500,
                   fontSize: '14px',
@@ -215,7 +216,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     width: '36px',
                     height: '36px',
                     borderRadius: '10px',
-                    backgroundColor: isActive ? '#dfae32' : 'rgba(255, 255, 255, 0.05)',
+                    backgroundColor: isActive ? 'var(--tc-figma-gold)' : 'var(--tc-icon-bg)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -270,7 +271,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               gap: '14px',
               padding: '10px 14px',
               borderRadius: '12px',
-              backgroundColor: isSettingsActive ? 'rgba(223, 174, 50, 0.12)' : 'transparent',
+              backgroundColor: isSettingsActive ? 'var(--tc-icon-bg-active)' : 'transparent',
               color: isSettingsActive ? '#FFFFFF' : '#9CA3AF',
               fontWeight: isSettingsActive ? 600 : 500,
               fontSize: '14px',
@@ -298,7 +299,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 width: '36px',
                 height: '36px',
                 borderRadius: '10px',
-                backgroundColor: isSettingsActive ? '#dfae32' : 'rgba(255, 255, 255, 0.05)',
+                backgroundColor: isSettingsActive ? 'var(--tc-figma-gold)' : 'var(--tc-icon-bg)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
@@ -346,7 +347,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
               width: '36px',
               height: '36px',
               borderRadius: '10px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
+              backgroundColor: 'var(--tc-icon-bg)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',

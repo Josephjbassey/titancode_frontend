@@ -182,7 +182,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         {/* Section 3: Real-Time Notification Policies */}
         <div
           style={{
-            backgroundColor: '#11151F',
+            backgroundColor: '#0f121bff',
             borderRadius: '14px',
             padding: '24px',
             border: '1px solid rgba(255, 255, 255, 0.08)',

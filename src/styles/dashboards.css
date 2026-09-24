@@ -1,0 +1,189 @@
+/**
+ * ============================================================================
+ * TitanCode Technologies - Workspace & Department Dashboards Styles
+ * ============================================================================
+ * Standardizes full-width fluid screen expansion across all 17 departments:
+ * - Fluid stretching across 100% of viewport (no restrictive maxWidth boxing)
+ * - Unified Figma card background (#FFFFFF1A) and border (#FFFFFF26)
+ * - Interactive tables, status dropdowns, and modal dialogs
+ */
+
+/* Fluid Workspace Container - Stretches across the full screen width */
+.tc-workspace-container {
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  color: #FFFFFF;
+  font-family: var(--tc-font-sans, 'Inter', -apple-system, sans-serif);
+}
+
+/* Unified Workspace Card (Exact Figma specification: #FFFFFF1A with #FFFFFF26 border) */
+.tc-workspace-card,
+.figma-card {
+  background-color: var(--tc-figma-card-bg, #FFFFFF1A) !important;
+  border: 1px solid var(--tc-figma-card-border, #FFFFFF26) !important;
+  border-radius: 16px !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tc-workspace-card:hover,
+.figma-card:hover {
+  border-color: rgba(223, 174, 50, 0.4) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+/* Dashboard Header with Title and Filter Controls */
+.tc-dashboard-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  width: 100%;
+  margin-bottom: 8px;
+}
+
+.tc-dashboard-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #FFFFFF;
+  margin: 0;
+  letter-spacing: -0.4px;
+}
+
+.tc-dashboard-subtitle {
+  font-size: 14px;
+  color: #9CA3AF;
+  margin: 4px 0 0;
+  line-height: 1.5;
+}
+
+/* 4-Metric Grid Top Row */
+.tc-metrics-grid-4 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+/* 3-Metric Grid Row */
+.tc-metrics-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  width: 100%;
+}
+
+/* Full-width interactive data table */
+.tc-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+}
+
+.tc-data-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  text-align: left;
+  font-size: 14px;
+}
+
+.tc-data-table th {
+  padding: 16px 20px;
+  color: #9CA3AF;
+  font-weight: 600;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.tc-data-table td {
+  padding: 18px 20px;
+  color: #E5E7EB;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  vertical-align: middle;
+}
+
+.tc-data-table tr:hover td {
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+/* Status Badges */
+.tc-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.tc-status-pill.success {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #10B981;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.tc-status-pill.warning {
+  background-color: rgba(223, 174, 50, 0.15);
+  color: #DFAE32;
+  border: 1px solid rgba(223, 174, 50, 0.3);
+}
+
+.tc-status-pill.info {
+  background-color: rgba(59, 130, 246, 0.15);
+  color: #3B82F6;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.tc-status-pill.danger {
+  background-color: rgba(239, 68, 68, 0.15);
+  color: #EF4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+/* Interactive Dropdown Selectors */
+.tc-dropdown-select {
+  height: 40px;
+  padding: 0 14px;
+  background-color: #232324;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  color: #FFFFFF;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.tc-dropdown-select:focus {
+  border-color: var(--tc-figma-gold, #DFAE32);
+}
+
+/* Primary Action Buttons */
+.tc-action-btn-gold {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 18px;
+  background-color: var(--tc-figma-gold, #DFAE32);
+  color: #0B0B0C;
+  font-weight: 700;
+  font-size: 13px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tc-action-btn-gold:hover {
+  background-color: #eec147;
+  box-shadow: 0 0 16px rgba(223, 174, 50, 0.4);
+}

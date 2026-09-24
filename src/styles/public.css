@@ -1,0 +1,184 @@
+/**
+ * ============================================================================
+ * TitanCode Technologies - Public Pages & Marketing Views Styles
+ * ============================================================================
+ * Styles for Homepage, About Us, Services, Contact Us, and Hire Us views.
+ * Implements:
+ * - Golden About Us badge with black dots and black text
+ * - Golden linear gradient corner vectors framing form containers
+ * - Responsive inputs and hero banners
+ */
+
+/* Public Hero Banner Header */
+.tc-public-hero {
+  position: relative;
+  width: 100%;
+  padding: 120px 40px 110px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.tc-public-hero-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 64px;
+  font-weight: 800;
+  line-height: 100%;
+  letter-spacing: -0.5px;
+  color: #FFFFFF;
+  margin-bottom: 20px;
+}
+
+.tc-public-hero-title span {
+  color: var(--tc-figma-gold, #DFAE32);
+}
+
+.tc-public-hero-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 32px;
+  color: #9CA3AF;
+  max-width: 680px;
+  margin: 0 auto;
+}
+
+/* Golden About Us Badge (Figma SVG Lines 265-267: Gold fill with black dots and black text) */
+.tc-about-gold-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  background-color: var(--tc-figma-gold, #DFAE32);
+  color: #0B0B0C;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  font-family: 'Inter', sans-serif;
+  box-shadow: 0 4px 20px rgba(223, 174, 50, 0.35);
+  border: none;
+}
+
+.tc-about-black-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #0B0B0C;
+  flex-shrink: 0;
+}
+
+/* Contact Us / Hire Us Form Framing Card with Golden Linear Gradient Corners */
+.tc-corner-framed-card {
+  position: relative;
+  padding: 48px 40px;
+  border-radius: 16px;
+  background-color: var(--tc-figma-black, #0B0B0C);
+  border: 1px solid var(--tc-figma-card-border, #FFFFFF26);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+/* Absolute Corner SVGs Positioning */
+.tc-corner-svg-tl {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.tc-corner-svg-tr {
+  position: absolute;
+  top: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.tc-corner-svg-bl {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.tc-corner-svg-br {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Form Pill Inputs */
+.tc-pill-input {
+  width: 100%;
+  height: 58px;
+  border-radius: 9999px;
+  background-color: var(--tc-bg-input, #161617);
+  border: 1px solid #FFFFFF59;
+  color: #FFFFFF;
+  padding: 0 28px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+}
+
+.tc-pill-input:focus {
+  border-color: var(--tc-figma-gold, #DFAE32);
+  box-shadow: 0 0 12px rgba(223, 174, 50, 0.25);
+}
+
+/* Form Textarea */
+.tc-card-textarea {
+  width: 100%;
+  border-radius: 16px;
+  background-color: var(--tc-bg-input, #161617);
+  border: 1px solid #FFFFFF59;
+  color: #FFFFFF;
+  padding: 20px 24px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 140px;
+}
+
+.tc-card-textarea:focus {
+  border-color: var(--tc-figma-gold, #DFAE32);
+  box-shadow: 0 0 12px rgba(223, 174, 50, 0.25);
+}
+
+/* Large Submit Button */
+.tc-submit-gold-btn {
+  width: 100%;
+  max-width: 320px;
+  height: 56px;
+  border-radius: 9999px;
+  background-color: var(--tc-figma-gold, #DFAE32);
+  color: #0B0B0C;
+  font-size: 16px;
+  font-weight: 700;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(223, 174, 50, 0.35);
+}
+
+.tc-submit-gold-btn:hover {
+  background-color: #eec147;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(223, 174, 50, 0.5);
+}

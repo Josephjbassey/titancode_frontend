@@ -25,24 +25,27 @@ export const PublicHero: React.FC<PublicHeroProps> = ({
       style={{
         position: 'relative',
         width: '100%',
+        minHeight: '420px',
         padding: '40px 24px 60px',
         ...style,
       }}
     >
       <div
         style={{
-          maxWidth: '1280px',
+          width: '100%',
+          maxWidth: '100%',
           margin: '0 auto',
           position: 'relative',
-          borderRadius: '24px',
+          borderRadius: 0,
           overflow: 'hidden',
-          minHeight: '360px',
+          minHeight: '420px',
           display: 'flex',
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           textAlign: 'center',
           padding: '60px 24px',
+          boxShadow: '0 22px 34px -18px rgba(223, 174, 50, 0.55)',
         }}
       >
         {/* Background Image */}

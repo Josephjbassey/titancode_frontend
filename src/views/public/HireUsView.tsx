@@ -27,7 +27,7 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
   };
 
   return (
-    <div style={{ backgroundColor: 'var(--tc-figma-black, #0B0B0C)', color: '#FFFFFF', paddingBottom: '120px' }}>
+    <div style={{ backgroundColor: 'var(--tc-figma-black)', color: '#FFFFFF', paddingBottom: '120px' }}>
       {/* 1. HERO BANNER */}
       <section
         style={{
@@ -109,10 +109,22 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
           </div>
         )}
 
-        {/* Form Inputs directly on #0B0B0C matching Figma Hire Us.png */}
-        <form onSubmit={handleSubmit} style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Row 1: Full Name | Email */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '32px' }}>
+        {/* Form Container framed by exact Figma linear gradient SVG corner vectors */}
+        <div
+          style={{
+            position: 'relative',
+            padding: '56px 48px',
+            borderRadius: '24px',
+            backgroundColor: 'var(--tc-figma-black)',
+            border: '1px solid var(--tc-figma-card-border)',
+            maxWidth: '1240px',
+            margin: '0 auto',
+            boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)',
+          }}
+        >
+          <form onSubmit={handleSubmit} style={{ width: '100%' }}>
+            {/* Row 1: Full Name | Email */}
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '40px', marginBottom: '32px' }}>
             <div>
               <input
                 type="text"
@@ -124,8 +136,8 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
                   width: '100%',
                   height: '64px',
                   borderRadius: '9999px',
-                  backgroundColor: '#232324',
-                  border: '1px solid #FFFFFF59',
+                  backgroundColor: 'var(--tc-bg-input)',
+                  border: '1px solid var(--tc-figma-input-border)',
                   color: '#FFFFFF',
                   padding: '0 32px',
                   fontSize: '16px',
@@ -148,8 +160,8 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
                   width: '100%',
                   height: '64px',
                   borderRadius: '9999px',
-                  backgroundColor: '#232324',
-                  border: '1px solid #FFFFFF59',
+                  backgroundColor: 'var(--tc-bg-input)',
+                  border: '1px solid var(--tc-figma-input-border)',
                   color: '#FFFFFF',
                   padding: '0 32px',
                   fontSize: '16px',
@@ -174,8 +186,8 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
                   width: '100%',
                   height: '64px',
                   borderRadius: '9999px',
-                  backgroundColor: '#232324',
-                  border: '1px solid #FFFFFF59',
+                  backgroundColor: 'var(--tc-bg-input)',
+                  border: '1px solid var(--tc-figma-input-border)',
                   color: '#FFFFFF',
                   padding: '0 32px',
                   fontSize: '16px',
@@ -197,8 +209,8 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
                   width: '100%',
                   height: '64px',
                   borderRadius: '9999px',
-                  backgroundColor: '#232324',
-                  border: '1px solid #FFFFFF59',
+                  backgroundColor: 'var(--tc-bg-input)',
+                  border: '1px solid var(--tc-figma-input-border)',
                   color: '#FFFFFF',
                   padding: '0 32px',
                   fontSize: '16px',
@@ -222,8 +234,8 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
                 width: '100%',
                 height: '64px',
                 borderRadius: '9999px',
-                backgroundColor: '#232324',
-                border: '1px solid #FFFFFF59',
+                backgroundColor: 'var(--tc-bg-input)',
+                border: '1px solid var(--tc-figma-input-border)',
                 color: '#FFFFFF',
                 padding: '0 32px',
                 fontSize: '16px',
@@ -246,7 +258,7 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
               style={{
                 width: '100%',
                 borderRadius: '20px',
-                backgroundColor: '#232324',
+                backgroundColor: 'var(--tc-bg-input)',
                 border: '1px solid #FFFFFF59',
                 color: '#FFFFFF',
                 padding: '24px 32px',
@@ -285,6 +297,7 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
             </button>
           </div>
         </form>
+        </div>
       </section>
     </div>
   );

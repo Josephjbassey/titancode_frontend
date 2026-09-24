@@ -72,7 +72,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
   });
 
   return (
-    <div style={{ color: '#FFFFFF', maxWidth: '1440px', margin: '0 auto' }}>
+    <div style={{ color: '#FFFFFF', width: '100%' }}>
       {/* 1. HEADER */}
       <div
         style={{
@@ -217,10 +217,10 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
           <div
             key={dept.id}
             style={{
-              backgroundColor: '#161618',
+              backgroundColor: '#FFFFFF1A',
               borderRadius: '16px',
               padding: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
+              border: '1px solid #FFFFFF26',
               display: 'flex',
               flexDirection: 'column',
               justifyContent: 'space-between',
