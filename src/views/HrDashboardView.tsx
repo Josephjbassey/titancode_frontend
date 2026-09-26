@@ -161,7 +161,7 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <span style={{ fontSize: '13px', color: '#9CA3AF', fontWeight: 600 }}>Inbound Client Leads</span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(223, 174, 50, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DFAE32' }}>
+            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#DFAE324D', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DFAE32' }}>
               <Users size={18} />
             </div>
           </div>
@@ -248,7 +248,6 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '16px',
           padding: '24px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
         }}
       >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>

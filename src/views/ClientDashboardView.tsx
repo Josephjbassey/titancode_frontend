@@ -52,11 +52,11 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
   const totalPaid = completedMilestones.reduce((sum, m) => sum + m.amount, 0);
 
   return (
-    <div style={{ color: '#FFFFFF', width: '100%' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
       {/* 1. WELCOME CLIENT BANNER WITH WHATSAPP CONCIERGE */}
       <div
         style={{
-          backgroundColor: '#161618',
+          backgroundColor: '#232324',
           border: '1px solid rgba(223, 174, 50, 0.3)',
           borderRadius: '16px',
           padding: '28px',
@@ -239,8 +239,8 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
       {/* 3. MILESTONES & DELIVERABLE TIMELINE TRACKER */}
       <div
         style={{
-          backgroundColor: '#FFFFFF1A',
-          border: '1px solid #FFFFFF26',
+          backgroundColor: '#232324',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '16px',
           padding: '24px',
           marginBottom: '28px',

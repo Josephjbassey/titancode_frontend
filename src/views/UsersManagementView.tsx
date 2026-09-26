@@ -149,7 +149,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
   };
 
   return (
-    <div style={{ color: '#FFFFFF' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
       {/* Header */}
       <div
         style={{
@@ -172,7 +172,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
 
         <div
           style={{
-            backgroundColor: '#11151F',
+            backgroundColor: 'rgba(223, 174, 50, 0.1)',
             border: '1px solid rgba(223, 174, 50, 0.3)',
             padding: '8px 16px',
             borderRadius: '8px',
@@ -232,7 +232,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: '100%',
-              backgroundColor: '#11151F',
+              backgroundColor: '#FFFFFF1A',
               border: '1px solid rgba(255, 255, 255, 0.08)',
               borderRadius: '8px',
               padding: '8px 12px 8px 36px',
@@ -247,9 +247,9 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
       {/* Users Table */}
       <div
         style={{
-          backgroundColor: '#11151F',
+          backgroundColor: '#232324',
           borderRadius: '12px',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           overflow: 'hidden',
         }}
       >
@@ -383,8 +383,8 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
         >
           <div
             style={{
-              backgroundColor: '#11151F',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
+              backgroundColor: '#1C1C1E',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '16px',
               maxWidth: '600px',
               width: '100%',

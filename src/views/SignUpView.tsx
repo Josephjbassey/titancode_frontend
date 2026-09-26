@@ -32,21 +32,27 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
       return;
     }
 
+    if (!fullName.trim()) {
+      setError('Full name is required.');
+      return;
+    }
+
     setIsLoading(true);
     try {
-      const user: User = {
-        id: Date.now(),
-        full_name: fullName || 'Benedicta Eguavoen',
+      // Register the account — status will be "pending" awaiting admin approval
+      await api.register({ full_name: fullName.trim(), email, password });
+      // Account created but pending approval — show a success message rather than logging in
+      const pendingUser: User = {
+        id: 0,
+        full_name: fullName.trim(),
         email,
         role: 'Member',
-        status: 'active',
+        status: 'pending',
         created_at: new Date().toISOString(),
-        avatar_url: '/assets/benedicta.png',
       };
-      api.setToken('mock_signup_token_' + Date.now());
-      onSuccess(user);
+      onSuccess(pendingUser);
     } catch (err: any) {
-      setError(err.message || 'Registration failed.');
+      setError(err.message || 'Registration failed. Please try again.');
     } finally {
       setIsLoading(false);
     }

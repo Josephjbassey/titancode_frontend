@@ -22,7 +22,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
   };
 
   return (
-    <div style={{ color: '#FFFFFF', maxWidth: '800px' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', maxWidth: '800px', paddingBottom: '40px' }}>
       {/* Header */}
       <div style={{ marginBottom: '28px' }}>
         <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
@@ -37,7 +37,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         {/* Section 1: Company Profile */}
         <div
           style={{
-            backgroundColor: '#11151F',
+            backgroundColor: '#232324',
             borderRadius: '14px',
             padding: '24px',
             border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -95,7 +95,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         {/* Section 2: Financial & Localization */}
         <div
           style={{
-            backgroundColor: '#11151F',
+            backgroundColor: '#232324',
             borderRadius: '14px',
             padding: '24px',
             border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -182,7 +182,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         {/* Section 3: Real-Time Notification Policies */}
         <div
           style={{
-            backgroundColor: '#0f121bff',
+            backgroundColor: '#232324',
             borderRadius: '14px',
             padding: '24px',
             border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -234,19 +234,11 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
           <button
             type="submit"
+            className="tc-action-btn-gold"
             style={{
-              backgroundColor: '#dfae32',
-              color: '#0A0D14',
-              fontWeight: 700,
               fontSize: '14px',
               padding: '12px 28px',
-              borderRadius: '8px',
-              border: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
+              height: 'auto',
             }}
           >
             <Save size={16} />

@@ -56,7 +56,7 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
   };
 
   return (
-    <div style={{ color: '#FFFFFF', width: '100%' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
       {/* State Switcher Previewer Banner */}
       <div
         style={{

@@ -130,7 +130,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
   };
 
   return (
-    <div style={{ color: '#FFFFFF' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
       {/* Top Header */}
       <div
         style={{
@@ -154,20 +154,8 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
         <button
           type="button"
           onClick={() => setShowScheduleModal(true)}
-          style={{
-            backgroundColor: '#dfae32',
-            color: '#0A0D14',
-            fontWeight: 700,
-            fontSize: '14px',
-            padding: '11px 22px',
-            borderRadius: '8px',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
-          }}
+          className="tc-action-btn-gold"
+          style={{ fontSize: '14px', padding: '11px 22px', height: 'auto' }}
         >
           <Plus size={18} strokeWidth={2.5} />
           <span>Schedule Meeting</span>
@@ -186,7 +174,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
               borderRadius: '8px',
               border: '1px solid',
               borderColor: typeFilter === t ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
-              backgroundColor: typeFilter === t ? 'rgba(223, 174, 50, 0.15)' : '#11151F',
+              backgroundColor: typeFilter === t ? 'rgba(223, 174, 50, 0.15)' : 'rgba(255, 255, 255, 0.04)',
               color: typeFilter === t ? '#dfae32' : '#9CA3AF',
               fontWeight: 600,
               fontSize: '13px',
@@ -207,16 +195,15 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
             <div
               key={meeting.id}
               style={{
-                backgroundColor: '#11151F',
+                backgroundColor: '#FFFFFF1A',
                 borderRadius: '14px',
                 padding: '24px',
-                border: isLive ? '1px solid #dfae32' : '1px solid rgba(255, 255, 255, 0.06)',
+                border: isLive ? '1px solid #dfae32' : '1px solid #FFFFFF26',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 flexWrap: 'wrap',
                 gap: '20px',
-                boxShadow: isLive ? '0 0 25px rgba(223, 174, 50, 0.15)' : 'none',
               }}
             >
               {/* Left Details */}
@@ -369,7 +356,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
         >
           <div
             style={{
-              backgroundColor: '#11151F',
+              backgroundColor: '#1C1C1E',
               border: '1px solid rgba(223, 174, 50, 0.3)',
               borderRadius: '16px',
               maxWidth: '520px',

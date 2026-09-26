@@ -149,7 +149,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
               key={idx}
               style={{
                 position: 'relative',
-                backgroundColor: '#11151F',
+                backgroundColor: 'rgba(255, 255, 255, 0.06)',
                 borderRadius: '12px',
                 overflow: 'hidden',
                 border: p.speaking ? '2px solid #dfae32' : '1px solid rgba(255, 255, 255, 0.08)',
@@ -360,7 +360,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
                   <span style={{ fontWeight: 700, color: '#dfae32', fontSize: '12px' }}>{msg.sender}</span>
                   <span style={{ color: '#6B7280', fontSize: '11px' }}>{msg.time}</span>
                 </div>
-                <div style={{ backgroundColor: '#11151F', padding: '10px 12px', borderRadius: '8px', color: '#D1D5DB', lineHeight: 1.4 }}>
+                <div style={{ backgroundColor: 'rgba(255, 255, 255, 0.06)', padding: '10px 12px', borderRadius: '8px', color: '#D1D5DB', lineHeight: 1.4 }}>
                   {msg.text}
                 </div>
               </div>
@@ -384,7 +384,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
               onChange={(e) => setInputMessage(e.target.value)}
               style={{
                 flex: 1,
-                backgroundColor: '#11151F',
+                backgroundColor: 'rgba(255, 255, 255, 0.06)',
                 border: '1px solid rgba(255, 255, 255, 0.1)',
                 borderRadius: '8px',
                 padding: '8px 12px',

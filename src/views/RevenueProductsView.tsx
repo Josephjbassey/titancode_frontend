@@ -98,7 +98,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
   };
 
   return (
-    <div style={{ color: '#FFFFFF' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
       {/* Header */}
       <div
         style={{
@@ -122,20 +122,8 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
         <button
           type="button"
           onClick={() => setShowAddModal(true)}
-          style={{
-            backgroundColor: '#dfae32',
-            color: '#0A0D14',
-            fontWeight: 700,
-            fontSize: '14px',
-            padding: '11px 22px',
-            borderRadius: '8px',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
-          }}
+          className="tc-action-btn-gold"
+          style={{ fontSize: '14px', padding: '11px 22px', height: 'auto' }}
         >
           <Plus size={18} strokeWidth={2.5} />
           <span>Register Product</span>
@@ -151,7 +139,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
           marginBottom: '28px',
         }}
       >
-        <div style={{ backgroundColor: '#11151F', borderRadius: '14px', padding: '24px', border: '1px solid rgba(223, 174, 50, 0.3)' }}>
+        <div style={{ backgroundColor: '#FFFFFF1A', borderRadius: '14px', padding: '24px', border: '1px solid rgba(223, 174, 50, 0.3)' }}>
           <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Total Cumulative Revenue</div>
           <div style={{ fontSize: '32px', fontWeight: 800, color: '#dfae32', marginTop: '6px' }}>
             ${totalEarnings.toLocaleString()} USD
@@ -159,7 +147,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
           <div style={{ color: '#10B981', fontSize: '12px', marginTop: '4px' }}>All live products verified</div>
         </div>
 
-        <div style={{ backgroundColor: '#11151F', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+        <div style={{ backgroundColor: '#FFFFFF1A', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
           <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Current Monthly MRR Run-rate</div>
           <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>
             ${totalMonthly.toLocaleString()} / mo
@@ -167,7 +155,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
           <div style={{ color: '#10B981', fontSize: '12px', marginTop: '4px' }}>+22% growth vs last quarter</div>
         </div>
 
-        <div style={{ backgroundColor: '#11151F', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+        <div style={{ backgroundColor: '#FFFFFF1A', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
           <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Live Endpoints & APIs</div>
           <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>
             {products.length} Active Services
@@ -182,7 +170,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
           <div
             key={product.id}
             style={{
-              backgroundColor: '#11151F',
+              backgroundColor: '#FFFFFF1A',
               borderRadius: '14px',
               padding: '24px',
               border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -307,8 +295,8 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
         >
           <div
             style={{
-              backgroundColor: '#11151F',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
+              backgroundColor: '#1C1C1E',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '16px',
               maxWidth: '520px',
               width: '100%',

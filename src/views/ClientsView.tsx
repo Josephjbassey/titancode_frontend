@@ -65,7 +65,7 @@ export const ClientsView: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '32px' }} className="tc-fade-in">
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px', width: '100%' }} className="tc-fade-in">
       {/* Top Header */}
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <h1 style={{

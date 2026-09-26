@@ -118,7 +118,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
   };
 
   return (
-    <div style={{ color: '#FFFFFF' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
       {/* Header */}
       <div
         style={{
@@ -153,7 +153,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%',
-                backgroundColor: '#11151F',
+                backgroundColor: 'rgba(255, 255, 255, 0.04)',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 borderRadius: '8px',
                 padding: '7px 12px 7px 32px',
@@ -209,9 +209,9 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
       {/* Applications Table */}
       <div
         style={{
-          backgroundColor: '#11151F',
+          backgroundColor: '#232324',
           borderRadius: '12px',
-          border: '1px solid rgba(255, 255, 255, 0.06)',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           overflow: 'hidden',
         }}
       >
@@ -315,8 +315,8 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
         >
           <div
             style={{
-              backgroundColor: '#11151F',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
+              backgroundColor: '#1C1C1E',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '16px',
               maxWidth: '600px',
               width: '100%',

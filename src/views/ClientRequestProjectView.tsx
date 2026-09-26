@@ -63,7 +63,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
   };
 
   return (
-    <div style={{ color: '#FFFFFF' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
       {/* Header */}
       <div
         style={{
@@ -87,7 +87,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
         <div
           style={{
             display: 'flex',
-            backgroundColor: '#11151F',
+            backgroundColor: 'rgba(255, 255, 255, 0.04)',
             borderRadius: '8px',
             padding: '3px',
             border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -135,7 +135,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
         submitted ? (
           <div
             style={{
-              backgroundColor: '#11151F',
+              backgroundColor: '#FFFFFF1A',
               borderRadius: '16px',
               padding: '48px',
               textAlign: 'center',
@@ -172,7 +172,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
         ) : (
           <div
             style={{
-              backgroundColor: '#11151F',
+              backgroundColor: '#FFFFFF1A',
               borderRadius: '16px',
               padding: '36px',
               border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -330,7 +330,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
             <div
               key={p.id}
               style={{
-                backgroundColor: '#11151F',
+                backgroundColor: '#FFFFFF1A',
                 borderRadius: '14px',
                 padding: '24px',
                 border: '1px solid rgba(255, 255, 255, 0.08)',

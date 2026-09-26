@@ -193,7 +193,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
   };
 
   return (
-    <div style={{ color: '#FFFFFF' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
       {/* Top Header & Actions */}
       <div
         style={{
@@ -217,20 +217,8 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
         <button
           type="button"
           onClick={() => setShowCreateModal(true)}
-          style={{
-            backgroundColor: '#dfae32',
-            color: '#0A0D14',
-            fontWeight: 700,
-            fontSize: '14px',
-            padding: '11px 22px',
-            borderRadius: '8px',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.25)',
-          }}
+          className="tc-action-btn-gold"
+          style={{ fontSize: '14px', padding: '11px 22px', height: 'auto' }}
         >
           <Plus size={18} strokeWidth={2.5} />
           <span>New Project</span>
@@ -248,7 +236,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
       >
         <div
           style={{
-            backgroundColor: '#11151F',
+            backgroundColor: '#FFFFFF1A',
             borderRadius: '12px',
             padding: '20px',
             border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -261,7 +249,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
 
         <div
           style={{
-            backgroundColor: '#11151F',
+            backgroundColor: '#FFFFFF1A',
             borderRadius: '12px',
             padding: '20px',
             border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -276,7 +264,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
 
         <div
           style={{
-            backgroundColor: '#11151F',
+            backgroundColor: '#FFFFFF1A',
             borderRadius: '12px',
             padding: '20px',
             border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -291,7 +279,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
 
         <div
           style={{
-            backgroundColor: '#11151F',
+            backgroundColor: '#FFFFFF1A',
             borderRadius: '12px',
             padding: '20px',
             border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -322,7 +310,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
             display: 'flex',
             alignItems: 'center',
             gap: '8px',
-            backgroundColor: '#11151F',
+            backgroundColor: '#FFFFFF1A',
             padding: '4px',
             borderRadius: '8px',
             border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -369,7 +357,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{
               width: '100%',
-              backgroundColor: '#11151F',
+              backgroundColor: '#FFFFFF1A',
               border: '1px solid rgba(255, 255, 255, 0.08)',
               borderRadius: '8px',
               padding: '9px 14px 9px 36px',
@@ -402,7 +390,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
               key={project.id}
               onClick={() => setSelectedProject(project)}
               style={{
-                backgroundColor: '#11151F',
+                backgroundColor: '#FFFFFF1A',
                 borderRadius: '14px',
                 padding: '24px',
                 border: '1px solid rgba(255, 255, 255, 0.06)',
@@ -530,8 +518,8 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
         >
           <div
             style={{
-              backgroundColor: '#11151F',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
+              backgroundColor: '#1C1C1E',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '16px',
               maxWidth: '680px',
               width: '100%',
@@ -741,8 +729,8 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
         >
           <div
             style={{
-              backgroundColor: '#11151F',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
+              backgroundColor: '#1C1C1E',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '16px',
               maxWidth: '540px',
               width: '100%',

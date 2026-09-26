@@ -187,3 +187,29 @@
   background-color: #eec147;
   box-shadow: 0 0 16px rgba(223, 174, 50, 0.4);
 }
+
+/* Alias classes — tc-btn + tc-btn-primary map to the same gold CTA tokens */
+.tc-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tc-btn.tc-btn-primary {
+  background-color: var(--tc-figma-gold, #DFAE32);
+  color: #0B0B0C;
+  font-weight: 700;
+}
+
+.tc-btn.tc-btn-primary:hover {
+  background-color: #eec147;
+  box-shadow: 0 0 16px rgba(223, 174, 50, 0.4);
+}
+
+.tc-btn.tc-btn-primary:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}

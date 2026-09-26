@@ -76,7 +76,7 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
   };
 
   return (
-    <div style={{ color: '#FFFFFF', width: '100%' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
       {/* 1. EXECUTIVE HEADER */}
       <div
         style={{
@@ -314,8 +314,8 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
       {/* 3. 70/30 CONCIERGE SPLIT VISUAL BREAKDOWN */}
       <div
         style={{
-          backgroundColor: '#FFFFFF1A',
-          border: '1px solid #FFFFFF26',
+          backgroundColor: '#232324',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '16px',
           padding: '24px',
           marginBottom: '28px',
@@ -394,7 +394,7 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
       {/* 4. DEPARTMENT PERFORMANCE & REVENUE CONTRIBUTION TABLE */}
       <div
         style={{
-          backgroundColor: '#161618',
+          backgroundColor: '#232324',
           border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '16px',
           padding: '24px',
@@ -567,8 +567,8 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
         {/* Left Card: Executive Capital Approvals Queue */}
         <div
           style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
+            backgroundColor: '#232324',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             padding: '24px',
           }}
@@ -669,8 +669,8 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
         {/* Right Card: Corporate Governance, SOC2 & Regulatory Scorecard */}
         <div
           style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
+            backgroundColor: '#232324',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             padding: '24px',
           }}

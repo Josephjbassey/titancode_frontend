@@ -120,7 +120,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
   };
 
   return (
-    <div style={{ color: '#FFFFFF' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
       {/* Top Header */}
       <div
         style={{
@@ -145,7 +145,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
         <div
           style={{
             display: 'flex',
-            backgroundColor: '#11151F',
+            backgroundColor: 'rgba(255, 255, 255, 0.04)',
             borderRadius: '8px',
             padding: '3px',
             border: '1px solid rgba(255, 255, 255, 0.08)',
@@ -185,7 +185,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
           {/* Balance Hero Card */}
           <div
             style={{
-              backgroundColor: '#11151F',
+              backgroundColor: '#232324',
               borderRadius: '16px',
               padding: '36px',
               border: '1px solid rgba(223, 174, 50, 0.3)',
@@ -195,7 +195,6 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               justifyContent: 'space-between',
               flexWrap: 'wrap',
               gap: '24px',
-              boxShadow: '0 8px 30px rgba(0, 0, 0, 0.5)',
             }}
           >
             <div>
@@ -214,20 +213,8 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
             <button
               type="button"
               onClick={() => setShowWithdrawModal(true)}
-              style={{
-                backgroundColor: '#dfae32',
-                color: '#0A0D14',
-                fontWeight: 700,
-                fontSize: '15px',
-                padding: '14px 32px',
-                borderRadius: '8px',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 16px rgba(223, 174, 50, 0.35)',
-              }}
+              className="tc-action-btn-gold"
+              style={{ fontSize: '15px', padding: '14px 32px', height: 'auto' }}
             >
               <ArrowUpRight size={18} strokeWidth={2.5} />
               <span>Withdraw Funds</span>
@@ -237,9 +224,9 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
           {/* Transaction Ledger */}
           <div
             style={{
-              backgroundColor: '#11151F',
+              backgroundColor: '#232324',
               borderRadius: '14px',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
               overflow: 'hidden',
             }}
           >
@@ -282,7 +269,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
       {activeTab === 'admin_payouts' && (
         <div
           style={{
-            backgroundColor: '#11151F',
+            backgroundColor: '#232324',
             borderRadius: '14px',
             border: '1px solid rgba(255, 255, 255, 0.06)',
             overflow: 'hidden',
@@ -361,7 +348,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
             <div
               key={inv.id}
               style={{
-                backgroundColor: '#11151F',
+                backgroundColor: '#232324',
                 borderRadius: '14px',
                 border: '1px solid rgba(255, 255, 255, 0.08)',
                 padding: '24px',
@@ -446,19 +433,19 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               marginBottom: '28px',
             }}
           >
-            <div style={{ backgroundColor: '#11151F', borderRadius: '14px', padding: '24px', border: '1px solid rgba(223, 174, 50, 0.3)' }}>
+            <div style={{ backgroundColor: '#232324', borderRadius: '14px', padding: '24px', border: '1px solid rgba(223, 174, 50, 0.3)' }}>
               <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Corporate Vault Balance</div>
               <div style={{ fontSize: '32px', fontWeight: 800, color: '#dfae32', marginTop: '6px' }}>$194,250.00</div>
               <div style={{ color: '#10B981', fontSize: '12px', marginTop: '4px' }}>+$18,400 this month</div>
             </div>
 
-            <div style={{ backgroundColor: '#11151F', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            <div style={{ backgroundColor: '#232324', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
               <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Digital Product Revenue In</div>
               <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>$84,600.00</div>
               <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '4px' }}>Across 4 SaaS products</div>
             </div>
 
-            <div style={{ backgroundColor: '#11151F', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
+            <div style={{ backgroundColor: '#232324', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
               <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Total Payouts Debited Out</div>
               <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>$68,900.00</div>
               <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '4px' }}>To engineering staff</div>
@@ -485,8 +472,8 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
         >
           <div
             style={{
-              backgroundColor: '#11151F',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
+              backgroundColor: '#1C1C1E',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
               borderRadius: '16px',
               maxWidth: '480px',
               width: '100%',

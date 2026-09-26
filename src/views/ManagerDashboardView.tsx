@@ -102,7 +102,7 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
       : departments.filter((d) => d.category === selectedCategory);
 
   return (
-    <div style={{ color: '#FFFFFF', width: '100%' }}>
+    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', gap: '0', paddingBottom: '40px' }}>
       {/* 1. TOP HEADER & DEPARTMENT SELECTOR */}
       <div
         style={{
@@ -404,8 +404,8 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
       {/* 3. MAIN SECTION: SPRINT ROSTER & WORKLOAD TABLE */}
       <div
         style={{
-          backgroundColor: '#FFFFFF1A',
-          border: '1px solid #FFFFFF26',
+          backgroundColor: '#232324',
+          border: '1px solid rgba(255, 255, 255, 0.08)',
           borderRadius: '16px',
           padding: '24px',
           marginBottom: '28px',
@@ -634,8 +634,8 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
         {/* Left Card: Department Technical Deliverables & QA Sign-Off */}
         <div
           style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
+            backgroundColor: '#232324',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             padding: '24px',
           }}
@@ -743,8 +743,8 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
         {/* Right Card: Technical Candidate Screening Pipeline for this Department */}
         <div
           style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
+            backgroundColor: '#232324',
+            border: '1px solid rgba(255, 255, 255, 0.08)',
             borderRadius: '16px',
             padding: '24px',
           }}
