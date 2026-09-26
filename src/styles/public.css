@@ -1,54 +1,372 @@
 /**
  * ============================================================================
- * TitanCode Technologies - Public Pages & Marketing Views Styles
+ * TitanCode Technologies — Public Pages & Marketing Views Styles
  * ============================================================================
- * Styles for Homepage, About Us, Services, Contact Us, and Hire Us views.
- * Implements:
- * - Golden About Us badge with black dots and black text
- * - Golden linear gradient corner vectors framing form containers
- * - Responsive inputs and hero banners
+ * Covers: Header, Footer, Hero sections, Section containers, Cards,
+ *         Forms, Inputs, Buttons, Badges, Icons, Navigation, Layout.
+ *
+ * All Figma-spec values are sourced from colorFromFigma.txt / document-metadata.xml.
+ * Avoid inline styles in TSX; prefer these classes.
+ * ============================================================================
  */
 
-/* Public Hero Banner Header */
-.tc-public-hero {
-  position: relative;
-  width: 100%;
-  padding: 120px 40px 110px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  overflow: hidden;
+/* ─── SECTION CONTAINERS ────────────────────────────────────────────────────── */
+
+/* Outer page root — applied to the top-level <div> in every public view */
+.tc-page-root {
+  background-color: var(--tc-figma-black, #0B0B0C);
+  color: #FFFFFF;
+  min-height: 100vh;
 }
 
-.tc-public-hero-title {
+/* Generic padded section with horizontal gutters */
+.tc-section {
+  width: 100%;
+  padding: 90px clamp(24px, 4.2vw, 80px) 0;
+}
+
+/* Same but with bottom padding too */
+.tc-section--padded {
+  width: 100%;
+  padding: 90px clamp(24px, 4.2vw, 80px);
+}
+
+/* Content shell: centres content with a generous responsive max-width */
+.tc-section-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+/* Full-bleed content shell — no max-width cap */
+.tc-section-inner--full {
+  max-width: none;
+  margin: 0 auto;
+  padding-left: clamp(24px, 4.2vw, 80px);
+  padding-right: clamp(24px, 4.2vw, 80px);
+}
+
+/* Text block at the top of a section: heading + sub-copy */
+.tc-section-header {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.tc-section-header--left {
+  text-align: left;
+  margin-bottom: 40px;
+}
+
+/* ─── TYPOGRAPHY ────────────────────────────────────────────────────────────── */
+
+/* Hero H1 — public page hero headings */
+.tc-hero-title {
   font-family: 'Inter', sans-serif;
-  font-size: 64px;
+  font-size: clamp(42px, 5vw, 64px);
   font-weight: 800;
-  line-height: 100%;
+  line-height: 1.05;
   letter-spacing: -0.5px;
   color: #FFFFFF;
   margin-bottom: 20px;
 }
 
-.tc-public-hero-title span {
+/* Section H2 */
+.tc-section-title {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(32px, 4vw, 55px);
+  font-weight: 700;
+  line-height: 1.2;
+  color: #FFFFFF;
+  margin-bottom: 16px;
+}
+
+/* Section H2 gold variant */
+.tc-section-title--gold {
   color: var(--tc-figma-gold, #DFAE32);
 }
 
-.tc-public-hero-subtitle {
-  font-family: 'Poppins', sans-serif;
+/* Sub-heading used inside cards and feature rows */
+.tc-card-title {
   font-size: 20px;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 12px;
+}
+
+/* Descriptive paragraph under hero or section heading */
+.tc-hero-subtitle {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(16px, 2vw, 20px);
   font-weight: 500;
-  line-height: 32px;
+  line-height: 1.6;
   color: #9CA3AF;
   max-width: 680px;
   margin: 0 auto;
 }
 
-/* Golden About Us Badge (Figma SVG Lines 265-267: Gold fill with black dots and black text) */
+/* Smaller body copy inside sections */
+.tc-body-text {
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  color: #9CA3AF;
+  line-height: 1.7;
+}
+
+/* Gold accent span — wraps a word inside a heading */
+.tc-gold {
+  color: var(--tc-figma-gold, #DFAE32);
+}
+
+/* ─── HERO SECTIONS ─────────────────────────────────────────────────────────── */
+
+/* Subpage hero banner — Figma: x:0 y:154 w:1440 h:463, sharp corners */
+.tc-subpage-hero {
+  width: 100%;
+  position: relative;
+  overflow: hidden;
+  height: 463px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  border-radius: 0;
+}
+
+/* Overlay gradient applied to every subpage hero */
+.tc-subpage-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(rgba(11,11,12,0.72), rgba(11,11,12,0.88));
+  z-index: 1;
+}
+
+/* Hero content sits above the overlay */
+.tc-subpage-hero__content {
+  position: relative;
+  z-index: 2;
+  max-width: 840px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+/* ─── NAVIGATION (Public Header / Homepage Header) ──────────────────────────── */
+
+/* Shared header shell */
+.tc-public-header {
+  min-height: 154px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 40px 60px;
+  background-color: rgba(11,11,12,0.96);
+  border-bottom: 1px solid var(--tc-figma-card-border, #FFFFFF26);
+  backdrop-filter: blur(12px);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+/* Homepage header is not sticky and has different initial padding */
+.tc-homepage-header {
+  width: 100%;
+  padding: 28px 60px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 2;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+/* Nav link button (reset) */
+.tc-nav-link {
+  font-size: 15px;
+  font-weight: 500;
+  color: #9CA3AF;
+  transition: color 0.2s ease;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+}
+
+.tc-nav-link:hover,
+.tc-nav-link--active {
+  color: #FFFFFF;
+  font-weight: 700;
+}
+
+/* ─── BUTTONS ────────────────────────────────────────────────────────────────── */
+
+/* Gold CTA button — main call-to-action across public pages */
+.tc-btn-gold {
+  background-color: var(--tc-figma-gold, #DFAE32);
+  color: #0B0B0C;
+  font-weight: 700;
+  font-size: 15px;
+  padding: 12px 28px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.tc-btn-gold:hover {
+  background-color: #eec147;
+}
+
+/* Gold button — hero size (larger, used in homepage hero CTAs) */
+.tc-btn-gold--hero {
+  padding: 17px 30px;
+  font-size: 20px;
+  border-radius: 8px;
+}
+
+/* Gold button — full width (form submit) */
+.tc-btn-gold--full {
+  width: 100%;
+  max-width: 420px;
+  height: 62px;
+  border-radius: 12px;
+  font-size: 17px;
+  display: block;
+  margin: 0 auto;
+}
+
+/* Gold button — submit right-aligned (Contact Us submit) */
+.tc-btn-gold--submit {
+  padding: 14px 52px;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+/* Outline CTA button — appears next to gold CTA in hero */
+.tc-btn-outline-gold {
+  background-color: rgba(11,11,12,0.1);
+  color: #FFFFFF;
+  border: 1px solid rgba(223,174,50,0.9);
+  border-radius: 8px;
+  padding: 17px 30px;
+  font-size: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.tc-btn-outline-gold:hover {
+  background-color: rgba(223,174,50,0.08);
+}
+
+/* ─── CARDS ──────────────────────────────────────────────────────────────────── */
+
+/* Figma-spec translucent card — #FFFFFF1A bg, #FFFFFF26 border */
+.tc-public-card {
+  background-color: #FFFFFF1A;
+  border: 1px solid #FFFFFF26;
+  border-radius: 20px;
+  padding: 36px 28px;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s ease;
+}
+
+.tc-public-card:hover {
+  border-color: rgba(223,174,50,0.4);
+}
+
+/* Dark solid card (Mission, Vision, About section) */
+.tc-dark-card {
+  background-color: #FFFFFF1A;
+  border-radius: 18px;
+  padding: 48px 40px;
+  border: 1px solid #FFFFFF26;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Feature card with rounded border — used in homepage "What We Do" */
+.tc-feature-card {
+  border-radius: 30px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.28);
+  min-height: 306px;
+  padding: 34px 28px 26px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* ─── ICON BADGES ────────────────────────────────────────────────────────────── */
+
+/* Gold squircle icon badge (square-ish, 70×70) — "What We Do" / services */
+.tc-icon-badge {
+  width: 70px;
+  height: 70px;
+  border-radius: 18px;
+  background-color: var(--tc-figma-gold, #DFAE32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Gold circle icon badge (full circle, 74×74) — "Our Process" steps */
+.tc-icon-badge--circle {
+  width: 74px;
+  height: 74px;
+  border-radius: 37px;
+  background-color: var(--tc-figma-gold, #DFAE32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Dashboard icon pill bg — workspace metric card top-right */
+.tc-icon-pill {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background-color: #DFAE324D;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--tc-figma-gold, #DFAE32);
+  flex-shrink: 0;
+}
+
+/* Social icon circle in footer */
+.tc-social-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: #FFFFFF1A;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+  transition: background-color 0.2s;
+  flex-shrink: 0;
+  text-decoration: none;
+}
+
+.tc-social-icon:hover {
+  background-color: rgba(255,255,255,0.15);
+}
+
+/* ─── BADGE / PILL LABELS ────────────────────────────────────────────────────── */
+
+/* Gold-filled badge — "● ABOUT US ●" style */
 .tc-about-gold-badge {
   display: inline-flex;
   align-items: center;
@@ -61,7 +379,7 @@
   font-weight: 800;
   letter-spacing: 1.5px;
   font-family: 'Inter', sans-serif;
-  box-shadow: 0 4px 20px rgba(223, 174, 50, 0.35);
+  box-shadow: 0 4px 18px rgba(223,174,50,0.4);
   border: none;
 }
 
@@ -73,17 +391,188 @@
   flex-shrink: 0;
 }
 
-/* Contact Us / Hire Us Form Framing Card with Golden Linear Gradient Corners */
-.tc-corner-framed-card {
-  position: relative;
-  padding: 48px 40px;
-  border-radius: 16px;
-  background-color: var(--tc-figma-black, #0B0B0C);
-  border: 1px solid var(--tc-figma-card-border, #FFFFFF26);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+/* Outlined pill label — used in hero header area (Hire Us page) */
+.tc-pill-label {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  background-color: rgba(223,174,50,0.15);
+  border: 1px solid var(--tc-figma-gold, #DFAE32);
+  color: var(--tc-figma-gold, #DFAE32);
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Poppins', sans-serif;
+  margin-bottom: 20px;
 }
 
-/* Absolute Corner SVGs Positioning */
+/* Step number badge (floating on process circles) */
+.tc-step-number {
+  position: absolute;
+  top: 0;
+  right: -6px;
+  background-color: #0B0B0C;
+  border: 1px solid #DFAE32;
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 12px;
+}
+
+/* ─── FORMS ──────────────────────────────────────────────────────────────────── */
+
+/* Pill-shaped text input (Contact Us, Hire Us, Application Form) */
+.tc-pill-input {
+  width: 100%;
+  height: 58px;
+  border-radius: 9999px;
+  background-color: #0B0B0C;
+  border: 1px solid #FFFFFF59;
+  color: #FFFFFF;
+  padding: 0 28px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.tc-pill-input:focus {
+  border-color: var(--tc-figma-gold, #DFAE32);
+  box-shadow: 0 0 12px rgba(223,174,50,0.25);
+}
+
+/* Larger pill input (Hire Us — 64px tall) */
+.tc-pill-input--lg {
+  height: 64px;
+  padding: 0 32px;
+  font-size: 16px;
+}
+
+/* Flat bordered input (Application Form — rectangular with 8px radius) */
+.tc-rect-input {
+  width: 100%;
+  height: 56px;
+  background-color: #0B0B0C;
+  border: 1px solid #FFFFFF59;
+  border-radius: 8px;
+  color: #FFFFFF;
+  padding: 0 20px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.tc-rect-input:focus {
+  border-color: var(--tc-figma-gold, #DFAE32);
+}
+
+/* Message textarea */
+.tc-textarea {
+  width: 100%;
+  border-radius: 20px;
+  background-color: #0B0B0C;
+  border: 1px solid #FFFFFF59;
+  color: #FFFFFF;
+  padding: 22px 28px;
+  font-size: 15px;
+  line-height: 1.6;
+  outline: none;
+  resize: none;
+  transition: border-color 0.2s ease;
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+.tc-textarea:focus {
+  border-color: var(--tc-figma-gold, #DFAE32);
+  box-shadow: 0 0 12px rgba(223,174,50,0.25);
+}
+
+/* Textarea — larger variant (Hire Us, 8 rows) */
+.tc-textarea--lg {
+  padding: 24px 32px;
+  font-size: 16px;
+}
+
+/* Form field label */
+.tc-form-label {
+  display: block;
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #FFFFFF;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* 2-column form grid */
+.tc-form-grid-2col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 30px;
+  margin-bottom: 24px;
+}
+
+/* 2-column form grid — wider gap variant (Hire Us) */
+.tc-form-grid-2col--wide {
+  gap: 40px;
+  margin-bottom: 32px;
+}
+
+/* Form field row — single input with bottom margin */
+.tc-form-row {
+  margin-bottom: 24px;
+}
+
+.tc-form-row--lg {
+  margin-bottom: 32px;
+}
+
+/* Framed form container with corner gradient accents */
+.tc-form-frame {
+  position: relative;
+  padding: 44px;
+  background-color: var(--tc-figma-black, #0B0B0C);
+}
+
+/* Wider form frame (Hire Us) */
+.tc-form-frame--wide {
+  padding: 56px 48px;
+  max-width: 1240px;
+  margin: 0 auto;
+}
+
+/* Success toast inside a form */
+.tc-form-success {
+  background-color: rgba(16,185,129,0.15);
+  border: 1px solid #10B981;
+  color: #10B981;
+  padding: 16px 20px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+/* Inline validation error message */
+.tc-field-error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #EF4444;
+  font-size: 13px;
+  font-weight: 500;
+  margin-top: 6px;
+}
+
+/* ─── CORNER GRADIENT ACCENTS ────────────────────────────────────────────────── */
+
+/* Applied to SVG corner accent elements inside .tc-form-frame */
 .tc-corner-svg-tl {
   position: absolute;
   top: 0;
@@ -116,69 +605,303 @@
   z-index: 5;
 }
 
-/* Form Pill Inputs */
-.tc-pill-input {
-  width: 100%;
-  height: 58px;
-  border-radius: 9999px;
-  background-color: var(--tc-bg-input, #161617);
-  border: 1px solid #FFFFFF59;
-  color: #FFFFFF;
-  padding: 0 28px;
-  font-size: 15px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  font-family: inherit;
+/* ─── CONTACT INFO ROWS ──────────────────────────────────────────────────────── */
+
+/* Icon + text row in the left column of Contact Us */
+.tc-contact-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
 }
 
-.tc-pill-input:focus {
-  border-color: var(--tc-figma-gold, #DFAE32);
-  box-shadow: 0 0 12px rgba(223, 174, 50, 0.25);
-}
-
-/* Form Textarea */
-.tc-card-textarea {
-  width: 100%;
-  border-radius: 16px;
-  background-color: var(--tc-bg-input, #161617);
-  border: 1px solid #FFFFFF59;
-  color: #FFFFFF;
-  padding: 20px 24px;
-  font-size: 15px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  font-family: inherit;
-  resize: vertical;
-  min-height: 140px;
-}
-
-.tc-card-textarea:focus {
-  border-color: var(--tc-figma-gold, #DFAE32);
-  box-shadow: 0 0 12px rgba(223, 174, 50, 0.25);
-}
-
-/* Large Submit Button */
-.tc-submit-gold-btn {
-  width: 100%;
-  max-width: 320px;
-  height: 56px;
-  border-radius: 9999px;
-  background-color: var(--tc-figma-gold, #DFAE32);
-  color: #0B0B0C;
-  font-size: 16px;
-  font-weight: 700;
-  border: none;
-  cursor: pointer;
+/* Square icon container in contact rows */
+.tc-contact-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 8px;
+  background-color: #111214;
+  border: 1px solid rgba(223,174,50,0.24);
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto;
-  transition: all 0.2s ease;
-  box-shadow: 0 4px 20px rgba(223, 174, 50, 0.35);
+  color: var(--tc-figma-gold, #DFAE32);
+  flex-shrink: 0;
 }
 
-.tc-submit-gold-btn:hover {
-  background-color: #eec147;
-  transform: translateY(-2px);
-  box-shadow: 0 6px 24px rgba(223, 174, 50, 0.5);
+/* ─── PROCESS STEPS (Services page) ─────────────────────────────────────────── */
+
+/* Flex row that holds step columns + arrow connectors */
+.tc-process-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  position: relative;
+}
+
+/* Individual step column */
+.tc-process-step {
+  flex: 1;
+  max-width: 240px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Arrow connector container */
+.tc-process-arrow {
+  flex: 0 0 70px;
+  padding-top: 42px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+}
+
+/* The arrow SVG itself */
+.tc-process-arrow__svg {
+  width: 164px;
+  height: 14px;
+  transform: scaleY(-1);
+  flex-shrink: 0;
+}
+
+/* ─── FAQ ACCORDION ──────────────────────────────────────────────────────────── */
+
+/* Accordion item container */
+.tc-faq-item {
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px;
+  overflow: hidden;
+  transition: border-color 0.2s ease;
+}
+
+.tc-faq-item--open {
+  border-color: rgba(223,174,50,0.35);
+}
+
+/* FAQ question button */
+.tc-faq-question {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 22px 28px;
+  background: transparent;
+  border: none;
+  color: #FFFFFF;
+  font-size: 17px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  font-family: inherit;
+}
+
+.tc-faq-question:hover {
+  background-color: rgba(255,255,255,0.03);
+}
+
+.tc-faq-question--open {
+  color: var(--tc-figma-gold, #DFAE32);
+}
+
+/* FAQ answer text */
+.tc-faq-answer {
+  padding: 0 28px 22px;
+  font-size: 15px;
+  color: #9CA3AF;
+  line-height: 1.7;
+}
+
+/* ─── ABOUT US SPECIFIC ──────────────────────────────────────────────────────── */
+
+/* Two-col grid: left = images, right = text. Right is top-aligned (not centred). */
+.tc-about-intro-grid {
+  display: grid;
+  grid-template-columns: 530fr 444fr;
+  gap: 60px;
+  align-items: start;
+}
+
+/* Left image stack (position:relative so accent image can overlap) */
+.tc-about-image-stack {
+  position: relative;
+  height: 370px;
+}
+
+/* Mission/Vision 2-col grid */
+.tc-about-mission-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+
+/* Team 4-col grid */
+.tc-about-team-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 24px;
+}
+
+/* Team member card */
+.tc-team-card {
+  background-color: #FFFFFF1A;
+  border: 1px solid #FFFFFF26;
+  border-radius: 16px;
+  overflow: hidden;
+  transition: border-color 0.2s;
+}
+
+.tc-team-card:hover {
+  border-color: rgba(223,174,50,0.4);
+}
+
+/* ─── FOOTER ─────────────────────────────────────────────────────────────────── */
+
+/* Shared public footer shell */
+.tc-footer {
+  background-color: var(--tc-figma-black, #0B0B0C);
+  border-top: 0.4px solid var(--tc-figma-gold, #DFAE32);
+  padding: 70px 80px 30px;
+}
+
+/* Footer 3-column grid */
+.tc-footer-grid {
+  max-width: none;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 60px;
+  padding-bottom: 50px;
+}
+
+/* Footer section heading */
+.tc-footer-heading {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  color: #FFFFFF;
+}
+
+/* Footer nav link */
+.tc-footer-link {
+  text-align: left;
+  color: #9CA3AF;
+  font-size: 14px;
+  transition: color 0.2s;
+  border: none;
+  background: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: inherit;
+  display: block;
+}
+
+.tc-footer-link:hover,
+.tc-footer-link--active {
+  color: #FFFFFF;
+}
+
+/* Footer copyright strip */
+.tc-footer-bottom {
+  border-top: 1px solid rgba(255,255,255,0.08);
+  padding-top: 25px;
+  text-align: center;
+  color: #9CA3AF;
+  font-size: 13px;
+}
+
+/* ─── RESPONSIVE OVERRIDES ───────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .tc-about-intro-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  .tc-about-image-stack {
+    height: 280px;
+  }
+}
+
+@media (max-width: 900px) {
+  .tc-public-header {
+    min-height: 96px;
+    padding: 24px !important;
+  }
+
+  .tc-public-header .tc-public-nav {
+    width: 100%;
+    justify-content: center;
+    gap: 18px 24px !important;
+  }
+
+  .tc-footer-grid {
+    grid-template-columns: 1fr !important;
+    gap: 28px !important;
+  }
+
+  .tc-homepage-header {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .tc-subpage-hero {
+    height: 320px;
+  }
+
+  .tc-about-mission-grid {
+    grid-template-columns: 1fr !important;
+    gap: 24px !important;
+  }
+
+  .tc-about-team-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  .tc-section-title {
+    font-size: clamp(28px, 6vw, 44px);
+  }
+
+  .tc-process-row {
+    flex-direction: column;
+    align-items: center;
+    gap: 22px;
+  }
+
+  .tc-process-arrow {
+    flex: 0 0 auto;
+    padding-top: 0;
+    transform: rotate(90deg);
+  }
+
+  .tc-form-grid-2col,
+  .tc-form-grid-2col--wide {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .tc-footer {
+    padding: 50px 24px 24px;
+  }
+
+  .tc-form-frame,
+  .tc-form-frame--wide {
+    padding: 32px 20px;
+  }
+}
+
+@media (max-width: 640px) {
+  .tc-section {
+    padding: 60px 20px 0;
+  }
+
+  .tc-section--padded {
+    padding: 60px 20px;
+  }
+
+  .tc-about-team-grid {
+    grid-template-columns: 1fr !important;
+  }
 }

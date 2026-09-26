@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { ScreenId } from '../../App';
 import { AlertCircle, Check, ChevronDown, X } from 'lucide-react';
+import '../../styles/public.css';
 
 export type ApplicationState = 'default' | 'required' | 'email_exists' | 'submitted';
 
@@ -52,84 +53,51 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
     setAppState('submitted');
   };
 
+  const isEmailError = appState === 'required' || appState === 'email_exists';
+
   return (
-    <div style={{ backgroundColor: '#0b0b0c', color: '#FFFFFF', padding: '80px 40px 140px', position: 'relative' }}>
-      <div style={{ maxWidth: '980px', margin: '0 auto' }}>
-        {/* Header matching Figma */}
-        <div style={{ textAlign: 'center', marginBottom: '70px' }}>
-          <h1 style={{ fontSize: '42px', fontWeight: '800', marginBottom: '14px' }}>
-            Fill in Your Details to <span style={{ color: '#dfae32' }}>Get Started</span>
+    <div className="tc-page-root" style={{ padding: '80px clamp(20px, 5vw, 80px) 140px', position: 'relative', width: '100%' }}>
+      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+        {/* Header */}
+        <div className="tc-section-header" style={{ marginBottom: '70px' }}>
+          <h1 className="tc-section-title" style={{ fontSize: '42px', fontWeight: 800 }}>
+            Fill in Your Details to <span className="tc-gold">Get Started</span>
           </h1>
-          <p style={{ fontSize: '16px', color: '#9CA3AF' }}>
-            Tell us a bit about yourself and the role you’re interested in.
+          <p className="tc-body-text">
+            Tell us a bit about yourself and the role you're interested in.
           </p>
         </div>
 
-        {/* Form Container */}
+        {/* Form */}
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
           {/* Row 1: First Name | Last Name */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '30px' }}>
+          <div className="tc-form-grid-2col">
             <div>
-              <label style={{ display: 'block', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>
-                First Name
-              </label>
+              <label className="tc-form-label">First Name</label>
               <input
                 type="text"
                 placeholder="Enter Name"
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                style={{
-                  width: '100%',
-                  height: '56px',
-                  backgroundColor: 'var(--tc-figma-black, #0B0B0C)',
-                  border: '1px solid var(--tc-figma-input-border, #FFFFFF59)',
-                  borderRadius: '8px',
-                  color: '#FFFFFF',
-                  padding: '0 20px',
-                  fontSize: '15px',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                  fontFamily: "'Poppins', sans-serif",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = 'var(--tc-figma-gold, #DFAE32)')}
-                onBlur={(e) => (e.target.style.borderColor = 'var(--tc-figma-input-border, #FFFFFF59)')}
+                className="tc-rect-input"
               />
             </div>
-
             <div>
-              <label style={{ display: 'block', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>
-                Last Name
-              </label>
+              <label className="tc-form-label">Last Name</label>
               <input
                 type="text"
                 placeholder="Enter Name"
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                style={{
-                  width: '100%',
-                  height: '56px',
-                  backgroundColor: 'var(--tc-figma-black, #0B0B0C)',
-                  border: '1px solid var(--tc-figma-input-border, #FFFFFF59)',
-                  borderRadius: '8px',
-                  color: '#FFFFFF',
-                  padding: '0 20px',
-                  fontSize: '15px',
-                  outline: 'none',
-                  transition: 'border-color 0.2s',
-                  fontFamily: "'Poppins', sans-serif",
-                }}
-                onFocus={(e) => (e.target.style.borderColor = 'var(--tc-figma-gold, #DFAE32)')}
-                onBlur={(e) => (e.target.style.borderColor = 'var(--tc-figma-input-border, #FFFFFF59)')}
+                className="tc-rect-input"
               />
             </div>
           </div>
 
-          {/* Row 2: Email (with Required Error or Email Exists states matching Figma) */}
+          {/* Row 2: Email (with error states) */}
           <div>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <label style={{ fontSize: '18px', fontWeight: '600', color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>
-                Email
-              </label>
+              <label className="tc-form-label" style={{ marginBottom: 0 }}>Email</label>
               {appState === 'required' && (
                 <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#df0e0e', fontSize: '14px', fontWeight: '600' }}>
                   <AlertCircle size={16} />
@@ -147,21 +115,11 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
                   setAppState('default');
                 }
               }}
+              className="tc-rect-input"
               style={{
-                width: '100%',
-                height: '56px',
-                backgroundColor: 'var(--tc-figma-black, #0B0B0C)',
-                border: (appState === 'required' || appState === 'email_exists') ? '1px solid #df0e0e' : '1px solid var(--tc-figma-input-border, #FFFFFF59)',
-                borderRadius: '8px',
-                color: (appState === 'required' || appState === 'email_exists') ? '#df0e0e' : '#FFFFFF',
-                padding: '0 20px',
-                fontSize: '15px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-                fontFamily: "'Poppins', sans-serif",
+                border: isEmailError ? '1px solid #df0e0e' : undefined,
+                color: isEmailError ? '#df0e0e' : undefined,
               }}
-              onFocus={(e) => (e.target.style.borderColor = (appState === 'required' || appState === 'email_exists') ? '#df0e0e' : 'var(--tc-figma-gold, #DFAE32)')}
-              onBlur={(e) => (e.target.style.borderColor = (appState === 'required' || appState === 'email_exists') ? '#df0e0e' : 'var(--tc-figma-input-border, #FFFFFF59)')}
             />
             {appState === 'email_exists' && (
               <p style={{ color: '#df0e0e', fontSize: '14px', marginTop: '8px', fontWeight: '500' }}>
@@ -172,91 +130,47 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
 
           {/* Row 3: Phone Number */}
           <div>
-            <label style={{ display: 'block', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>
-              Phone Number
-            </label>
+            <label className="tc-form-label">Phone Number</label>
             <input
               type="text"
               placeholder="1234567890"
               value={formData.phoneNumber}
               onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-              style={{
-                width: '100%',
-                height: '56px',
-                backgroundColor: 'var(--tc-figma-black, #0B0B0C)',
-                border: '1px solid var(--tc-figma-input-border, #FFFFFF59)',
-                borderRadius: '8px',
-                color: '#FFFFFF',
-                padding: '0 20px',
-                fontSize: '15px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-                fontFamily: "'Poppins', sans-serif",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--tc-figma-gold, #DFAE32)')}
-              onBlur={(e) => (e.target.style.borderColor = 'var(--tc-figma-input-border, #FFFFFF59)')}
+              className="tc-rect-input"
             />
           </div>
 
           {/* Row 4: Location */}
           <div>
-            <label style={{ display: 'block', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>
-              Location
-            </label>
+            <label className="tc-form-label">Location</label>
             <input
               type="text"
               placeholder="Lagos"
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-              style={{
-                width: '100%',
-                height: '56px',
-                backgroundColor: 'var(--tc-figma-black, #0B0B0C)',
-                border: '1px solid var(--tc-figma-input-border, #FFFFFF59)',
-                borderRadius: '8px',
-                color: '#FFFFFF',
-                padding: '0 20px',
-                fontSize: '15px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-                fontFamily: "'Poppins', sans-serif",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--tc-figma-gold, #DFAE32)')}
-              onBlur={(e) => (e.target.style.borderColor = 'var(--tc-figma-input-border, #FFFFFF59)')}
+              className="tc-rect-input"
             />
           </div>
 
-          {/* Row 5: Department */}
+          {/* Row 5: Department dropdown */}
           <div style={{ position: 'relative' }}>
-            <label style={{ display: 'block', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>
-              Department
-            </label>
+            <label className="tc-form-label">Department</label>
             <div
               onClick={() => setDepartmentOpen(!departmentOpen)}
+              className="tc-rect-input"
               style={{
-                width: '100%',
-                height: '56px',
-                backgroundColor: 'var(--tc-figma-black, #0B0B0C)',
-                border: departmentOpen ? '1px solid var(--tc-figma-gold, #DFAE32)' : '1px solid var(--tc-figma-input-border, #FFFFFF59)',
-                borderRadius: '8px',
-                color: '#FFFFFF',
-                padding: '0 20px',
-                fontSize: '15px',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 cursor: 'pointer',
-                fontFamily: "'Poppins', sans-serif",
+                border: departmentOpen ? '1px solid var(--tc-figma-gold, #DFAE32)' : undefined,
               }}
             >
               <span>{formData.department}</span>
               <ChevronDown
                 size={18}
                 color="#DFAE32"
-                style={{
-                  transform: departmentOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                  transition: 'transform 0.2s ease',
-                }}
+                style={{ transform: departmentOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
               />
             </div>
 
@@ -278,10 +192,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
                 {departments.map((dept) => (
                   <div
                     key={dept}
-                    onClick={() => {
-                      setFormData({ ...formData, department: dept });
-                      setDepartmentOpen(false);
-                    }}
+                    onClick={() => { setFormData({ ...formData, department: dept }); setDepartmentOpen(false); }}
                     style={{
                       padding: '10px 20px',
                       fontSize: '14px',
@@ -300,114 +211,52 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
             )}
           </div>
 
-          {/* Row 6: Linkedin */}
+          {/* Row 6: LinkedIn */}
           <div>
-            <label style={{ display: 'block', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>
+            <label className="tc-form-label">
               Linkedin <span style={{ color: '#9CA3AF', fontWeight: '400', fontSize: '15px' }}>(compulsory)</span>
             </label>
             <input
               type="text"
               value={formData.linkedin}
               onChange={(e) => setFormData({ ...formData, linkedin: e.target.value })}
-              style={{
-                width: '100%',
-                height: '56px',
-                backgroundColor: 'var(--tc-figma-black, #0B0B0C)',
-                border: '1px solid var(--tc-figma-input-border, #FFFFFF59)',
-                borderRadius: '8px',
-                color: '#FFFFFF',
-                padding: '0 20px',
-                fontSize: '15px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-                fontFamily: "'Poppins', sans-serif",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--tc-figma-gold, #DFAE32)')}
-              onBlur={(e) => (e.target.style.borderColor = 'var(--tc-figma-input-border, #FFFFFF59)')}
+              className="tc-rect-input"
             />
           </div>
 
           {/* Row 7: Github */}
           <div>
-            <label style={{ display: 'block', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>
-              Github
-            </label>
+            <label className="tc-form-label">Github</label>
             <input
               type="text"
               value={formData.github}
               onChange={(e) => setFormData({ ...formData, github: e.target.value })}
-              style={{
-                width: '100%',
-                height: '56px',
-                backgroundColor: 'var(--tc-figma-black, #0B0B0C)',
-                border: '1px solid var(--tc-figma-input-border, #FFFFFF59)',
-                borderRadius: '8px',
-                color: '#FFFFFF',
-                padding: '0 20px',
-                fontSize: '15px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-                fontFamily: "'Poppins', sans-serif",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--tc-figma-gold, #DFAE32)')}
-              onBlur={(e) => (e.target.style.borderColor = 'var(--tc-figma-input-border, #FFFFFF59)')}
+              className="tc-rect-input"
             />
           </div>
 
-          {/* Row 8: Tell Us About Yourself */}
+          {/* Row 8: About */}
           <div>
-            <label style={{ display: 'block', fontSize: '18px', fontWeight: '600', marginBottom: '12px', color: '#FFFFFF', fontFamily: "'Poppins', sans-serif" }}>
-              Tell Us About Yourself
-            </label>
+            <label className="tc-form-label">Tell Us About Yourself</label>
             <textarea
               rows={6}
               value={formData.about}
               onChange={(e) => setFormData({ ...formData, about: e.target.value })}
-              style={{
-                width: '100%',
-                backgroundColor: 'var(--tc-figma-black, #0B0B0C)',
-                border: '1px solid var(--tc-figma-input-border, #FFFFFF59)',
-                borderRadius: '8px',
-                color: '#FFFFFF',
-                padding: '18px 20px',
-                fontSize: '15px',
-                lineHeight: '1.6',
-                outline: 'none',
-                resize: 'none',
-                transition: 'border-color 0.2s',
-                fontFamily: "'Poppins', sans-serif",
-              }}
-              onFocus={(e) => (e.target.style.borderColor = 'var(--tc-figma-gold, #DFAE32)')}
-              onBlur={(e) => (e.target.style.borderColor = 'var(--tc-figma-input-border, #FFFFFF59)')}
+              className="tc-textarea"
+              style={{ borderRadius: '8px', padding: '18px 20px' }}
             />
           </div>
 
-          {/* Submit Button matching Figma */}
+          {/* Submit */}
           <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <button
-              type="submit"
-              style={{
-                backgroundColor: 'var(--tc-figma-gold, #DFAE32)',
-                color: '#0B0B0C',
-                fontWeight: '700',
-                fontSize: '16px',
-                padding: '14px 64px',
-                borderRadius: '8px',
-                border: 'none',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                fontFamily: "'Poppins', sans-serif",
-              }}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#EEC147')}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#DFAE32')}
-            >
+            <button type="submit" className="tc-btn-gold" style={{ padding: '14px 64px', fontSize: '16px', borderRadius: '8px' }}>
               Submit
             </button>
           </div>
         </form>
       </div>
 
-      {/* MODAL POPUP: Submitted Application matching Figma Submitted Application.png */}
+      {/* MODAL POPUP: Submitted Application */}
       {appState === 'submitted' && (
         <div
           onClick={() => setAppState('default')}
@@ -439,26 +288,14 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
               position: 'relative',
             }}
           >
-            {/* Top Right Close 'x' */}
             <button
               type="button"
               onClick={() => setAppState('default')}
-              style={{
-                position: 'absolute',
-                top: '20px',
-                right: '20px',
-                background: 'none',
-                border: 'none',
-                color: '#000000',
-                cursor: 'pointer',
-                padding: '6px',
-                display: 'flex',
-              }}
+              style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: '#000000', cursor: 'pointer', padding: '6px', display: 'flex' }}
             >
               <X size={22} strokeWidth={2.5} />
             </button>
 
-            {/* Dark Circle with Gold Checkmark Icon */}
             <div
               style={{
                 width: '88px',
@@ -474,32 +311,10 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
               <Check size={46} color="#dfae32" strokeWidth={3} />
             </div>
 
-            {/* Heading */}
-            <h2
-              style={{
-                fontSize: '32px',
-                fontWeight: '800',
-                color: '#000000',
-                marginBottom: '16px',
-                letterSpacing: '-0.5px',
-                fontFamily: "'Inter', sans-serif",
-              }}
-            >
+            <h2 style={{ fontSize: '32px', fontWeight: '800', color: '#000000', marginBottom: '16px', letterSpacing: '-0.5px', fontFamily: "'Inter', sans-serif" }}>
               Application Submitted
             </h2>
-
-            {/* Message */}
-            <p
-              style={{
-                fontSize: '16px',
-                color: '#1F2937',
-                lineHeight: '1.6',
-                maxWidth: '460px',
-                margin: '0 auto',
-                fontWeight: '500',
-                fontFamily: "'Poppins', sans-serif",
-              }}
-            >
+            <p style={{ fontSize: '16px', color: '#1F2937', lineHeight: '1.6', maxWidth: '460px', margin: '0 auto', fontWeight: '500', fontFamily: "'Poppins', sans-serif" }}>
               Thank you for applying! We have received your application and we will be in touch soon.
             </p>
           </div>

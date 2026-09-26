@@ -1,6 +1,13 @@
 import React, { useState } from 'react';
 import type { ScreenId } from '../../App';
-import { Mail, Phone, MapPin, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { Mail, Phone, MapPin, ChevronDown, CheckCircle2, AlertCircle } from 'lucide-react';
+import { api } from '../../services/api';
+import {
+  ContactCornerTopLeft,
+  ContactCornerTopRight,
+  ContactCornerBottomLeft,
+  ContactCornerBottomRight,
+} from '../../components/common/CornerGradients';
 
 interface ContactUsViewProps {
   onNavigate: (view: ScreenId) => void;
@@ -17,6 +24,8 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const subjectOptions = [
     'General Inquiry',
@@ -27,374 +36,214 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
     'Feedback',
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-    }, 4000);
+    setError('');
+    setIsLoading(true);
+    try {
+      await api.submitContact({
+        first_name: formData.firstName,
+        last_name: formData.lastName,
+        email: formData.email,
+        subject: formData.subject,
+        message: formData.message,
+      });
+      setSubmitted(true);
+      setFormData({ firstName: '', lastName: '', email: '', subject: 'General Inquiry', message: '' });
+      setTimeout(() => setSubmitted(false), 6000);
+    } catch (err: any) {
+      setError(err.message || 'Failed to send message. Please try again.');
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div style={{ backgroundColor: 'var(--tc-figma-black)', color: '#FFFFFF', paddingBottom: '120px' }}>
-      {/* 1. HERO BANNER */}
+    <div className="tc-page-root" style={{ paddingBottom: '120px' }}>
+      {/* 1. HERO — Figma: x:0, y:154, w:1440, h:463, sharp corners */}
       <section
-        style={{
-          width: '100%',
-          position: 'relative',
-          overflow: 'hidden',
-          padding: '120px 40px 110px',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          textAlign: 'center',
-          backgroundImage: 'linear-gradient(rgba(11, 11, 12, 0.72), rgba(11, 11, 12, 0.88)), url(/assets/contactus_bg.jpg)',
-          backgroundSize: 'cover',
-          backgroundPosition: 'center',
-          backgroundRepeat: 'no-repeat',
-        }}
+        className="tc-subpage-hero"
+        style={{ backgroundImage: 'url(/assets/contactus_bg.jpg)' }}
       >
-        <div style={{ maxWidth: '840px', margin: '0 auto' }}>
-          <h1
-            style={{
-              fontFamily: "'Inter', sans-serif",
-              fontSize: '64px',
-              fontWeight: 800,
-              lineHeight: '100%',
-              letterSpacing: '-0.5px',
-              color: '#FFFFFF',
-              marginBottom: '20px',
-            }}
-          >
-            Contact <span style={{ color: 'var(--tc-figma-gold, #DFAE32)' }}>Us</span>
+        <div className="tc-subpage-hero__content">
+          <h1 className="tc-hero-title">
+            Contact <span className="tc-gold">Us</span>
           </h1>
-
-          <p
-            style={{
-              fontFamily: "'Poppins', sans-serif",
-              fontSize: '20px',
-              fontWeight: 500,
-              lineHeight: '32px',
-              letterSpacing: '0%',
-              textAlign: 'center',
-              color: '#9CA3AF',
-              maxWidth: '680px',
-              margin: '0 auto',
-            }}
-          >
-            Send us a message and our team will get back to you shortly. We’re always available.
+          <p className="tc-hero-subtitle">
+            Send us a message and our team will get back to you shortly. We're always available.
           </p>
         </div>
       </section>
 
-      {/* 2. MAIN SPLIT SECTION */}
-      <section style={{ maxWidth: '1280px', margin: '90px auto 0', padding: '0 40px' }}>
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: '1.1fr 1.3fr',
-            gap: '80px',
-            alignItems: 'start',
-          }}
-        >
-          {/* Left Column: Let's Get in Touch */}
-          <div>
-            <h2 style={{ fontSize: '46px', fontWeight: '800', marginBottom: '20px', color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
-              Let’s Get in Touch
-            </h2>
-            <p style={{ fontSize: '16px', color: '#9CA3AF', lineHeight: '1.7', marginBottom: '48px', maxWidth: '480px', fontFamily: "'Poppins', sans-serif" }}>
-              Have a project, an inquiry, or looking to collaborate with us? Our team is ready to assist. Send us a message and we’ll respond as soon as possible.
-            </p>
+      {/* 2. SPLIT SECTION: contact info + form */}
+      <section className="tc-section">
+        <div className="tc-section-inner">
+          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.3fr', gap: '80px', alignItems: 'start' }}>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div
-                  style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '8px',
-                    backgroundColor: '#111214',
-                    border: '1px solid rgba(223, 174, 50, 0.24)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#DFAE32',
-                  }}
-                >
-                  <Mail size={20} />
-                </div>
-                <span style={{ fontSize: '15px', color: '#E5E7EB' }}>Titancodetechnologies@gmail.com</span>
-              </div>
+            {/* Left: contact details */}
+            <div>
+              <h2 style={{ fontSize: '46px', fontWeight: '800', marginBottom: '20px', color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
+                Let's Get in Touch
+              </h2>
+              <p className="tc-body-text" style={{ marginBottom: '48px', maxWidth: '480px' }}>
+                Have a project, an inquiry, or looking to collaborate with us? Our team is ready to assist.
+                Send us a message and we'll respond as soon as possible.
+              </p>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div
-                  style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '8px',
-                    backgroundColor: '#111214',
-                    border: '1px solid rgba(223, 174, 50, 0.24)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#DFAE32',
-                  }}
-                >
-                  <Phone size={20} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+                <div className="tc-contact-row">
+                  <div className="tc-contact-icon"><Mail size={20} /></div>
+                  <span style={{ fontSize: '15px', color: '#E5E7EB' }}>Titancodetechnologies@gmail.com</span>
                 </div>
-                <span style={{ fontSize: '15px', color: '#E5E7EB' }}>+233(0)546606807</span>
-              </div>
-
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <div
-                  style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '8px',
-                    backgroundColor: '#111214',
-                    border: '1px solid rgba(223, 174, 50, 0.24)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: '#DFAE32',
-                  }}
-                >
-                  <MapPin size={20} />
+                <div className="tc-contact-row">
+                  <div className="tc-contact-icon"><Phone size={20} /></div>
+                  <span style={{ fontSize: '15px', color: '#E5E7EB' }}>+233(0)546606807</span>
                 </div>
-                <span style={{ fontSize: '15px', color: '#E5E7EB' }}>Remote</span>
+                <div className="tc-contact-row">
+                  <div className="tc-contact-icon"><MapPin size={20} /></div>
+                  <span style={{ fontSize: '15px', color: '#E5E7EB' }}>Remote</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Right Column: Contact Form with exact golden linear gradient corner accents from Figma */}
-          <div
-            style={{
-              position: 'relative',
-              padding: '44px',
-              borderRadius: '16px',
-              backgroundColor: 'var(--tc-figma-black)',
-              border: '1px solid var(--tc-figma-card-border)',
-              boxShadow: '0 16px 40px rgba(0, 0, 0, 0.4)',
-            }}
-          >
-            {submitted && (
-              <div
-                style={{
-                  backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                  border: '1px solid #10B981',
-                  color: '#10B981',
-                  padding: '16px 20px',
-                  borderRadius: '12px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '10px',
-                  marginBottom: '24px',
-                  fontSize: '14px',
-                  fontWeight: '600',
-                }}
-              >
-                <CheckCircle2 size={20} />
-                <span>Message sent! Our support and engineering team will reach back shortly.</span>
-              </div>
-            )}
+            {/* Right: form with corner gradient accents */}
+            <div className="tc-form-frame">
+              {/* Figma gradient corner accents */}
+              <ContactCornerTopLeft className="tc-corner-svg-tl" />
+              <ContactCornerTopRight className="tc-corner-svg-tr" />
+              <ContactCornerBottomLeft className="tc-corner-svg-bl" />
+              <ContactCornerBottomRight className="tc-corner-svg-br" />
 
-            <form onSubmit={handleSubmit}>
-              {/* Row 1: First Name | Last Name */}
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px', marginBottom: '24px' }}>
-                <div>
+              {submitted && (
+                <div className="tc-form-success">
+                  <CheckCircle2 size={20} />
+                  <span>Message sent! Our support and engineering team will reach back shortly.</span>
+                </div>
+              )}
+
+              {error && (
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: '#EF4444', fontSize: '13px' }}>
+                  <AlertCircle size={15} />
+                  <span>{error}</span>
+                </div>
+              )}
+
+              <form onSubmit={handleSubmit}>
+                {/* Row 1: First Name | Last Name */}
+                <div className="tc-form-grid-2col">
                   <input
                     type="text"
                     required
                     placeholder="First Name"
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                    style={{
-                      width: '100%',
-                      height: '58px',
-                      borderRadius: '9999px',
-                      backgroundColor: 'var(--tc-bg-input)',
-                      border: '1px solid var(--tc-figma-input-border)',
-                      color: '#FFFFFF',
-                      padding: '0 28px',
-                      fontSize: '15px',
-                      outline: 'none',
-                      transition: 'border-color 0.2s',
-                    }}
+                    className="tc-pill-input"
                     onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
                     onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
                   />
-                </div>
-
-                <div>
                   <input
                     type="text"
                     required
                     placeholder="Last Name"
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                    style={{
-                      width: '100%',
-                      height: '58px',
-                      borderRadius: '9999px',
-                      backgroundColor: 'var(--tc-bg-input)',
-                      border: '1px solid var(--tc-figma-input-border)',
-                      color: '#FFFFFF',
-                      padding: '0 28px',
-                      fontSize: '15px',
-                      outline: 'none',
-                      transition: 'border-color 0.2s',
-                    }}
+                    className="tc-pill-input"
                     onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
                     onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
                   />
                 </div>
-              </div>
 
-              {/* Row 2: Email */}
-              <div style={{ marginBottom: '24px' }}>
-                <input
-                  type="email"
-                  required
-                  placeholder="Email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  style={{
-                    width: '100%',
-                    height: '58px',
-                    borderRadius: '9999px',
-                    backgroundColor: 'var(--tc-bg-input)',
-                    border: '1px solid var(--tc-figma-input-border)',
-                    color: '#FFFFFF',
-                    padding: '0 28px',
-                    fontSize: '15px',
-                    outline: 'none',
-                    transition: 'border-color 0.2s',
-                  }}
-                  onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
-                  onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
-                />
-              </div>
-
-              {/* Row 3: Subject Dropdown matching Figma */}
-              <div style={{ position: 'relative', marginBottom: '24px' }}>
-                <div
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  style={{
-                    width: '100%',
-                    height: '58px',
-                    borderRadius: '9999px',
-                    backgroundColor: 'var(--tc-bg-input)',
-                    border: dropdownOpen ? '1px solid #DFAE32' : '1px solid #FFFFFF59',
-                    color: '#FFFFFF',
-                    padding: '0 28px',
-                    fontSize: '15px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    cursor: 'pointer',
-                    userSelect: 'none',
-                  }}
-                >
-                  <span>{formData.subject}</span>
-                  <ChevronDown
-                    size={18}
-                    color="#DFAE32"
-                    style={{
-                      transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                      transition: 'transform 0.2s ease',
-                    }}
+                {/* Row 2: Email */}
+                <div className="tc-form-row">
+                  <input
+                    type="email"
+                    required
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    className="tc-pill-input"
+                    onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
+                    onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
                   />
                 </div>
 
-                {/* Dropdown Menu matching Figma slice */}
-                {dropdownOpen && (
+                {/* Row 3: Subject dropdown */}
+                <div className="tc-form-row" style={{ position: 'relative' }}>
                   <div
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="tc-pill-input"
                     style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      cursor: 'pointer',
+                      userSelect: 'none',
+                      borderColor: dropdownOpen ? '#DFAE32' : '#FFFFFF59',
+                    }}
+                  >
+                    <span>{formData.subject}</span>
+                    <ChevronDown
+                      size={18}
+                      color="#DFAE32"
+                      style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
+                    />
+                  </div>
+
+                  {dropdownOpen && (
+                    <div style={{
                       position: 'absolute',
                       top: '66px',
                       right: 0,
                       width: '260px',
-                      backgroundColor: 'var(--tc-bg-input)',
-                      border: '1px solid rgba(223, 174, 50, 0.4)',
+                      backgroundColor: '#0B0B0C',
+                      border: '1px solid rgba(223,174,50,0.4)',
                       borderRadius: '14px',
                       padding: '10px 0',
-                      boxShadow: '0 12px 32px rgba(0, 0, 0, 0.7)',
+                      boxShadow: '0 12px 32px rgba(0,0,0,0.7)',
                       zIndex: 50,
-                    }}
-                  >
-                    {subjectOptions.map((opt) => (
-                      <div
-                        key={opt}
-                        onClick={() => {
-                          setFormData({ ...formData, subject: opt });
-                          setDropdownOpen(false);
-                        }}
-                        style={{
-                          padding: '10px 20px',
-                          fontSize: '14px',
-                          color: formData.subject === opt ? '#DFAE32' : '#E5E7EB',
-                          fontWeight: formData.subject === opt ? '600' : '400',
-                          cursor: 'pointer',
-                          transition: 'background-color 0.15s',
-                        }}
-                        onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(223, 174, 50, 0.15)')}
-                        onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                      >
-                        {opt}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
+                    }}>
+                      {subjectOptions.map((opt) => (
+                        <div
+                          key={opt}
+                          onClick={() => { setFormData({ ...formData, subject: opt }); setDropdownOpen(false); }}
+                          style={{
+                            padding: '10px 20px',
+                            fontSize: '14px',
+                            color: formData.subject === opt ? '#DFAE32' : '#E5E7EB',
+                            fontWeight: formData.subject === opt ? '600' : '400',
+                            cursor: 'pointer',
+                          }}
+                          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(223,174,50,0.15)')}
+                          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                        >
+                          {opt}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
 
-              {/* Row 4: Message Textarea */}
-              <div style={{ marginBottom: '32px' }}>
-                <textarea
-                  rows={6}
-                  required
-                  placeholder="Message"
-                  value={formData.message}
-                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                  style={{
-                    width: '100%',
-                    borderRadius: '20px',
-                    backgroundColor: 'var(--tc-bg-input)',
-                    border: '1px solid #FFFFFF59',
-                    color: '#FFFFFF',
-                    padding: '22px 28px',
-                    fontSize: '15px',
-                    lineHeight: '1.6',
-                    outline: 'none',
-                    resize: 'none',
-                    transition: 'border-color 0.2s',
-                  }}
-                  onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
-                  onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
-                />
-              </div>
+                {/* Row 4: Message */}
+                <div className="tc-form-row" style={{ marginBottom: '32px' }}>
+                  <textarea
+                    rows={6}
+                    required
+                    placeholder="Message"
+                    value={formData.message}
+                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                    className="tc-textarea"
+                    onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
+                    onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
+                  />
+                </div>
 
-              {/* Submit button aligned to the right matching Figma */}
-              <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                <button
-                  type="submit"
-                  style={{
-                    backgroundColor: '#DFAE32',
-                    color: '#0B0B0C',
-                    fontWeight: '700',
-                    fontSize: '16px',
-                    padding: '14px 52px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.2s ease',
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#eec147')}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#DFAE32')}
-                >
-                  Submit
-                </button>
-              </div>
-            </form>
+                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                  <button type="submit" className="tc-btn-gold tc-btn-gold--submit" disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1 }}>
+                    {isLoading ? 'Sending…' : 'Submit'}
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         </div>
       </section>

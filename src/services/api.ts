@@ -20,6 +20,9 @@ import type {
   TeamMemberWorkload,
   ClientMilestone,
   ApplicantRecord,
+  Project,
+  WithdrawalRecord,
+  ProductRecord,
 } from '../types';
 
 const configuredApiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
@@ -992,9 +995,12 @@ export const MOCK_APPLICANT_RECORDS: ApplicantRecord[] = [
  */
 class ApiService {
   private token: string | null = null;
+  private refreshToken: string | null = null;
+  private refreshPromise: Promise<string | null> | null = null;
 
   constructor() {
     this.token = localStorage.getItem('tc_access_token');
+    this.refreshToken = localStorage.getItem('tc_refresh_token');
   }
 
   setToken(token: string | null) {
@@ -1006,320 +1012,346 @@ class ApiService {
     }
   }
 
-  // --- AUTHENTICATION ---
-  async login(email: string, _password: string): Promise<AuthResponse> {
+  setRefreshToken(token: string | null) {
+    this.refreshToken = token;
+    if (token) {
+      localStorage.setItem('tc_refresh_token', token);
+    } else {
+      localStorage.removeItem('tc_refresh_token');
+    }
+  }
+
+  clearAuth() {
+    this.setToken(null);
+    this.setRefreshToken(null);
+  }
+
+  isAuthenticated(): boolean {
+    return !!this.token && !this.token.startsWith('mock_');
+  }
+
+  /** Silently exchange the refresh token for a new access token. */
+  private async _refreshAccessToken(): Promise<string | null> {
+    if (!this.refreshToken) return null;
     try {
-      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      const res = await fetch(`${API_BASE_URL}/auth/refresh?refresh_token=${encodeURIComponent(this.refreshToken)}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams({ username: email, password: _password }),
       });
-      if (response.ok) {
-        const data = await response.json();
+      if (res.ok) {
+        const data = await res.json();
         this.setToken(data.access_token);
-        const user = await this.getCurrentUser();
-        return { ...data, user };
+        if (data.refresh_token) this.setRefreshToken(data.refresh_token);
+        return data.access_token;
       }
     } catch {
-      // Graceful fallback to mock response
+      // network error — leave current token intact
+    }
+    return null;
+  }
+
+  /**
+   * Deduplicated token refresh — multiple concurrent 401s
+   * trigger only one refresh call.
+   */
+  async ensureFreshToken(): Promise<void> {
+    if (!this.refreshPromise) {
+      this.refreshPromise = this._refreshAccessToken().finally(() => {
+        this.refreshPromise = null;
+      });
+    }
+    await this.refreshPromise;
+  }
+
+  /** Auth-aware fetch that transparently retries once after a 401. */
+  private async authFetch(input: RequestInfo, init: RequestInit = {}): Promise<Response> {
+    const headers = new Headers(init.headers || {});
+    if (this.token) headers.set('Authorization', `Bearer ${this.token}`);
+    const res = await fetch(input, { ...init, headers });
+
+    if (res.status === 401 && this.refreshToken) {
+      await this.ensureFreshToken();
+      if (this.token) headers.set('Authorization', `Bearer ${this.token}`);
+      return fetch(input, { ...init, headers });
+    }
+    return res;
+  }
+
+  // --- AUTHENTICATION ---
+  async login(email: string, password: string): Promise<AuthResponse> {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ username: email, password }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Invalid email or password.');
     }
 
-    // Role check logic for demo
-    const user = email.toLowerCase().includes('admin') ? MOCK_ADMIN_USER : MOCK_MEMBER_USER;
-    const authData: AuthResponse = {
-      access_token: 'mock_jwt_token_' + Date.now(),
-      refresh_token: 'mock_refresh_token_' + Date.now(),
-      token_type: 'bearer',
-      user,
-    };
-    this.setToken(authData.access_token);
-    return authData;
+    const data = await response.json();
+    this.setToken(data.access_token);
+    if (data.refresh_token) this.setRefreshToken(data.refresh_token);
+    const user = await this.getCurrentUser();
+    return { ...data, user };
+  }
+
+  async register(payload: {
+    full_name: string;
+    email: string;
+    password: string;
+    phone_number?: string;
+    country?: string;
+  }): Promise<User> {
+    const res = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Registration failed. Please try again.');
+    }
+    return res.json();
+  }
+
+  async logout(): Promise<void> {
+    this.clearAuth();
   }
 
   async getCurrentUser(): Promise<User> {
-    try {
-      if (this.token) {
-        const res = await fetch(`${API_BASE_URL}/auth/profile`, {
-          headers: { Authorization: `Bearer ${this.token}` },
-        });
-        if (res.ok) return await res.json();
-      }
-    } catch {
-      // fallback
-    }
-    return MOCK_MEMBER_USER;
+    if (!this.token) throw new Error('Not authenticated');
+    const res = await this.authFetch(`${API_BASE_URL}/auth/profile`);
+    if (!res.ok) throw new Error('Failed to load user profile');
+    return res.json();
   }
 
   // --- PASSWORD RECOVERY WIZARD (3 STEPS) ---
   async requestPasswordResetOtp(email: string): Promise<{ success: boolean; message: string }> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/forgot-password/request-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
+    const res = await fetch(`${API_BASE_URL}/auth/forgot-password/request-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to send reset code.');
     }
-    return { success: true, message: `OTP verification code sent to ${email}` };
+    return res.json();
   }
 
   async verifyOtp(email: string, code: string): Promise<{ success: boolean; reset_token: string }> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/forgot-password/verify-otp`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, code }),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
+    const res = await fetch(`${API_BASE_URL}/auth/forgot-password/verify-otp`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, code }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Incorrect code. Please try again.');
     }
-
-    if (code === '0000') {
-      throw new Error('Incorrect code. Please try again.');
-    }
-    return { success: true, reset_token: 'rst_' + Math.random().toString(36).substring(7) };
+    return res.json();
   }
 
   async resetPassword(resetToken: string, newPassword: string): Promise<{ success: boolean; message: string }> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/forgot-password/reset`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reset_token: resetToken, new_password: newPassword }),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
+    const res = await fetch(`${API_BASE_URL}/auth/forgot-password/reset`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reset_token: resetToken, new_password: newPassword }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to reset password. The link may have expired.');
     }
-    return { success: true, message: 'Password has been reset successfully.' };
+    return res.json();
   }
 
   // --- DASHBOARD / TASKS ---
   async getTasks(): Promise<Task[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/tasks/?limit=100`, {
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return Array.isArray(data) ? data : data.items;
-      }
-    } catch {
-      // fallback
-    }
-    return MOCK_TASKS;
+    const res = await this.authFetch(`${API_BASE_URL}/tasks/?limit=100`);
+    if (!res.ok) return MOCK_TASKS; // degraded: show mock tasks if backend unavailable
+    const data = await res.json();
+    return Array.isArray(data) ? data : (data.items ?? MOCK_TASKS);
   }
 
-  async getUpcomingMeeting(): Promise<Meeting> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/meetings/?limit=1`, {
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) {
-        const data = await res.json();
-        const meeting = (Array.isArray(data) ? data : data.items)?.[0];
-        if (meeting) {
-          const scheduledAt = new Date(meeting.scheduled_at);
-          return {
-            id: meeting.id,
-            title: meeting.title,
-            date: scheduledAt.toLocaleDateString(),
-            time: scheduledAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            duration_minutes: 0,
-            meet_url: meeting.meeting_link || '',
-            attendees: [],
-          };
-        }
-      }
-    } catch {
-      // fallback
-    }
-    return MOCK_MEETING;
+  async getUpcomingMeeting(): Promise<Meeting | null> {
+    const res = await this.authFetch(`${API_BASE_URL}/meetings/?limit=1`);
+    if (!res.ok) return MOCK_MEETING;
+    const data = await res.json();
+    const meeting = (Array.isArray(data) ? data : data.items)?.[0];
+    if (!meeting) return null;
+    const scheduledAt = new Date(meeting.scheduled_at);
+    return {
+      id: meeting.id,
+      title: meeting.title,
+      date: scheduledAt.toLocaleDateString(),
+      time: scheduledAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      duration_minutes: 0,
+      meet_url: meeting.meeting_link || '',
+      attendees: [],
+    };
   }
 
-  async getWallet(): Promise<Wallet> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/wallets/me`, {
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return MOCK_WALLET;
+  async getWallet(): Promise<Wallet | null> {
+    const res = await this.authFetch(`${API_BASE_URL}/wallets/me`);
+    if (res.status === 404) return null; // wallet not created yet
+    if (!res.ok) return MOCK_WALLET;
+    return res.json();
   }
 
   // --- CLIENTS CRM ---
+  // ClientsView should use /users?role=Client (leads are separate from activated clients)
   async getClients(): Promise<ClientRecord[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/clients`, {
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return MOCK_CLIENTS;
+    const res = await this.authFetch(`${API_BASE_URL}/users/?role=Client&limit=100`);
+    if (!res.ok) return MOCK_CLIENTS;
+    const data = await res.json();
+    const users = data.items ?? data;
+    // Map User records with role=Client to ClientRecord shape
+    return users.map((u: any) => ({
+      id: u.id,
+      full_name: u.full_name,
+      email: u.email,
+      phone: u.phone_number ?? '',
+      status: u.status === 'approved' ? 'Active' : u.status === 'pending' ? 'Pending' : 'Closed',
+      created_at: u.created_at,
+    }));
   }
 
-  async addClient(client: Partial<ClientRecord>): Promise<ClientRecord> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/clients`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
-        },
-        body: JSON.stringify(client),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
+  async getInboundLeads(): Promise<InboundLead[]> {
+    const res = await this.authFetch(`${API_BASE_URL}/leads/?limit=100`);
+    if (!res.ok) return MOCK_INBOUND_LEADS;
+    const data = await res.json();
+    const items = data.items ?? data;
+    return items.map((lead: any) => ({
+      id: lead.id,
+      client_name: lead.full_name,
+      email: lead.email,
+      phone: lead.phone ?? '',
+      company: lead.company ?? '',
+      budget_range: '',
+      project_title: lead.service_interest ?? '',
+      service_category: lead.service_interest ?? '',
+      description: lead.message ?? '',
+      status: lead.status ?? 'new',
+      whatsapp_ready: !!lead.phone,
+      created_at: lead.created_at,
+    }));
+  }
 
-    const newRecord: ClientRecord = {
-      id: Date.now(),
-      full_name: client.full_name || 'Anonymous Client',
-      email: client.email || 'client@example.com',
-      company: client.company || 'Enterprise Partner',
-      phone: client.phone || '+234 800 000 0000',
-      service_interest: client.service_interest || 'Full Stack Web App',
-      status: client.status || 'Active',
-      contract_value: client.contract_value || 5000000,
-      currency: 'NGN',
-      created_at: new Date().toISOString(),
-    };
-    return newRecord;
+  /** Submit the public Hire Us form → POST /leads */
+  async submitHireUs(payload: {
+    name: string;
+    email: string;
+    phone?: string;
+    company?: string;
+    project_type?: string;
+    description?: string;
+  }): Promise<{ success: boolean }> {
+    const res = await fetch(`${API_BASE_URL}/leads`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to submit inquiry. Please try again.');
+    }
+    return { success: true };
+  }
+
+  /** Submit the public Contact Us form → POST /leads/contact */
+  async submitContact(payload: {
+    first_name: string;
+    last_name: string;
+    email: string;
+    subject: string;
+    message: string;
+  }): Promise<{ success: boolean; message: string }> {
+    const res = await fetch(`${API_BASE_URL}/leads/contact`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to send message. Please try again.');
+    }
+    return res.json();
   }
 
   // --- PROFILE & SETTINGS ---
   async updateProfile(updates: Partial<User>): Promise<User> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/users/update`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
-        },
-        body: JSON.stringify(updates),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
+    const res = await this.authFetch(`${API_BASE_URL}/users/update`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updates),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to update profile.');
     }
-    return { ...MOCK_MEMBER_USER, ...updates };
+    return res.json();
   }
 
   async changePassword(currentPass: string, newPass: string): Promise<{ success: boolean; message: string }> {
-    if (currentPass !== 'titan2026' && currentPass !== 'current_password') {
-      throw new Error('Incorrect current password.');
+    const res = await this.authFetch(`${API_BASE_URL}/auth/change-password`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ current_password: currentPass, new_password: newPass }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to change password.');
     }
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/change-password`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
-        },
-        body: JSON.stringify({ current_password: currentPass, new_password: newPass }),
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return { success: true, message: 'Password has been updated successfully.' };
+    return res.json();
   }
 
-  // --- SESSIONS ---
+  // --- SESSIONS (not yet backed by a real endpoint — kept as stub) ---
   async getSessions(): Promise<UserSession[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/sessions`, {
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
+    // No backend sessions endpoint exists yet. Return mock until implemented.
     return MOCK_SESSIONS;
   }
 
-  async revokeSession(sessionId: string): Promise<{ success: boolean }> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/sessions/${sessionId}`, {
-        method: 'DELETE',
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
+  async revokeSession(_sessionId: string): Promise<{ success: boolean }> {
+    // Stub — no backend endpoint yet
     return { success: true };
   }
 
   // --- SUMSUB KYC INTEGRATION (EMPLOYEES ONLY) ---
   async initiateSumsubKyc(userId: number): Promise<SumsubVerificationInitResponse> {
     try {
-      const res = await fetch(`${API_BASE_URL}/kyc/sumsub/initiate`, {
+      const res = await this.authFetch(`${API_BASE_URL}/kyc/sumsub/initiate`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_id: userId, verification_level: 'employee-identity-proof' }),
       });
-      if (res.ok) return await res.json();
+      if (res.ok) return res.json();
     } catch {
-      // fallback
+      // Sumsub not configured — fall through to stub
     }
-    return {
-      applicant_id: 'sub_app_' + Math.random().toString(36).substring(5),
-      sdk_token: '_act_mock_sumsub_token_' + Date.now(),
-      status: 'pending',
-      message: 'Sumsub KYC WebSDK session initialized for employee onboarding.',
-    };
-  }
-
-  // --- HR & INBOUND LEADS ---
-  async getInboundLeads(): Promise<InboundLead[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/leads/`, {
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return MOCK_INBOUND_LEADS;
+    // Not yet integrated — indicate unavailability rather than pretending success
+    throw new Error('KYC verification is not available yet. Please contact support.');
   }
 
   getWhatsAppOutreachLink(phone: string, clientName: string, projectTitle: string): string {
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     const message = encodeURIComponent(
-      `Hello ${clientName}, this is Blessing from TitanCode Technologies regarding your inquiry for "${projectTitle}". I'd love to discuss your technical requirements and timeline!`
+      `Hello ${clientName}, this is TitanCode Technologies regarding your inquiry for "${projectTitle}". I'd love to discuss your technical requirements and timeline!`
     );
     return `https://wa.me/${cleanPhone}?text=${message}`;
   }
 
-  // --- DEPARTMENTS & TEAM WORKLOAD ---
+  // --- DEPARTMENTS ---
   async getDepartments(): Promise<DepartmentInfo[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/departments/`, {
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) {
-        const data = await res.json();
-        if (Array.isArray(data) && data.length > 0) return data;
-      }
-    } catch {
-      // fallback
-    }
-    return MOCK_DEPARTMENTS;
+    const res = await this.authFetch(`${API_BASE_URL}/departments/`);
+    if (!res.ok) return MOCK_DEPARTMENTS;
+    const data = await res.json();
+    if (Array.isArray(data) && data.length > 0) return data;
+    return MOCK_DEPARTMENTS; // DB is empty — show mock for demo
   }
 
   async getTeamWorkload(departmentCode?: string): Promise<TeamMemberWorkload[]> {
+    // No dedicated endpoint yet — filter mock data by department
     if (!departmentCode || departmentCode === 'all') return MOCK_TEAM_WORKLOAD;
     return MOCK_TEAM_WORKLOAD.filter((m) =>
       m.department.toLowerCase().includes(departmentCode.toLowerCase())
@@ -1328,28 +1360,31 @@ class ApiService {
 
   // --- CLIENT MILESTONES ---
   async getClientMilestones(projectId: number = 1): Promise<ClientMilestone[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/client/projects/${projectId}/milestones`, {
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
+    // No milestones endpoint yet — documented gap G-09
     return MOCK_CLIENT_MILESTONES;
   }
 
   // --- APPLICANT ATS ---
   async getApplicantRecords(): Promise<ApplicantRecord[]> {
-    try {
-      const res = await fetch(`${API_BASE_URL}/applications/`, {
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) return await res.json();
-    } catch {
-      // fallback
-    }
-    return MOCK_APPLICANT_RECORDS;
+    const res = await this.authFetch(`${API_BASE_URL}/applications/?limit=100`);
+    if (!res.ok) return MOCK_APPLICANT_RECORDS;
+    const data = await res.json();
+    const items = data.items ?? data;
+    if (!Array.isArray(items) || items.length === 0) return MOCK_APPLICANT_RECORDS;
+    return items.map((app: any) => ({
+      id: app.id,
+      applicant_name: app.user?.full_name ?? `Applicant #${app.user_id}`,
+      email: app.user?.email ?? '',
+      phone: app.user?.phone_number ?? '',
+      department_id: app.department_id,
+      department_name: app.department?.name ?? '',
+      experience_years: app.user?.experience_years ?? 0,
+      github_url: app.github_url,
+      portfolio_url: app.portfolio,
+      skills: app.user?.skills ? app.user.skills.split(',').map((s: string) => s.trim()) : [],
+      status: app.status,
+      created_at: app.reviewed_at ?? '',
+    }));
   }
 
   // --- CEO EXECUTIVE OVERVIEW ---
@@ -1363,33 +1398,41 @@ class ApiService {
     splitTreasuryPercent: number;
   }> {
     try {
-      const res = await fetch(`${API_BASE_URL}/dashboard/overview`, {
-        headers: this.token ? { Authorization: `Bearer ${this.token}` } : {},
-      });
-      if (res.ok) {
-        const data = await res.json();
-        return {
-          totalRevenue: Number(data.total_revenue) || 84500000,
-          treasuryBalance: 25350000,
-          developerPoolPaid: 59150000,
-          activeProjects: data.active_projects || 18,
-          totalStaff: 78,
-          splitMemberPercent: 70,
-          splitTreasuryPercent: 30,
-        };
-      }
+      const [overviewRes, walletRes, staffRes] = await Promise.all([
+        this.authFetch(`${API_BASE_URL}/dashboard/overview`),
+        this.authFetch(`${API_BASE_URL}/financials/company-wallet`),
+        this.authFetch(`${API_BASE_URL}/users/?role=Member&limit=1`),
+      ]);
+
+      const overview = overviewRes.ok ? await overviewRes.json() : {};
+      const wallet = walletRes.ok ? await walletRes.json() : {};
+      const staff = staffRes.ok ? await staffRes.json() : {};
+
+      const totalRevenue = Number(overview.total_revenue ?? 0);
+      const treasuryBalance = Number(wallet.balance ?? 0);
+      const totalStaff = staff.total ?? 0;
+
+      return {
+        totalRevenue,
+        treasuryBalance,
+        developerPoolPaid: totalRevenue * 0.7,
+        activeProjects: overview.active_projects ?? 0,
+        totalStaff,
+        splitMemberPercent: 70,
+        splitTreasuryPercent: 30,
+      };
     } catch {
-      // fallback
+      // Full fallback when backend is unreachable
+      return {
+        totalRevenue: 0,
+        treasuryBalance: 0,
+        developerPoolPaid: 0,
+        activeProjects: 0,
+        totalStaff: 0,
+        splitMemberPercent: 70,
+        splitTreasuryPercent: 30,
+      };
     }
-    return {
-      totalRevenue: 84500000,
-      treasuryBalance: 25350000,
-      developerPoolPaid: 59150000,
-      activeProjects: 18,
-      totalStaff: 78,
-      splitMemberPercent: 70,
-      splitTreasuryPercent: 30,
-    };
   }
 }
 

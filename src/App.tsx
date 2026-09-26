@@ -100,7 +100,9 @@ export type ScreenId =
 
 export function App() {
   const [currentView, setCurrentView] = useState<ScreenId>('home');
-  const [currentUser, setCurrentUser] = useState<User>(MOCK_MEMBER_USER);
+  // Start unauthenticated — null means "not logged in".
+  // Use MOCK_MEMBER_USER only as a fallback type reference, not as actual startup state.
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [settingsTab, setSettingsTab] = useState<'profile' | 'password' | 'notifications'>('profile');
   const [showPreviewBar, setShowPreviewBar] = useState(false);
 

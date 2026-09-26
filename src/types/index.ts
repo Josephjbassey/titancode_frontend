@@ -224,6 +224,29 @@ export interface SumsubVerificationInitResponse {
   message: string;
 }
 
+export interface WithdrawalRecord {
+  id: number;
+  user_id: number;
+  amount: number;
+  bank_info: string;
+  status: 'pending' | 'approved' | 'rejected' | 'paid';
+  created_at: string;
+  notes?: string;
+}
+
+export interface ProductRecord {
+  id: number;
+  name: string;
+  product_type: string;
+  revenue_endpoint?: string;
+  product_url?: string;
+  api_key_id?: string;
+  api_key_masked?: string;
+  api_key?: string;
+  created_at: string;
+  created_by?: number;
+}
+
 export interface ApiResponse<T> {
   success: boolean;
   data: T;

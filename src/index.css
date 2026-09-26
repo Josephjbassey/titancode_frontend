@@ -295,6 +295,12 @@ input, textarea, select {
  --tc-logo-height: 38px;
 }
 
+/* Footer logo: 115×28px — intentionally smaller than the 158×38 header logo */
+.tc-logo-crop--footer {
+ --tc-logo-width: 115px;
+ --tc-logo-height: 28px;
+}
+
 .tc-public-form-card {
  background: var(--tc-figma-black);
 }
