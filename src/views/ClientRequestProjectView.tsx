@@ -283,7 +283,7 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                 />
               </div>
 
-              {/* Upload brief mock box */}
+              {/* Upload brief attachment box */}
               <div
                 style={{
                   border: '2px dashed rgba(223, 174, 50, 0.3)',

@@ -1,19 +1,17 @@
 import React from 'react';
 import { Search, Bell, Shield } from 'lucide-react';
-import type { User, UserRole } from '../types';
+import type { User } from '../types';
 
 interface HeaderProps {
   user: User;
   onOpenProfile?: () => void;
   onOpenNotifications?: () => void;
-  onRoleChange?: (role: UserRole) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   user,
   onOpenProfile,
   onOpenNotifications,
-  onRoleChange,
 }) => {
   return (
     <header
@@ -77,39 +75,26 @@ export const Header: React.FC<HeaderProps> = ({
         />
       </div>
 
-      {/* Right Controls: Role Switcher, Bell, and Avatar */}
+      {/* Right Controls: Role Badge, Bell, and Avatar */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        {/* Workspace Role Switcher */}
-        {onRoleChange && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <Shield size={14} style={{ color: '#DFAE32' }} />
-            <select
-              value={user.role}
-              onChange={(e) => onRoleChange(e.target.value as UserRole)}
-              aria-label="Switch Active Workspace Role"
-              style={{
-                height: '34px',
-                padding: '0 10px',
-                borderRadius: '8px',
-                backgroundColor: 'var(--tc-bg-input)',
-                color: '#DFAE32',
-                border: '1px solid rgba(223, 174, 50, 0.4)',
-                fontSize: '12px',
-                fontWeight: 700,
-                cursor: 'pointer',
-                outline: 'none',
-              }}
-            >
-              <option value="Member">Role: Member</option>
-              <option value="Manager">Role: Manager / Lead</option>
-              <option value="HR">Role: HR Concierge</option>
-              <option value="CEO">Role: CEO / Exec</option>
-              <option value="Client">Role: Client</option>
-              <option value="Applicant">Role: Applicant</option>
-              <option value="Admin">Role: Admin</option>
-            </select>
-          </div>
-        )}
+        {/* Static Role Badge */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px',
+            height: '34px',
+            padding: '0 12px',
+            borderRadius: '8px',
+            backgroundColor: 'rgba(223, 174, 50, 0.1)',
+            border: '1px solid rgba(223, 174, 50, 0.3)',
+          }}
+        >
+          <Shield size={14} style={{ color: '#DFAE32' }} />
+          <span style={{ color: '#DFAE32', fontSize: '12px', fontWeight: 700 }}>
+            {user.role}
+          </span>
+        </div>
 
         {/* Notification Bell (Figma Rectangle 265: 34px x 34px) */}
         <button

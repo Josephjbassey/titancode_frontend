@@ -454,7 +454,7 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
 
                   {m.status === 'pending' && (
                     <a
-                      href={m.stripe_invoice_url || 'https://checkout.stripe.com/pay/mock'}
+                      href={m.stripe_invoice_url || '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{

@@ -8,14 +8,14 @@ interface SignInViewProps {
   onSuccess: (user: User) => void;
   onNavigateSignUp: () => void;
   onNavigateForgotPassword: () => void;
-  onNavigateQualification: () => void;
+  onNavigateQualification?: () => void;
 }
 
 export const SignInView: React.FC<SignInViewProps> = ({
   onSuccess,
   onNavigateSignUp,
   onNavigateForgotPassword,
-  onNavigateQualification,
+  onNavigateQualification: _onNavigateQualification,
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -316,46 +316,6 @@ export const SignInView: React.FC<SignInViewProps> = ({
           </button>
         </div>
 
-        {/* Admin Demo Helper */}
-        <div style={{
-          marginTop: '20px',
-          textAlign: 'center',
-          display: 'flex',
-          justifyContent: 'center',
-          gap: '16px',
-        }}>
-          <button
-            type="button"
-            onClick={() => {
-              setEmail('admin.elena@titancode.tech');
-              setPassword('admin2026');
-            }}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#6B7280',
-              fontSize: '12px',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-            }}
-          >
-            Demo: Admin Account
-          </button>
-          <button
-            type="button"
-            onClick={onNavigateQualification}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#6B7280',
-              fontSize: '12px',
-              cursor: 'pointer',
-              textDecoration: 'underline',
-            }}
-          >
-            Demo: Qualification
-          </button>
-        </div>
       </form>
     </AuthLayout>
   );

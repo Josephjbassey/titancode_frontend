@@ -670,38 +670,6 @@ input, textarea, select {
   box-shadow: 0 0 20px rgba(239, 68, 68, 0.25);
 }
 
-/* Screen Switcher Floating Toolbar */
-.tc-screen-switcher {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  z-index: 10000;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  background: rgba(18, 21, 28, 0.95);
-  border: 1px solid var(--tc-brand-gold);
-  border-radius: var(--tc-radius-full);
-  padding: 8px 14px;
-  box-shadow: var(--tc-shadow-lg), 0 0 15px rgba(223, 174, 50, 0.25);
-  backdrop-filter: blur(12px);
-}
-
-.tc-screen-switcher select {
-  background: transparent;
-  color: var(--tc-brand-gold);
-  border: none;
-  font-weight: 600;
-  font-size: 13px;
-  outline: none;
-  cursor: pointer;
-}
-
-.tc-screen-switcher select option {
-  background: #12151C;
-  color: #FFFFFF;
-}
-
 /* Exact Figma Design Specifications */
 .figma-card {
   background: var(--tc-figma-card-bg) !important;

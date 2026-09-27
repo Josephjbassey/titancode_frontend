@@ -169,7 +169,7 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
                   <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Camera is muted</div>
                 </div>
               ) : (
-                /* Mock live stream with portrait */
+                /* Video participant stream */
                 <div style={{ width: '100%', height: '100%', position: 'relative' }}>
                   <img
                     src={p.avatar}

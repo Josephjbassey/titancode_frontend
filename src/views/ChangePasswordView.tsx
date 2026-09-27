@@ -356,23 +356,6 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
             </div>
           </form>
 
-          {/* Quick toggle button to test Screen 13 state */}
-          <div style={{ marginTop: '20px', paddingTop: '16px', borderTop: '1px solid rgba(255, 255, 255, 0.06)' }}>
-            <button
-              type="button"
-              onClick={() => setHasCurrentPasswordError(!hasCurrentPasswordError)}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#6B7280',
-                fontSize: '11px',
-                cursor: 'pointer',
-                textDecoration: 'underline',
-              }}
-            >
-              Toggle Figma Screen 13 (Incorrect password error state)
-            </button>
-          </div>
         </div>
 
         {/* Right Card: Where you're logged in (Figma) */}
@@ -560,9 +543,6 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
             Confirm
           </button>
 
-          <div style={{ marginTop: '12px', fontSize: '11px', color: '#6B7280' }}>
-            Tip: enter <strong>00000</strong> to test Screen 15 (Incorrect code modal).
-          </div>
         </div>
       </Modal>
 

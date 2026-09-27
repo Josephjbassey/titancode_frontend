@@ -3,7 +3,6 @@ import {
   CheckCircle2,
   Clock,
   XCircle,
-  Sparkles,
   Send,
   ShieldCheck,
 } from 'lucide-react';
@@ -114,56 +113,6 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
 
   return (
     <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
-      {/* State Switcher Previewer Banner */}
-      <div
-        style={{
-          backgroundColor: '#FFFFFF1A',
-          border: '1px solid #FFFFFF26',
-          borderRadius: '12px',
-          padding: '12px 20px',
-          marginBottom: '24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          flexWrap: 'wrap',
-          gap: '12px',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Sparkles size={16} style={{ color: '#dfae32' }} />
-          <span style={{ fontSize: '12px', fontWeight: 700, color: '#dfae32' }}>
-            Figma Frames 17–20 Applicant State Switcher:
-          </span>
-        </div>
-
-        <div style={{ display: 'flex', gap: '8px' }}>
-          {[
-            { id: 'under_review', label: 'Frame 17: Under Review' },
-            { id: 'approved', label: 'Frame 18: Approved / KYC' },
-            { id: 'rejected', label: 'Frame 19: Rejected / Cooldown' },
-            { id: 'reapply', label: 'Frame 20: Reapply Form' },
-          ].map((st) => (
-            <button
-              key={st.id}
-              type="button"
-              onClick={() => setActiveState(st.id as ApplicantState)}
-              style={{
-                padding: '6px 12px',
-                borderRadius: '6px',
-                border: 'none',
-                backgroundColor: activeState === st.id ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
-                color: activeState === st.id ? '#000000' : '#D1D5DB',
-                fontSize: '11px',
-                fontWeight: activeState === st.id ? 700 : 500,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
-            >
-              {st.label}
-            </button>
-          ))}
-        </div>
-      </div>
 
       {/* STATE 1: FRAME 17 - UNDER REVIEW */}
       {activeState === 'under_review' && (
