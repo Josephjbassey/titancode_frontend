@@ -454,7 +454,7 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
 
                   {m.status === 'pending' && (
                     <a
-                      href={m.stripe_invoice_url || '#'}
+                      href={m.payment_url || '#'}
                       target="_blank"
                       rel="noopener noreferrer"
                       style={{
@@ -471,7 +471,7 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
                       }}
                     >
                       <CreditCard size={14} />
-                      Fund Escrow with Stripe
+                      Fund Escrow
                     </a>
                   )}
 

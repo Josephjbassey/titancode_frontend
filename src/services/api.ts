@@ -164,6 +164,26 @@ class ApiService {
     return { ...data, user };
   }
 
+  async googleLogin(credential: string): Promise<AuthResponse> {
+    const response = await fetch(`${API_BASE_URL}/auth/google`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || 'Google sign-in failed.');
+    }
+
+    const data = await response.json();
+    this.setToken(data.access_token);
+    if (data.refresh_token) this.setRefreshToken(data.refresh_token);
+    const user = await this.getCurrentUser();
+    this.saveActiveUser(user);
+    return { ...data, user };
+  }
+
   async register(payload: {
     full_name: string;
     email: string;
@@ -969,7 +989,7 @@ class ApiService {
           status: (t.status === 'completed' ? 'paid' : t.status === 'in_progress' ? 'in_progress' : 'pending') as ClientMilestone['status'],
           due_date: t.deadline || '2026-10-15',
           deliverables: [t.task_title, 'Source Code & Documentation Review'],
-          stripe_invoice_url: undefined,
+          payment_url: undefined,
         }));
       }
     } catch {

@@ -124,7 +124,7 @@ export interface ClientMilestone {
   due_date: string;
   status: 'pending' | 'in_progress' | 'ready_for_review' | 'approved' | 'paid';
   deliverables: string[];
-  stripe_invoice_url?: string;
+  payment_url?: string;
 }
 
 export interface ApplicantRecord {

@@ -1,8 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Eye, EyeOff, Mail } from 'lucide-react';
 import { AuthLayout } from '../components/AuthLayout';
 import { api } from '../services/api';
 import type { User } from '../types';
+
+// Google Identity Services types
+declare global {
+  interface Window {
+    google?: {
+      accounts: {
+        id: {
+          initialize: (config: {
+            client_id: string;
+            callback: (response: { credential: string }) => void;
+            auto_select?: boolean;
+          }) => void;
+          prompt: () => void;
+        };
+      };
+    };
+  }
+}
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 interface SignInViewProps {
   onSuccess: (user: User) => void;
@@ -22,7 +42,9 @@ export const SignInView: React.FC<SignInViewProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const googleInitialized = useRef(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,6 +58,66 @@ export const SignInView: React.FC<SignInViewProps> = ({
       setErrorMessage(err.message || 'Failed to sign in. Please check your credentials.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Google OAuth callback
+  const handleGoogleCredential = useCallback(async (response: { credential: string }) => {
+    setErrorMessage('');
+    setIsGoogleLoading(true);
+    try {
+      const authResponse = await api.googleLogin(response.credential);
+      onSuccess(authResponse.user);
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Google sign-in failed. Please try again.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  }, [onSuccess]);
+
+  // Initialize Google Identity Services
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID || googleInitialized.current) return;
+
+    const initGoogle = () => {
+      if (window.google?.accounts?.id) {
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredential,
+        });
+        googleInitialized.current = true;
+      }
+    };
+
+    // GIS script might already be loaded
+    if (window.google?.accounts?.id) {
+      initGoogle();
+    } else {
+      // Wait for the async script to load
+      const checkInterval = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          initGoogle();
+          clearInterval(checkInterval);
+        }
+      }, 200);
+      // Clean up after 10 seconds if it never loads
+      const timeout = setTimeout(() => clearInterval(checkInterval), 10000);
+      return () => {
+        clearInterval(checkInterval);
+        clearTimeout(timeout);
+      };
+    }
+  }, [handleGoogleCredential]);
+
+  const handleGoogleClick = () => {
+    if (!GOOGLE_CLIENT_ID) {
+      setErrorMessage('Google Sign-In is not configured. Please set VITE_GOOGLE_CLIENT_ID.');
+      return;
+    }
+    if (window.google?.accounts?.id) {
+      window.google.accounts.id.prompt();
+    } else {
+      setErrorMessage('Google Sign-In is still loading. Please try again in a moment.');
     }
   };
 
@@ -244,6 +326,8 @@ export const SignInView: React.FC<SignInViewProps> = ({
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
           <button
             type="button"
+            onClick={handleGoogleClick}
+            disabled={isGoogleLoading}
             style={{
               height: '44px',
               borderRadius: '9999px',
@@ -256,40 +340,46 @@ export const SignInView: React.FC<SignInViewProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               gap: '10px',
-              cursor: 'pointer',
+              cursor: isGoogleLoading ? 'wait' : 'pointer',
+              opacity: isGoogleLoading ? 0.6 : 1,
+              transition: 'opacity 0.2s, background-color 0.2s',
             }}
+            onMouseEnter={(e) => { if (!isGoogleLoading) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'; }}
           >
             <img
               src="/assets/google.png"
               alt="Google"
               style={{ width: '20px', height: '20px', objectFit: 'contain' }}
             />
-            Google
+            {isGoogleLoading ? 'Signing in…' : 'Google'}
           </button>
 
           <button
             type="button"
+            disabled
+            title="Apple Sign-In — Coming Soon"
             style={{
               height: '44px',
               borderRadius: '9999px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid #FFFFFF59',
-              color: '#FFFFFF',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              color: 'rgba(255, 255, 255, 0.35)',
               fontSize: '14px',
               fontWeight: '500',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '10px',
-              cursor: 'pointer',
+              cursor: 'not-allowed',
             }}
           >
             <img
               src="/assets/apple.png"
               alt="Apple"
-              style={{ width: '20px', height: '20px', objectFit: 'contain' }}
+              style={{ width: '20px', height: '20px', objectFit: 'contain', opacity: 0.4 }}
             />
-            iphone
+            Apple
           </button>
         </div>
 
