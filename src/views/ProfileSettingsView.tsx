@@ -13,14 +13,16 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
   user,
   onUpdateUser,
 }) => {
-  const [firstName, setFirstName] = useState(user.first_name || 'Benedicta');
-  const [lastName, setLastName] = useState(user.last_name || 'Eguavoen');
-  const [email, setEmail] = useState(user.email || 'examples@gmail.com');
-  const [phone, setPhone] = useState('812 345 6789');
-  const [gender, setGender] = useState<'Male' | 'Female'>('Female');
-  const [idNumber] = useState('1559 000 7788 8DER');
-  const [address, setAddress] = useState(user.address || '14 Admiralty Way, Lekki Phase 1, Lagos');
-  const [dob, setDob] = useState(user.dob || '1995-08-14');
+  const initialFirst = user.first_name || (user.full_name ? user.full_name.split(' ')[0] : '');
+  const initialLast = user.last_name || (user.full_name ? user.full_name.split(' ').slice(1).join(' ') : '');
+  const [firstName, setFirstName] = useState(initialFirst);
+  const [lastName, setLastName] = useState(initialLast);
+  const [email, setEmail] = useState(user.email || '');
+  const [phone, setPhone] = useState(user.phone_number ? user.phone_number.replace(/^\+234\s*/, '') : '');
+  const [gender, setGender] = useState<'Male' | 'Female'>((user.gender as 'Male' | 'Female') || 'Female');
+  const [idNumber] = useState(user.id ? `TC-${String(user.id).padStart(4, '0')}-KYC` : 'TC-KYC-PENDING');
+  const [address, setAddress] = useState(user.address || '');
+  const [dob, setDob] = useState(user.dob || '');
   const [isSaving, setIsSaving] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showKycModal, setShowKycModal] = useState(false);
@@ -30,19 +32,19 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
     setIsSaving(true);
     try {
       const updated = await api.updateProfile({
-        first_name: firstName,
-        last_name: lastName,
-        full_name: `${firstName} ${lastName}`,
-        email,
-        phone_number: `+234 ${phone}`,
+        first_name: firstName.trim(),
+        last_name: lastName.trim(),
+        full_name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+        email: email.trim(),
+        phone_number: phone.trim() ? `+234 ${phone.trim()}` : undefined,
         gender,
-        address,
-        dob,
+        address: address.trim() || undefined,
+        dob: dob.trim() || undefined,
       });
       onUpdateUser(updated);
       setShowSuccessModal(true);
-    } catch {
-      setShowSuccessModal(true);
+    } catch (err: any) {
+      alert(err.message || 'Failed to update profile settings.');
     } finally {
       setIsSaving(false);
     }
@@ -70,7 +72,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
         {/* Benedicta Avatar with Yellow Edit Pencil Badge (Figma) */}
         <div style={{ position: 'relative', width: '76px', height: '76px' }}>
           <img
-            src="/assets/benedicta.png"
+            src={user.avatar_url || '/assets/benedicta.png'}
             alt="Profile Avatar"
             style={{
               width: '76px',

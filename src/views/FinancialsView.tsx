@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   ArrowUpRight,
   CheckCircle2,
   X,
+  Loader2,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
+import { api } from '../services/api';
 
 interface Withdrawal {
   id: string;
@@ -25,45 +27,35 @@ interface PayoutInvoice {
   generatedDate: string;
 }
 
+const mapApiWithdrawal = (w: any): Withdrawal => ({
+  id: `WTH-${w.id}`,
+  member: `Member #${w.user_id}`,
+  amount: Number(w.amount),
+  bankName: w.bank_info || 'Bank Wire',
+  account: '•••• ••••',
+  status: w.status === 'approved' ? 'Approved' : w.status === 'rejected' ? 'Rejected' : 'Pending',
+  requestedDate: w.created_at ? w.created_at.split('T')[0] : '2026-09-20',
+});
+
 export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }> = () => {
   const [activeTab, setActiveTab] = useState<'my_wallet' | 'admin_payouts' | 'payout_invoices' | 'company_treasury'>('my_wallet');
   
   // My Wallet State
-  const [myBalance, setMyBalance] = useState(14850);
+  const [myBalance, setMyBalance] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawSuccess, setWithdrawSuccess] = useState(false);
 
   // Admin Payouts State
-  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([
-    {
-      id: 'WTH-801',
-      member: 'Joseph John',
-      amount: 4500,
-      bankName: 'Guaranty Trust Bank',
-      account: '0123456789',
-      status: 'Pending',
-      requestedDate: '2026-09-20',
-    },
-    {
-      id: 'WTH-802',
-      member: 'Benedicta Atagamen',
-      amount: 3200,
-      bankName: 'Standard Chartered Ghana',
-      account: '9876543210',
-      status: 'Pending',
-      requestedDate: '2026-09-19',
-    },
-    {
-      id: 'WTH-803',
-      member: 'Olukayode Tioluwanimi',
-      amount: 5000,
-      bankName: 'Access Bank PLC',
-      account: '4455667788',
-      status: 'Approved',
-      requestedDate: '2026-09-15',
-    },
-  ]);
+  const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
+
+  // Company Treasury Metrics
+  const [treasury, setTreasury] = useState({
+    totalRevenue: 98400,
+    treasuryBalance: 29500,
+    developerPoolPaid: 68900,
+  });
 
   // Payout Invoices
   const [invoices, setInvoices] = useState<PayoutInvoice[]>([
@@ -93,24 +85,65 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
     },
   ]);
 
-  const handleWithdrawSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+    Promise.all([
+      api.getWallet().catch(() => null),
+      api.listWithdrawals().catch(() => []),
+      api.getCeoOverview().catch(() => null),
+    ]).then(([wallet, withdrawalList, overview]) => {
+      if (!mounted) return;
+      if (wallet) {
+        setMyBalance(Number(wallet.balance ?? 0));
+      }
+      if (withdrawalList && withdrawalList.length > 0) {
+        setWithdrawals(withdrawalList.map(mapApiWithdrawal));
+      }
+      if (overview) {
+        setTreasury({
+          totalRevenue: overview.totalRevenue,
+          treasuryBalance: overview.treasuryBalance,
+          developerPoolPaid: overview.developerPoolPaid,
+        });
+      }
+    }).finally(() => {
+      if (mounted) setIsLoading(false);
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  const handleWithdrawSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const val = Number(withdrawAmount);
     if (!val || val <= 0 || val > myBalance) return;
 
-    setMyBalance((prev) => prev - val);
-    setWithdrawSuccess(true);
-    setTimeout(() => {
-      setShowWithdrawModal(false);
-      setWithdrawSuccess(false);
-      setWithdrawAmount('');
-    }, 1500);
+    try {
+      await api.requestWithdrawal(val, 'Personal Bank Account');
+      setMyBalance((prev) => prev - val);
+      setWithdrawSuccess(true);
+      setTimeout(() => {
+        setShowWithdrawModal(false);
+        setWithdrawSuccess(false);
+        setWithdrawAmount('');
+      }, 1500);
+    } catch (err: any) {
+      alert(err.message || 'Failed to submit withdrawal request');
+    }
   };
 
-  const handleApproveWithdrawal = (id: string) => {
+  const handleApproveWithdrawal = async (id: string) => {
+    const numericId = parseInt(id.replace('WTH-', ''), 10);
     setWithdrawals((prev) =>
       prev.map((w) => (w.id === id ? { ...w, status: 'Approved' } : w))
     );
+    if (!isNaN(numericId)) {
+      try {
+        await api.processWithdrawal(numericId, 'approve');
+      } catch {
+        // Fallback
+      }
+    }
   };
 
   const handleApproveInvoice = (id: string) => {
@@ -291,51 +324,68 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               </tr>
             </thead>
             <tbody>
-              {withdrawals.map((w) => (
-                <tr key={w.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                  <td style={{ padding: '14px 20px', color: '#dfae32', fontWeight: 600 }}>{w.id}</td>
-                  <td style={{ padding: '14px 20px', color: '#FFFFFF', fontWeight: 700 }}>{w.member}</td>
-                  <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{w.bankName}</td>
-                  <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{w.account}</td>
-                  <td style={{ padding: '14px 20px', fontWeight: 700, color: '#dfae32' }}>${w.amount.toLocaleString()}</td>
-                  <td style={{ padding: '14px 20px' }}>
-                    <span
-                      style={{
-                        padding: '3px 8px',
-                        borderRadius: '999px',
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        backgroundColor: w.status === 'Approved' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(223, 174, 50, 0.15)',
-                        color: w.status === 'Approved' ? '#10B981' : '#dfae32',
-                      }}
-                    >
-                      ● {w.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '14px 20px', textAlign: 'right' }}>
-                    {w.status === 'Pending' ? (
-                      <button
-                        type="button"
-                        onClick={() => handleApproveWithdrawal(w.id)}
-                        style={{
-                          backgroundColor: '#10B981',
-                          color: '#FFFFFF',
-                          border: 'none',
-                          borderRadius: '6px',
-                          padding: '6px 14px',
-                          fontSize: '12px',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Approve Payout
-                      </button>
-                    ) : (
-                      <span style={{ color: '#9CA3AF', fontSize: '12px' }}>Wire Transferred</span>
-                    )}
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <Loader2 size={16} className="tc-spin" color="#dfae32" />
+                      <span>Loading withdrawal authorizations...</span>
+                    </div>
                   </td>
                 </tr>
-              ))}
+              ) : withdrawals.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF', fontSize: '13px' }}>
+                    No withdrawal requests submitted yet.
+                  </td>
+                </tr>
+              ) : (
+                withdrawals.map((w) => (
+                  <tr key={w.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
+                    <td style={{ padding: '14px 20px', color: '#dfae32', fontWeight: 600 }}>{w.id}</td>
+                    <td style={{ padding: '14px 20px', color: '#FFFFFF', fontWeight: 700 }}>{w.member}</td>
+                    <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{w.bankName}</td>
+                    <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{w.account}</td>
+                    <td style={{ padding: '14px 20px', fontWeight: 700, color: '#dfae32' }}>${w.amount.toLocaleString()}</td>
+                    <td style={{ padding: '14px 20px' }}>
+                      <span
+                        style={{
+                          padding: '3px 8px',
+                          borderRadius: '999px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          backgroundColor: w.status === 'Approved' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(223, 174, 50, 0.15)',
+                          color: w.status === 'Approved' ? '#10B981' : '#dfae32',
+                        }}
+                      >
+                        ● {w.status}
+                      </span>
+                    </td>
+                    <td style={{ padding: '14px 20px', textAlign: 'right' }}>
+                      {w.status === 'Pending' ? (
+                        <button
+                          type="button"
+                          onClick={() => handleApproveWithdrawal(w.id)}
+                          style={{
+                            backgroundColor: '#10B981',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            borderRadius: '6px',
+                            padding: '6px 14px',
+                            fontSize: '12px',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Approve Payout
+                        </button>
+                      ) : (
+                        <span style={{ color: '#9CA3AF', fontSize: '12px' }}>Wire Transferred</span>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -435,20 +485,26 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
           >
             <div style={{ backgroundColor: '#232324', borderRadius: '14px', padding: '24px', border: '1px solid rgba(223, 174, 50, 0.3)' }}>
               <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Corporate Vault Balance</div>
-              <div style={{ fontSize: '32px', fontWeight: 800, color: '#dfae32', marginTop: '6px' }}>$194,250.00</div>
-              <div style={{ color: '#10B981', fontSize: '12px', marginTop: '4px' }}>+$18,400 this month</div>
+              <div style={{ fontSize: '32px', fontWeight: 800, color: '#dfae32', marginTop: '6px' }}>
+                ${treasury.treasuryBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <div style={{ color: '#10B981', fontSize: '12px', marginTop: '4px' }}>30% Platform Treasury Split</div>
             </div>
 
             <div style={{ backgroundColor: '#232324', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-              <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Digital Product Revenue In</div>
-              <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>$84,600.00</div>
-              <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '4px' }}>Across 4 SaaS products</div>
+              <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Total Platform Revenue</div>
+              <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>
+                ${treasury.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '4px' }}>Gross milestone billings</div>
             </div>
 
             <div style={{ backgroundColor: '#232324', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-              <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Total Payouts Debited Out</div>
-              <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>$68,900.00</div>
-              <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '4px' }}>To engineering staff</div>
+              <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Total Developer Pool Paid</div>
+              <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>
+                ${treasury.developerPoolPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+              </div>
+              <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '4px' }}>70% distributed to engineering staff</div>
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   FolderGit2,
   CheckSquare,
@@ -9,50 +9,81 @@ import {
   Calendar,
   Clock,
   ExternalLink,
+  Loader2,
 } from 'lucide-react';
 import { DonutChart } from '../components/DonutChart';
+import type { ScreenId } from '../App';
+import { api } from '../services/api';
+import type { User, Project, Meeting } from '../types';
 
-export const TeamDashboardView: React.FC = () => {
-  const [taskRows, setTaskRows] = useState([
-    {
-      id: 1,
-      name: 'Design Member Onboarding Wireframes',
-      project: 'TitanCode Website & Workspace',
-      due: 'Aug 12, 2024',
-      priority: 'High',
-      status: 'In Progress',
-    },
-    {
-      id: 2,
-      name: 'Integrate WebRTC Video Mesh Signaling',
-      project: 'Aurelia FinTech Mobile App',
-      due: 'Aug 15, 2024',
-      priority: 'Urgent',
-      status: 'In Progress',
-    },
-    {
-      id: 3,
-      name: 'PostgreSQL Index Tuning & Payout Audit',
-      project: 'TitanCore SaaS Cloud Engine',
-      due: 'Aug 18, 2024',
-      priority: 'Medium',
-      status: 'Completed',
-    },
-  ]);
+interface TeamDashboardViewProps {
+  onNavigate?: (view: ScreenId) => void;
+}
 
+export const TeamDashboardView: React.FC<TeamDashboardViewProps> = ({ onNavigate }) => {
+  const [user, setUser] = useState<User | null>(api.getActiveUser());
+  const [taskRows, setTaskRows] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [walletBalance, setWalletBalance] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeDropdownId, setActiveDropdownId] = useState<number | null>(null);
 
-  const handleStatusChange = (id: number, newStatus: string) => {
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+
+    Promise.all([
+      api.getCurrentUser().catch(() => api.getActiveUser()),
+      api.getTasks().catch(() => []),
+      api.getProjects().catch(() => []),
+      api.getMeetings().catch(() => []),
+      api.getWallet().catch(() => ({ balance: 0 })),
+    ]).then(([currentUser, fetchedTasks, fetchedProjects, fetchedMeetings, fetchedWallet]) => {
+      if (!mounted) return;
+      if (currentUser) setUser(currentUser);
+      setTaskRows(
+        (fetchedTasks || []).map((t: any) => ({
+          id: t.id,
+          name: t.task_title,
+          project: t.project_name || 'Active Sprint Deliverable',
+          due: t.deadline ? new Date(t.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Flexible',
+          priority: t.priority ? (t.priority.charAt(0).toUpperCase() + t.priority.slice(1)) : 'Medium',
+          status: t.status === 'completed' ? 'Completed' : t.status === 'in_progress' ? 'In Progress' : 'Pending',
+        }))
+      );
+      setProjects(fetchedProjects || []);
+      setMeetings(fetchedMeetings || []);
+      setWalletBalance(fetchedWallet?.balance || 0);
+      setIsLoading(false);
+    });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const handleStatusChange = async (id: number, newStatus: string) => {
     setTaskRows((prev) =>
       prev.map((t) => (t.id === id ? { ...t, status: newStatus } : t))
     );
     setActiveDropdownId(null);
+    try {
+      const backendStatus = (newStatus === 'Completed' ? 'completed' : newStatus === 'In Progress' ? 'in_progress' : 'open') as 'open' | 'in_progress' | 'completed';
+      await api.updateTask(id, { status: backendStatus });
+    } catch {
+      // ignore
+    }
   };
 
+  const completedCount = taskRows.filter((t) => t.status === 'Completed').length;
+  const inProgressCount = taskRows.filter((t) => t.status === 'In Progress').length;
+  const pendingCount = taskRows.filter((t) => t.status !== 'Completed' && t.status !== 'In Progress').length;
+
   const donutSlices = [
-    { label: 'Completed', value: 8, color: '#10B981' },
-    { label: 'In Progress', value: 4, color: '#3B82F6' },
-    { label: 'Pending', value: 2, color: '#dfae32' },
+    { label: 'Completed', value: completedCount, color: '#10B981' },
+    { label: 'In Progress', value: inProgressCount, color: '#3B82F6' },
+    { label: 'Pending', value: pendingCount, color: '#dfae32' },
   ];
 
   const recentActivities = [
@@ -108,7 +139,7 @@ export const TeamDashboardView: React.FC = () => {
             marginBottom: '4px',
           }}
         >
-          Welcome back, Benedicta! 👋
+          Welcome back, {user?.first_name || (user?.full_name ? user.full_name.split(' ')[0] : 'Member')}! 👋
         </h1>
         <p
           style={{
@@ -159,7 +190,7 @@ export const TeamDashboardView: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: '32px', fontWeight: '700', color: '#FFFFFF', lineHeight: 1 }}>
-            04
+            {String(projects.length).padStart(2, '0')}
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#10B981' }}>
             <TrendingUp size={14} />
@@ -197,10 +228,11 @@ export const TeamDashboardView: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: '32px', fontWeight: '700', color: '#FFFFFF', lineHeight: 1 }}>
-            12
+            {String(taskRows.length).padStart(2, '0')}
           </div>
           <button
             type="button"
+            onClick={() => onNavigate?.('tasks')}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -249,10 +281,11 @@ export const TeamDashboardView: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: '32px', fontWeight: '700', color: '#FFFFFF', lineHeight: 1 }}>
-            12
+            {String(meetings.length).padStart(2, '0')}
           </div>
           <button
             type="button"
+            onClick={() => onNavigate?.('meetings')}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -301,10 +334,11 @@ export const TeamDashboardView: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: '30px', fontWeight: '700', color: '#FFFFFF', lineHeight: 1 }}>
-            ₦125,000
+            ₦{walletBalance.toLocaleString()}
           </div>
           <button
             type="button"
+            onClick={() => onNavigate?.('financials')}
             style={{
               display: 'flex',
               alignItems: 'center',
@@ -379,7 +413,23 @@ export const TeamDashboardView: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {taskRows.map((row) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <Loader2 size={16} className="tc-spin" color="#dfae32" />
+                      <span>Loading your assigned sprint tasks...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : taskRows.length === 0 ? (
+                <tr>
+                  <td colSpan={6} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF', fontSize: '13px' }}>
+                    No assigned tasks found. Your workload is currently clear.
+                  </td>
+                </tr>
+              ) : (
+                taskRows.map((row) => (
                 <tr
                   key={row.id}
                   style={{
@@ -510,7 +560,7 @@ export const TeamDashboardView: React.FC = () => {
                     )}
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>
@@ -745,7 +795,7 @@ export const TeamDashboardView: React.FC = () => {
             <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#FFFFFF', margin: 0 }}>
               Task Overview
             </h3>
-            <span style={{ fontSize: '12px', color: '#9CA3AF' }}>Total: 14 Tasks</span>
+            <span style={{ fontSize: '12px', color: '#9CA3AF' }}>Total: {taskRows.length} Tasks</span>
           </div>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px 0' }}>

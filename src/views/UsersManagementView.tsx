@@ -1,12 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   CreditCard,
   Globe,
   ExternalLink,
   X,
+  Loader2,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
+import { api } from '../services/api';
 
 interface PlatformUser {
   id: string;
@@ -26,103 +28,74 @@ interface PlatformUser {
   joinedDate: string;
 }
 
-const INITIAL_USERS: PlatformUser[] = [
-  {
-    id: 'USR-001',
-    name: 'Munis Samuel',
-    email: 'munis@titancode.tech',
-    role: 'CEO',
-    department: 'Executive / Leadership',
-    status: 'Approved',
-    country: 'United Kingdom',
-    phone: '+44 7911 123456',
-    githubUrl: 'https://github.com/munissol',
-    portfolioUrl: 'https://titancode.tech/munis',
-    bankAccount: 'GB29 NWBK 6016 1331 9268 19',
-    bankName: 'NatWest Bank UK',
-    totalEarnings: 84200,
-    avatar: '/assets/munis.jpg',
-    joinedDate: '2024-01-10',
-  },
-  {
-    id: 'USR-002',
-    name: 'Joseph John',
-    email: 'joseph@titancode.tech',
-    role: 'Manager',
-    department: 'Fullstack Engineering',
-    status: 'Approved',
-    country: 'Nigeria',
-    phone: '+234 812 345 6789',
-    githubUrl: 'https://github.com/josephjohn',
-    portfolioUrl: 'https://josephjohn.dev',
-    bankAccount: '0123456789',
-    bankName: 'Guaranty Trust Bank',
-    totalEarnings: 34500,
-    avatar: '/assets/joseph.jpg',
-    joinedDate: '2024-02-15',
-  },
-  {
-    id: 'USR-003',
-    name: 'Benedicta Atagamen',
-    email: 'benedicta@titancode.tech',
-    role: 'Member',
-    department: 'UI/UX Design',
-    status: 'Approved',
-    country: 'Ghana',
-    phone: '+233 54 660 6807',
-    githubUrl: 'https://github.com/benedictadesign',
-    portfolioUrl: 'https://dribbble.com/benedicta',
-    bankAccount: '9876543210',
-    bankName: 'Standard Chartered Bank',
-    totalEarnings: 28900,
-    avatar: '/assets/benedicta.png',
-    joinedDate: '2024-03-01',
-  },
-  {
-    id: 'USR-004',
-    name: 'Olukayode Tioluwanimi Blessing',
-    email: 'olukayode@titancode.tech',
-    role: 'Admin',
-    department: 'Product Management',
-    status: 'Approved',
-    country: 'Nigeria',
-    phone: '+234 901 234 5678',
-    githubUrl: 'https://github.com/olukayodepm',
-    portfolioUrl: 'https://olukayode.product',
-    bankAccount: '4455667788',
-    bankName: 'Access Bank PLC',
-    totalEarnings: 31200,
-    avatar: '/assets/blessing.jpg',
-    joinedDate: '2024-02-01',
-  },
-  {
-    id: 'USR-005',
-    name: 'Apex Global Financials (Rep)',
-    email: 'contact@apexglobal.com',
-    role: 'Client',
-    department: 'Client Partner',
-    status: 'Approved',
-    country: 'United States',
-    phone: '+1 415 555 2671',
-    githubUrl: '',
-    portfolioUrl: 'https://apexglobal.com',
-    bankAccount: 'US89 WIRE 0210 0002 1',
-    bankName: 'JPMorgan Chase NY',
-    totalEarnings: 0,
-    avatar: '/assets/dashprofile.jpg',
-    joinedDate: '2026-01-20',
-  },
-];
+const mapApiUser = (u: any): PlatformUser => {
+  const roleMap: Record<string, PlatformUser['role']> = {
+    ceo: 'CEO',
+    admin: 'Admin',
+    manager: 'Manager',
+    assistant: 'Assistant',
+    member: 'Member',
+    client: 'Client',
+  };
+  const normalizedRole = roleMap[(u.role || '').toLowerCase()] || 'Member';
+
+  let normalizedStatus: PlatformUser['status'] = 'Approved';
+  if ((u.status || '').toLowerCase() === 'suspended') {
+    normalizedStatus = 'Suspended';
+  } else if ((u.status || '').toLowerCase() === 'pending') {
+    normalizedStatus = 'Pending';
+  }
+
+  return {
+    id: `USR-${u.id}`,
+    name: u.full_name || u.name || 'Platform Member',
+    email: u.email || '',
+    role: normalizedRole,
+    department: u.department_name || (u.department_id ? `Department #${u.department_id}` : 'General'),
+    status: normalizedStatus,
+    country: u.country || 'Global',
+    phone: u.phone_number || 'N/A',
+    githubUrl: u.github_url || '',
+    portfolioUrl: u.portfolio_url || '',
+    bankAccount: u.bank_account_number || '•••• •••• ••••',
+    bankName: u.bank_name || 'Bank on file',
+    totalEarnings: u.total_earnings || 0,
+    avatar: u.avatar || '/assets/dashprofile.jpg',
+    joinedDate: u.created_at ? u.created_at.split('T')[0] : '2026-01-01',
+  };
+};
 
 interface UsersManagementViewProps {
   onNavigate?: (view: ScreenId) => void;
 }
 
 export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavigate: _onNavigate }) => {
-  const [users, setUsers] = useState<PlatformUser[]>(INITIAL_USERS);
+  const [users, setUsers] = useState<PlatformUser[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [roleFilter, setRoleFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<PlatformUser | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+    api.getUsers()
+      .then((res) => {
+        if (!mounted) return;
+        setUsers(res.items.map(mapApiUser));
+      })
+      .catch((err) => {
+        console.error('Failed to load users:', err);
+        if (!mounted) return;
+        setUsers([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const filteredUsers = users.filter((u) => {
     const matchesRole = roleFilter === 'All' || u.role === roleFilter;
@@ -133,18 +106,38 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
     return matchesRole && matchesSearch;
   });
 
-  const toggleUserStatus = (userId: string) => {
+  const toggleUserStatus = async (userId: string) => {
+    const numericId = parseInt(userId.replace('USR-', ''), 10);
+    const targetUser = users.find((u) => u.id === userId);
+    if (!targetUser) return;
+    const nextStatus = targetUser.status === 'Approved' ? 'Suspended' : 'Approved';
+
     setUsers((prev) =>
       prev.map((u) => {
         if (u.id !== userId) return u;
-        const nextStatus = u.status === 'Approved' ? 'Suspended' : 'Approved';
         return { ...u, status: nextStatus };
       })
     );
     if (selectedUser && selectedUser.id === userId) {
       setSelectedUser((prev) =>
-        prev ? { ...prev, status: prev.status === 'Approved' ? 'Suspended' : 'Approved' } : null
+        prev ? { ...prev, status: nextStatus } : null
       );
+    }
+
+    if (!isNaN(numericId)) {
+      try {
+        const nextStatusEnum = (nextStatus.toLowerCase() === 'active' ? 'active' : nextStatus.toLowerCase() === 'inactive' ? 'inactive' : 'pending') as 'active' | 'inactive' | 'pending';
+        await api.updateUser(numericId, { status: nextStatusEnum });
+      } catch (err: any) {
+        alert(err.message || 'Failed to update user status on server');
+        // Revert on failure
+        setUsers((prev) =>
+          prev.map((u) => (u.id === userId ? { ...u, status: targetUser.status } : u))
+        );
+        if (selectedUser && selectedUser.id === userId) {
+          setSelectedUser((prev) => (prev ? { ...prev, status: targetUser.status } : null));
+        }
+      }
     }
   };
 
@@ -266,7 +259,23 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
             </tr>
           </thead>
           <tbody>
-            {filteredUsers.map((user) => (
+            {isLoading ? (
+              <tr>
+                <td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    <Loader2 size={18} className="tc-spin" color="#dfae32" />
+                    <span>Loading system accounts...</span>
+                  </div>
+                </td>
+              </tr>
+            ) : filteredUsers.length === 0 ? (
+              <tr>
+                <td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
+                  No accounts found matching the current criteria.
+                </td>
+              </tr>
+            ) : (
+              filteredUsers.map((user) => (
               <tr
                 key={user.id}
                 onClick={() => setSelectedUser(user)}
@@ -360,7 +369,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
                   </button>
                 </td>
               </tr>
-            ))}
+            )))}
           </tbody>
         </table>
       </div>

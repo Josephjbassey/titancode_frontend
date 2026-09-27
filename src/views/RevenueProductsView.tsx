@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Key,
   Plus,
@@ -6,8 +6,10 @@ import {
   Check,
   ExternalLink,
   X,
+  Loader2,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
+import { api } from '../services/api';
 
 interface DigitalProduct {
   id: string;
@@ -21,50 +23,57 @@ interface DigitalProduct {
   createdDate: string;
 }
 
-const INITIAL_PRODUCTS: DigitalProduct[] = [
-  {
-    id: 'PRD-01',
-    name: 'TitanCore Cloud SaaS',
-    type: 'Platform',
-    url: 'https://cloud.titancode.tech',
-    apiKey: 'tc_live_8f7b2c9a1d3e4f5a6b7c8d9e0f1a2b3c',
-    totalRevenue: 54200,
-    monthlyRevenue: 12400,
+const mapApiProduct = (p: any): DigitalProduct => {
+  let mappedType: DigitalProduct['type'] = 'Platform';
+  const pt = (p.product_type || '').toLowerCase();
+  if (pt.includes('mobile')) mappedType = 'Mobile App';
+  else if (pt.includes('web')) mappedType = 'Website';
+  else if (pt.includes('game')) mappedType = 'Game';
+
+  return {
+    id: `PRD-${String(p.id).padStart(2, '0')}`,
+    name: p.name,
+    type: mappedType,
+    url: p.product_url || 'https://titancode.tech',
+    apiKey: p.api_key || p.api_key_masked || p.api_key_id || 'tc_live_••••••••••••••••••••••••••••••••',
+    totalRevenue: p.total_revenue || 0,
+    monthlyRevenue: p.monthly_revenue || 0,
     status: 'Active',
-    createdDate: '2025-08-12',
-  },
-  {
-    id: 'PRD-02',
-    name: 'OmniTrade Bot Infrastructure',
-    type: 'Platform',
-    url: 'https://omnitrade.fi',
-    apiKey: 'tc_live_7c4d1e2f3a4b5c6d7e8f9a0b1c2d3e4f',
-    totalRevenue: 22400,
-    monthlyRevenue: 6800,
-    status: 'Active',
-    createdDate: '2025-11-20',
-  },
-  {
-    id: 'PRD-03',
-    name: 'Aurelia FinTech Mobile SDK',
-    type: 'Mobile App',
-    url: 'https://aurelia.app',
-    apiKey: 'tc_live_1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d',
-    totalRevenue: 8000,
-    monthlyRevenue: 2500,
-    status: 'Active',
-    createdDate: '2026-02-10',
-  },
-];
+    createdDate: p.created_at ? p.created_at.split('T')[0] : '2026-01-01',
+  };
+};
 
 export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => void }> = () => {
-  const [products, setProducts] = useState<DigitalProduct[]>(INITIAL_PRODUCTS);
+  const [products, setProducts] = useState<DigitalProduct[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
   const [newName, setNewName] = useState('');
   const [newType, setNewType] = useState<'Platform' | 'Mobile App' | 'Website' | 'Game'>('Platform');
   const [newUrl, setNewUrl] = useState('');
+
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+    api.getProducts()
+      .then((records) => {
+        if (!mounted) return;
+        setProducts(records.map(mapApiProduct));
+      })
+      .catch((err) => {
+        console.error('Failed to fetch products:', err);
+        if (!mounted) return;
+        setProducts([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const totalEarnings = products.reduce((acc, p) => acc + p.totalRevenue, 0);
   const totalMonthly = products.reduce((acc, p) => acc + p.monthlyRevenue, 0);
@@ -75,26 +84,27 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
     setTimeout(() => setCopiedKey(null), 2000);
   };
 
-  const handleCreateProduct = (e: React.FormEvent) => {
+  const handleCreateProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newName.trim()) return;
+    if (!newName.trim() || isSubmitting) return;
 
-    const newProd: DigitalProduct = {
-      id: `PRD-0${products.length + 1}`,
-      name: newName,
-      type: newType,
-      url: newUrl || 'https://titancode.tech',
-      apiKey: `tc_live_${Math.random().toString(36).substring(2, 15)}${Math.random().toString(36).substring(2, 15)}`,
-      totalRevenue: 0,
-      monthlyRevenue: 0,
-      status: 'Active',
-      createdDate: new Date().toISOString().split('T')[0],
-    };
+    setIsSubmitting(true);
+    try {
+      const created = await api.addProduct({
+        name: newName.trim(),
+        product_type: newType,
+        product_url: newUrl.trim() || undefined,
+      });
 
-    setProducts([...products, newProd]);
-    setShowAddModal(false);
-    setNewName('');
-    setNewUrl('');
+      setProducts((prev) => [...prev, mapApiProduct(created)]);
+      setShowAddModal(false);
+      setNewName('');
+      setNewUrl('');
+    } catch (err: any) {
+      alert(err.message || 'Failed to register product.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -166,8 +176,38 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
 
       {/* Products Grid */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
-        {products.map((product) => (
+        {isLoading ? (
           <div
+            style={{
+              padding: '60px 20px',
+              textAlign: 'center',
+              backgroundColor: '#FFFFFF1A',
+              borderRadius: '14px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              color: '#9CA3AF',
+            }}
+          >
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+              <Loader2 size={20} className="tc-spin" color="#dfae32" />
+              <span>Loading registered products...</span>
+            </div>
+          </div>
+        ) : products.length === 0 ? (
+          <div
+            style={{
+              padding: '60px 20px',
+              textAlign: 'center',
+              backgroundColor: '#FFFFFF1A',
+              borderRadius: '14px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              color: '#9CA3AF',
+            }}
+          >
+            No digital products registered yet. Click &quot;Register Product&quot; above to connect one.
+          </div>
+        ) : (
+          products.map((product) => (
+            <div
             key={product.id}
             style={{
               backgroundColor: '#FFFFFF1A',
@@ -274,7 +314,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
               </a>
             </div>
           </div>
-        ))}
+        )))}
       </div>
 
       {/* REGISTER PRODUCT MODAL */}

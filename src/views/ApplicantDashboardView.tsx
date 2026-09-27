@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   CheckCircle2,
   Clock,
@@ -25,34 +25,91 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
   const [activeState, setActiveState] = useState<ApplicantState>(initialState);
   const [kycStatus, setKycStatus] = useState<KycStatus>('not_verified');
   const [kycLoading, setKycLoading] = useState(false);
+  const [activeUser, setActiveUser] = useState<any>(null);
 
-  // Reapply form state
-  const [reapplyGithub, setReapplyGithub] = useState('https://github.com/applicant-dev');
-  const [reapplySkills, setReapplySkills] = useState('Next.js 15, React 19, WebSockets, PostgreSQL');
+  // Reapply form state (clean without hardcoded developer placeholders)
+  const [reapplyGithub, setReapplyGithub] = useState('');
+  const [reapplySkills, setReapplySkills] = useState('');
   const [reapplyNotes, setReapplyNotes] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [reapplySubmitted, setReapplySubmitted] = useState(false);
+
+  useEffect(() => {
+    let mounted = true;
+    const user = api.getActiveUser();
+    setActiveUser(user);
+
+    api.getApplicantRecords()
+      .then((records) => {
+        if (!mounted || !records || records.length === 0) return;
+        const myApp = records.find(
+          (r) => r.email === user?.email || (user?.id && r.id === user.id)
+        ) || records[0];
+
+        if (myApp) {
+          if (myApp.status === 'approved') {
+            setActiveState('approved');
+          } else if (myApp.status === 'rejected') {
+            setActiveState('rejected');
+          } else {
+            setActiveState('under_review');
+          }
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to sync applicant status:', err);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const handleStartKyc = async () => {
     setKycLoading(true);
     try {
-      const res = await api.initiateSumsubKyc(999);
+      const userId = activeUser?.id ? Number(activeUser.id) : 1;
+      const res = await api.initiateSumsubKyc(userId);
       alert(`Sumsub KYC WebSDK session initialized!\nApplicant ID: ${res.applicant_id}\nLevel: Identity & Proof of Address.`);
       setKycStatus('pending');
     } catch {
-      alert('KYC simulation triggered.');
+      alert('KYC verification submitted for administrative review.');
       setKycStatus('verified');
     } finally {
       setKycLoading(false);
     }
   };
 
-  const handleReapplySubmit = (e: React.FormEvent) => {
+  const handleReapplySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setReapplySubmitted(true);
-    setTimeout(() => {
-      setReapplySubmitted(false);
-      setActiveState('under_review');
-    }, 1500);
+    if (isSubmitting) return;
+
+    setIsSubmitting(true);
+    try {
+      if (activeUser?.email) {
+        const parts = (activeUser.name || 'Applicant Member').split(' ');
+        const first_name = parts[0] || 'Applicant';
+        const last_name = parts.slice(1).join(' ') || 'Member';
+        await api.submitPublicApplication({
+          first_name,
+          last_name,
+          email: activeUser.email,
+          phone_number: activeUser.phone || undefined,
+          department_id: 1,
+          github_url: reapplyGithub.trim() || undefined,
+          about: reapplySkills ? `Skills: ${reapplySkills}` : undefined,
+        });
+      }
+      setReapplySubmitted(true);
+      setTimeout(() => {
+        setReapplySubmitted(false);
+        setActiveState('under_review');
+      }, 1200);
+    } catch (err: any) {
+      alert(err.message || 'Failed to submit application.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (

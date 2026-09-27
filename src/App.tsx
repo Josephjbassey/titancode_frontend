@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Header } from './components/Header';
 import { PublicLayout } from './components/PublicLayout';
@@ -40,6 +40,7 @@ import { NotificationModal } from './components/NotificationModal';
 import { Modal } from './components/Modal';
 import { OtpInput } from './components/OtpInput';
 import {
+  api,
   MOCK_MEMBER_USER,
   MOCK_ADMIN_USER,
   MOCK_CEO_USER,
@@ -105,6 +106,21 @@ export function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [settingsTab, setSettingsTab] = useState<'profile' | 'password' | 'notifications'>('profile');
   const [showPreviewBar, setShowPreviewBar] = useState(false);
+
+  // Attempt session hydration on mount
+  useEffect(() => {
+    if (api.isAuthenticated()) {
+      api.getCurrentUser()
+        .then((user) => setCurrentUser(user))
+        .catch(() => {
+          api.logout();
+          setCurrentUser(null);
+        });
+    }
+  }, []);
+
+  // Safe fallback user for preview navigator testing
+  const activeUser: User = currentUser || MOCK_MEMBER_USER;
 
   // Interactive standalone modal previews for Screens 14, 15, 16
   const [standaloneOtp, setStandaloneOtp] = useState('12345');
@@ -263,7 +279,7 @@ export function App() {
         <div style={{ display: 'flex', width: '100%', minHeight: '100vh' }}>
           <Sidebar
             currentView={currentView}
-            userRole={currentUser.role}
+            userRole={activeUser.role}
             onNavigate={(view) => {
               if (view === 'settings') {
                 setCurrentView('profile_settings');
@@ -272,12 +288,16 @@ export function App() {
                 setCurrentView(view as ScreenId);
               }
             }}
-            onLogout={() => setCurrentView('sign_in')}
+            onLogout={() => {
+              api.logout();
+              setCurrentUser(null);
+              setCurrentView('sign_in');
+            }}
           />
 
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
             <Header
-              user={currentUser}
+              user={activeUser}
               onOpenProfile={() => {
                 setCurrentView('profile_settings');
                 setSettingsTab('profile');
@@ -290,7 +310,7 @@ export function App() {
             />
 
             <main className="tc-workspace-main" style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
-              {currentView === 'dashboard' && <TeamDashboardView />}
+              {currentView === 'dashboard' && <TeamDashboardView onNavigate={setCurrentView} />}
 
               {currentView === 'manager_dashboard' && (
                 <ManagerDashboardView onNavigate={setCurrentView} />
@@ -363,7 +383,7 @@ export function App() {
                 >
                   {settingsTab === 'profile' ? (
                     <ProfileSettingsView
-                      user={currentUser}
+                      user={activeUser}
                       onUpdateUser={(u) => setCurrentUser(u)}
                     />
                   ) : (
@@ -418,7 +438,13 @@ export function App() {
             <SignInView
               onSuccess={(user) => {
                 setCurrentUser(user);
-                setCurrentView(user.role === 'Admin' ? 'clients' : 'dashboard');
+                if (user.role === 'CEO') setCurrentView('ceo_dashboard');
+                else if (user.role === 'Manager' || user.role === 'Team Lead' || user.role === 'Project Manager') setCurrentView('manager_dashboard');
+                else if (user.role === 'HR') setCurrentView('hr_dashboard');
+                else if (user.role === 'Client') setCurrentView('client_dashboard');
+                else if (user.role === 'Applicant') setCurrentView('applicant_dashboard');
+                else if (user.role === 'Admin') setCurrentView('clients');
+                else setCurrentView('dashboard');
               }}
               onNavigateSignUp={() => setCurrentView('sign_up')}
               onNavigateForgotPassword={() => setCurrentView('forgot_password_1')}
@@ -440,7 +466,8 @@ export function App() {
           {currentView === 'qualification' && (
             <QualificationView
               onSelectRole={(role) => {
-                setCurrentUser({ ...currentUser, role });
+                const base = currentUser || MOCK_MEMBER_USER;
+                setCurrentUser({ ...base, role });
                 setCurrentView(role === 'Client' ? 'clients' : 'dashboard');
               }}
               onBack={() => setCurrentView('sign_in')}
@@ -597,7 +624,7 @@ export function App() {
           <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
             <Shield size={12} style={{ color: 'var(--tc-brand-gold)' }} />
             <select
-              value={currentUser.role}
+              value={currentUser?.role ?? 'Member'}
               onChange={(e) => handleRoleSelect(e.target.value as UserRole)}
               style={{
                 padding: '3px 8px',

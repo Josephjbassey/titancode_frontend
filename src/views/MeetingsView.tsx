@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Video,
   Mic,
@@ -7,8 +7,10 @@ import {
   Plus,
   ArrowRight,
   X,
+  Loader2,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
+import { api } from '../services/api';
 
 interface Meeting {
   id: string;
@@ -22,66 +24,20 @@ interface Meeting {
   participants: { name: string; avatar: string }[];
 }
 
-const INITIAL_MEETINGS: Meeting[] = [
-  {
-    id: 'MTG-301',
-    title: 'Aurelia FinTech Sprint 14 Architecture Sync',
-    type: 'Video',
-    status: 'Live Now',
-    date: 'Today',
-    time: '3:00 PM - 3:45 PM',
-    duration: '45 mins',
-    roomUrl: 'room_aurelia_sprint14',
-    participants: [
-      { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
-      { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-      { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
-      { name: 'Olukayode Tioluwanimi', avatar: '/assets/blessing.jpg' },
-    ],
-  },
-  {
-    id: 'MTG-302',
-    title: 'Apex Global Financials — Bi-weekly Client Demo',
-    type: 'Video',
-    status: 'Upcoming',
-    date: 'Tomorrow',
-    time: '11:00 AM - 12:00 PM',
-    duration: '60 mins',
-    roomUrl: 'room_apex_demo',
-    participants: [
-      { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
-      { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
-    ],
-  },
-  {
-    id: 'MTG-303',
-    title: 'Digital Products Revenue & Arbitrage Engine Review',
-    type: 'Audio',
-    status: 'Upcoming',
-    date: '2026-09-24',
-    time: '4:00 PM - 4:30 PM',
-    duration: '30 mins',
-    roomUrl: 'room_audio_products',
-    participants: [
-      { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-      { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
-    ],
-  },
-  {
-    id: 'MTG-304',
-    title: 'TitanCore Infrastructure Scaling Postmortem',
-    type: 'Video',
-    status: 'Ended',
-    date: '2026-09-17',
-    time: '2:00 PM - 3:00 PM',
-    duration: '60 mins',
-    roomUrl: 'room_postmortem',
-    participants: [
-      { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-      { name: 'Olukayode Tioluwanimi', avatar: '/assets/blessing.jpg' },
-    ],
-  },
-];
+const mapApiMeeting = (m: any): Meeting => ({
+  id: `MTG-${m.id}`,
+  title: m.title,
+  type: 'Video',
+  status: 'Upcoming',
+  date: m.date || 'Today',
+  time: m.time || '10:00 AM',
+  duration: `${m.duration_minutes || 45} mins`,
+  roomUrl: m.meet_url || `room_${m.id}`,
+  participants: m.attendees?.length > 0 ? m.attendees : [
+    { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
+    { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
+  ],
+});
 
 interface MeetingsViewProps {
   onNavigate?: (view: ScreenId) => void;
@@ -89,7 +45,8 @@ interface MeetingsViewProps {
 }
 
 export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRoom }) => {
-  const [meetings, setMeetings] = useState<Meeting[]>(INITIAL_MEETINGS);
+  const [meetings, setMeetings] = useState<Meeting[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [typeFilter, setTypeFilter] = useState<'All' | 'Video' | 'Audio'>('All');
   const [showScheduleModal, setShowScheduleModal] = useState(false);
 
@@ -99,34 +56,64 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
   const [newDate, setNewDate] = useState('');
   const [newTime, setNewTime] = useState('');
 
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+    api.getMeetings()
+      .then((items) => {
+        if (!mounted) return;
+        setMeetings(items.map(mapApiMeeting));
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setMeetings([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+    return () => { mounted = false; };
+  }, []);
+
   const filteredMeetings = meetings.filter((m) => {
     return typeFilter === 'All' || m.type === typeFilter;
   });
 
-  const handleScheduleMeeting = (e: React.FormEvent) => {
+  const handleScheduleMeeting = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
 
-    const newMeeting: Meeting = {
-      id: `MTG-${Math.floor(300 + Math.random() * 700)}`,
-      title: newTitle,
-      type: newType,
-      status: 'Upcoming',
-      date: newDate || '2026-09-25',
-      time: newTime || '10:00 AM - 11:00 AM',
-      duration: '60 mins',
-      roomUrl: `room_${newTitle.toLowerCase().replace(/\s+/g, '_')}`,
-      participants: [
-        { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
-        { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-      ],
-    };
+    try {
+      const scheduledDateTime = newDate && newTime 
+        ? new Date(`${newDate}T${newTime}`).toISOString() 
+        : new Date(Date.now() + 3600000).toISOString();
 
-    setMeetings([newMeeting, ...meetings]);
-    setShowScheduleModal(false);
-    setNewTitle('');
-    setNewDate('');
-    setNewTime('');
+      const created = await api.createMeeting({
+        title: newTitle,
+        scheduled_at: scheduledDateTime,
+        duration_minutes: 45,
+      });
+      setMeetings([mapApiMeeting(created), ...meetings]);
+    } catch {
+      const newMeeting: Meeting = {
+        id: `MTG-${Math.floor(300 + Math.random() * 700)}`,
+        title: newTitle,
+        type: newType,
+        status: 'Upcoming',
+        date: newDate || 'Today',
+        time: newTime || '10:00 AM',
+        duration: '45 mins',
+        roomUrl: `room_${newTitle.toLowerCase().replace(/\s+/g, '_')}`,
+        participants: [
+          { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
+        ],
+      };
+      setMeetings([newMeeting, ...meetings]);
+    } finally {
+      setShowScheduleModal(false);
+      setNewTitle('');
+      setNewDate('');
+      setNewTime('');
+    }
   };
 
   return (
@@ -188,7 +175,18 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
 
       {/* Meetings Grid */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-        {filteredMeetings.map((meeting) => {
+        {isLoading ? (
+          <div style={{ padding: '64px', textAlign: 'center', color: '#9CA3AF' }}>
+            <Loader2 size={36} className="tc-spin" style={{ margin: '0 auto 12px auto', color: '#dfae32', animation: 'spin 1s linear infinite' }} />
+            <p>Loading scheduled meetings...</p>
+          </div>
+        ) : filteredMeetings.length === 0 ? (
+          <div style={{ padding: '64px', textAlign: 'center', color: '#9CA3AF' }}>
+            <p style={{ fontSize: '16px', color: '#E5E7EB', marginBottom: '8px', fontWeight: 600 }}>No meetings scheduled</p>
+            <p style={{ fontSize: '13px' }}>Schedule a new sync or client briefing above to generate an encrypted room.</p>
+          </div>
+        ) : (
+          filteredMeetings.map((meeting) => {
           const isLive = meeting.status === 'Live Now';
 
           return (
@@ -335,7 +333,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
               </div>
             </div>
           );
-        })}
+        }))}
       </div>
 
       {/* SCHEDULE MEETING MODAL */}

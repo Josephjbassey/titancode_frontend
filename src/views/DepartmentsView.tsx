@@ -5,9 +5,10 @@ import {
   Building2,
   ArrowRight,
   Search,
+  Loader2,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
-import { api, MOCK_DEPARTMENTS } from '../services/api';
+import { api } from '../services/api';
 import type { DepartmentInfo } from '../types';
 
 interface DepartmentsViewProps {
@@ -15,7 +16,9 @@ interface DepartmentsViewProps {
 }
 
 export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) => {
-  const [departments, setDepartments] = useState<DepartmentInfo[]>(MOCK_DEPARTMENTS);
+  const [departments, setDepartments] = useState<DepartmentInfo[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -27,37 +30,47 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
   const [newManager, setNewManager] = useState('Joseph John');
 
   useEffect(() => {
-    async function loadDepts() {
-      const data = await api.getDepartments();
-      setDepartments(data);
-    }
-    loadDepts();
+    let mounted = true;
+    setIsLoading(true);
+    api.getDepartments()
+      .then((data) => {
+        if (!mounted) return;
+        setDepartments(data);
+      })
+      .catch((err) => {
+        console.error('Failed to load departments:', err);
+        if (!mounted) return;
+        setDepartments([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const handleCreate = (e: React.FormEvent) => {
+  const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newName.trim()) return;
+    if (!newName.trim() || isSubmitting) return;
 
-    const newDept: DepartmentInfo = {
-      id: `DEP-${departments.length + 1 < 10 ? '0' : ''}${departments.length + 1}`,
-      code: newName.toLowerCase().replace(/[^a-z0-9]/g, '-').slice(0, 12),
-      name: newName,
-      description: newDesc || 'Specialized division of TitanCode Technologies.',
-      manager_name: newManager,
-      manager_avatar: '/assets/joseph.jpg',
-      manager_email: `${newName.toLowerCase().split(' ')[0]}@titancode.tech`,
-      member_count: 4,
-      active_projects_count: 2,
-      monthly_budget: 6000000,
-      currency: 'NGN',
-      profit_pool_share_percent: 4,
-      category: newCategory,
-    };
+    setIsSubmitting(true);
+    try {
+      const created = await api.createDepartment({
+        name: newName.trim(),
+        description: newDesc.trim() || undefined,
+        manager_name: newManager.trim() || undefined,
+      });
 
-    setDepartments([newDept, ...departments]);
-    setShowCreateModal(false);
-    setNewName('');
-    setNewDesc('');
+      setDepartments((prev) => [created, ...prev]);
+      setShowCreateModal(false);
+      setNewName('');
+      setNewDesc('');
+    } catch (err: any) {
+      alert(err.message || 'Failed to create department.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const categories = ['All', 'Engineering', 'Product', 'Growth', 'Operations', 'Finance'];
@@ -208,13 +221,43 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
       <div
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))',
+          gridTemplateColumns: isLoading || filtered.length === 0 ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))',
           gap: '20px',
           marginBottom: '32px',
         }}
       >
-        {filtered.map((dept) => (
+        {isLoading ? (
           <div
+            style={{
+              padding: '60px 20px',
+              textAlign: 'center',
+              backgroundColor: '#FFFFFF1A',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              color: '#9CA3AF',
+            }}
+          >
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+              <Loader2 size={20} className="tc-spin" color="#dfae32" />
+              <span>Loading organizational departments...</span>
+            </div>
+          </div>
+        ) : filtered.length === 0 ? (
+          <div
+            style={{
+              padding: '60px 20px',
+              textAlign: 'center',
+              backgroundColor: '#FFFFFF1A',
+              borderRadius: '16px',
+              border: '1px solid rgba(255, 255, 255, 0.08)',
+              color: '#9CA3AF',
+            }}
+          >
+            No departments found matching the filter.
+          </div>
+        ) : (
+          filtered.map((dept) => (
+            <div
             key={dept.id}
             style={{
               backgroundColor: '#FFFFFF1A',
@@ -342,7 +385,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
               </button>
             </div>
           </div>
-        ))}
+        )))}
       </div>
 
       {/* 4. MODAL: CREATE DEPARTMENT */}

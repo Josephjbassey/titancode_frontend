@@ -21,17 +21,21 @@ export interface User {
   id: number;
   email: string;
   full_name: string;
+  name?: string; // Backward compatibility alias for full_name
   first_name?: string;
   last_name?: string;
   role: UserRole;
   department_id?: number | null;
   department_name?: string;
+  department?: string; // Backward compatibility alias for department_name
   country?: string;
   phone_number?: string;
+  phone?: string; // Backward compatibility alias for phone_number
   github_url?: string;
   portfolio_url?: string;
   status: 'active' | 'inactive' | 'pending';
   avatar_url?: string;
+  avatar?: string; // Backward compatibility alias for avatar_url
   gender?: 'Male' | 'Female' | 'Other';
   address?: string;
   city?: string;
@@ -47,9 +51,11 @@ export interface User {
 export interface ClientRecord {
   id: number;
   full_name: string;
+  name?: string; // Backward compatibility alias for full_name
   email: string;
   company?: string;
   phone?: string;
+  phone_number?: string; // Backward compatibility alias for phone
   service_interest?: string;
   message?: string;
   status: 'Active' | 'Lead' | 'Pending' | 'Closed';
@@ -61,8 +67,10 @@ export interface ClientRecord {
 export interface InboundLead {
   id: number;
   client_name: string;
+  full_name?: string; // Backward compatibility alias for client_name
   email: string;
   phone: string;
+  phone_number?: string; // Backward compatibility alias for phone
   company: string;
   budget_range: string;
   project_title: string;
@@ -93,7 +101,7 @@ export interface DepartmentInfo {
 }
 
 export interface TeamMemberWorkload {
-  id: number;
+  id: number | string;
   name: string;
   role: string;
   avatar: string;
@@ -107,7 +115,7 @@ export interface TeamMemberWorkload {
 }
 
 export interface ClientMilestone {
-  id: number;
+  id: number | string;
   project_id: number;
   title: string;
   description: string;
@@ -122,8 +130,11 @@ export interface ClientMilestone {
 export interface ApplicantRecord {
   id: number;
   applicant_name: string;
+  full_name?: string; // Backward compatibility alias for applicant_name
+  name?: string; // Backward compatibility alias for applicant_name
   email: string;
   phone: string;
+  phone_number?: string; // Backward compatibility alias for phone
   department_id: number;
   department_name: string;
   experience_years: number;
@@ -145,9 +156,11 @@ export interface Task {
   project_id: number;
   project_name?: string;
   assigned_user: number;
+  assigned_to?: number; // Backward compatibility alias for assigned_user
   assigned_user_name?: string;
   assigned_user_avatar?: string;
   task_title: string;
+  title?: string; // Backward compatibility alias for task_title
   description?: string;
   status: TaskStatus;
   priority: TaskPriority;
@@ -159,6 +172,8 @@ export interface Task {
 export interface Project {
   id: number;
   project_name: string;
+  name?: string; // Backward compatibility alias for project_name
+  title?: string; // Backward compatibility alias for project_name
   client_id?: number;
   client_name?: string;
   budget: number;
@@ -252,4 +267,25 @@ export interface ApiResponse<T> {
   data: T;
   message?: string;
   error?: string;
+}
+
+export interface FinancialSettings {
+  company_name: string;
+  support_email: string;
+  currency: string;
+  timezone: string;
+  platform_split_percent: number;
+  member_split_percent: number;
+  notify_on_milestone: boolean;
+  notify_on_withdrawal: boolean;
+}
+
+export interface SalaryProjection {
+  total_budget: number;
+  platform_split_percent: number;
+  member_split_percent: number;
+  platform_treasury_share: number;
+  team_pool_share: number;
+  member_count: number;
+  projected_salary_per_member: number;
 }

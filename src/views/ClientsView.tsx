@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Users,
   DollarSign,
@@ -8,8 +8,10 @@ import {
   MoreHorizontal,
   ChevronDown,
   Plus,
+  Loader2,
 } from 'lucide-react';
 import { Modal } from '../components/Modal';
+import { api } from '../services/api';
 
 interface ClientItem {
   id: number;
@@ -22,15 +24,9 @@ interface ClientItem {
 }
 
 export const ClientsView: React.FC = () => {
-  const [clientRows, setClientRows] = useState<ClientItem[]>([
-    { id: 1, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 2, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 3, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 4, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 5, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 6, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-    { id: 7, date: '10 May, 26', name: 'John Peter', avatar: '/assets/dashprofile.jpg', company: 'Tesla, Inc. (TSLA)', amount: '₦2,000,000', status: 'Active' },
-  ]);
+  const [clientRows, setClientRows] = useState<ClientItem[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newClientName, setNewClientName] = useState('');
@@ -38,31 +34,84 @@ export const ClientsView: React.FC = () => {
   const [newAmount, setNewAmount] = useState('2,000,000');
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+    api.getClients()
+      .then((records) => {
+        if (!mounted) return;
+        const mapped = records.map((c) => ({
+          id: c.id,
+          date: c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : 'Recent',
+          name: c.full_name || 'Client Representative',
+          avatar: '/assets/dashprofile.jpg',
+          company: c.email ? c.email.split('@')[1] : 'Enterprise Client',
+          amount: '₦2,000,000',
+          status: c.status || 'Active',
+        }));
+        setClientRows(mapped);
+      })
+      .catch((err) => {
+        console.error('Failed to load clients:', err);
+        if (!mounted) return;
+        setClientRows([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
   const handleCopy = (id: number, text: string) => {
     navigator.clipboard?.writeText(text);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const handleAddClient = (e: React.FormEvent) => {
+  const handleAddClient = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newClientName) return;
+    if (!newClientName.trim() || isSubmitting) return;
 
-    const newEntry: ClientItem = {
-      id: Date.now(),
-      date: '10 May, 26',
-      name: newClientName,
-      avatar: '/assets/dashprofile.jpg',
-      company: newCompany || 'Tesla, Inc. (TSLA)',
-      amount: `₦${newAmount}`,
-      status: 'Active',
-    };
+    setIsSubmitting(true);
+    try {
+      await api.submitHireUs({
+        name: newClientName.trim(),
+        email: `${newClientName.toLowerCase().replace(/[^a-z0-9]/g, '.')}@client.titan`,
+        company: newCompany.trim() || undefined,
+        project_type: 'Enterprise Retainer',
+        description: `Client onboarded with retainer: ₦${newAmount}`,
+      });
 
-    setClientRows([newEntry, ...clientRows]);
-    setIsAddModalOpen(false);
-    setNewClientName('');
-    setNewCompany('');
+      const newEntry: ClientItem = {
+        id: Date.now(),
+        date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }),
+        name: newClientName,
+        avatar: '/assets/dashprofile.jpg',
+        company: newCompany || 'Enterprise Partner',
+        amount: `₦${newAmount}`,
+        status: 'Active',
+      };
+
+      setClientRows((prev) => [newEntry, ...prev]);
+      setIsAddModalOpen(false);
+      setNewClientName('');
+      setNewCompany('');
+    } catch (err: any) {
+      alert(err.message || 'Failed to save client.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+  const activeCount = clientRows.filter((r) => r.status.toLowerCase() === 'active').length;
+  const pendingCount = clientRows.filter((r) => r.status.toLowerCase() === 'pending').length;
+  const totalCount = clientRows.length;
+  const totalAmount = clientRows.reduce((sum, r) => {
+    const num = parseInt(r.amount.replace(/[^0-9]/g, ''), 10);
+    return sum + (isNaN(num) ? 0 : num);
+  }, 0);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px', width: '100%' }} className="tc-fade-in">
@@ -134,10 +183,10 @@ export const ClientsView: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: '36px', fontWeight: '800', color: '#000000', marginBottom: '8px', lineHeight: 1 }}>
-            24
+            {activeCount}
           </div>
           <div style={{ fontSize: '12px', fontWeight: '600', color: '#1F2937' }}>
-            +3 New since past 7 days
+            Verified enterprise contracts
           </div>
         </div>
 
@@ -167,10 +216,10 @@ export const ClientsView: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: '36px', fontWeight: '800', color: '#FFFFFF', marginBottom: '8px', lineHeight: 1 }}>
-            13
+            {pendingCount}
           </div>
           <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
-            since last month
+            Awaiting contract sign-off
           </div>
         </div>
 
@@ -200,10 +249,10 @@ export const ClientsView: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: '36px', fontWeight: '800', color: '#FFFFFF', marginBottom: '8px', lineHeight: 1 }}>
-            30
+            {totalCount}
           </div>
           <div style={{ fontSize: '12px', color: '#10B981', fontWeight: '600' }}>
-            +7 New since last month
+            All-time registered accounts
           </div>
         </div>
 
@@ -233,10 +282,10 @@ export const ClientsView: React.FC = () => {
             </div>
           </div>
           <div style={{ fontSize: '32px', fontWeight: '800', color: '#FFFFFF', marginBottom: '8px', lineHeight: 1 }}>
-            ₦2,700,000
+            ₦{totalAmount.toLocaleString()}
           </div>
           <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
-            since last month
+            Gross client commitments
           </div>
         </div>
       </div>
@@ -261,7 +310,23 @@ export const ClientsView: React.FC = () => {
               </tr>
             </thead>
             <tbody>
-              {clientRows.map((row) => (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <Loader2 size={18} className="tc-spin" color="#dfae32" />
+                      <span>Loading client records...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : clientRows.length === 0 ? (
+                <tr>
+                  <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
+                    No clients on record yet. Click &quot;Add Client&quot; above to onboard one.
+                  </td>
+                </tr>
+              ) : (
+                clientRows.map((row) => (
                 <tr key={row.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
                   {/* Date */}
                   <td style={{ padding: '16px 14px', color: '#9CA3AF' }}>
@@ -380,7 +445,7 @@ export const ClientsView: React.FC = () => {
                     </div>
                   </td>
                 </tr>
-              ))}
+              )))}
             </tbody>
           </table>
         </div>

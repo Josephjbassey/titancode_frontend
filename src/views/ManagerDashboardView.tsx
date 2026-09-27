@@ -13,13 +13,12 @@ import {
   Sparkles,
   ExternalLink,
   MessageSquare,
+  Loader2,
 } from 'lucide-react';
 import {
   api,
-  MOCK_DEPARTMENTS,
-  MOCK_TEAM_WORKLOAD,
 } from '../services/api';
-import type { DepartmentInfo, TeamMemberWorkload, TaskPriority } from '../types';
+import type { DepartmentInfo, TeamMemberWorkload, TaskPriority, Project } from '../types';
 import type { ScreenId } from '../App';
 
 interface ManagerDashboardViewProps {
@@ -31,10 +30,12 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
   onNavigate,
   initialDepartmentCode = 'frontend',
 }) => {
-  const [departments, setDepartments] = useState<DepartmentInfo[]>(MOCK_DEPARTMENTS);
+  const [departments, setDepartments] = useState<DepartmentInfo[]>([]);
   const [selectedDeptCode, setSelectedDeptCode] = useState<string>(initialDepartmentCode);
-  const [roster, setRoster] = useState<TeamMemberWorkload[]>(MOCK_TEAM_WORKLOAD);
+  const [roster, setRoster] = useState<TeamMemberWorkload[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   // Task Dispatcher Modal
   const [showDispatchModal, setShowDispatchModal] = useState(false);
@@ -43,6 +44,7 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
   const [taskAssignee, setTaskAssignee] = useState('');
   const [taskDeadline, setTaskDeadline] = useState('2026-10-01');
   const [taskDescription, setTaskDescription] = useState('');
+  const [isDispatching, setIsDispatching] = useState(false);
   const [dispatchSuccess, setDispatchSuccess] = useState(false);
 
   // Deliverables sign-off state
@@ -53,38 +55,87 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
   });
 
   useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+
     async function loadData() {
-      const depts = await api.getDepartments();
-      setDepartments(depts);
-      const members = await api.getTeamWorkload(selectedDeptCode);
-      setRoster(members);
+      try {
+        const [depts, members, projs] = await Promise.all([
+          api.getDepartments().catch(() => []),
+          api.getTeamWorkload(selectedDeptCode).catch(() => []),
+          api.getProjects().catch(() => []),
+        ]);
+        if (!mounted) return;
+        setDepartments(depts);
+        setRoster(members);
+        setProjects(projs);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
     }
     loadData();
+    return () => {
+      mounted = false;
+    };
   }, [selectedDeptCode]);
 
-  const currentDept =
-    departments.find((d) => d.code === selectedDeptCode) || departments[0];
+  const currentDept: DepartmentInfo =
+    departments.find((d) => d.code === selectedDeptCode) ||
+    departments[0] || {
+      id: 'DEP-01',
+      code: selectedDeptCode,
+      name: 'Engineering',
+      description: 'Departmental management and agile execution overview.',
+      manager_name: 'Lead Engineer',
+      manager_avatar: '/assets/joseph.jpg',
+      manager_email: 'engineering@titancode.tech',
+      member_count: 0,
+      active_projects_count: 0,
+      monthly_budget: 0,
+      currency: 'NGN',
+      profit_pool_share_percent: 10,
+      category: 'Engineering',
+    };
 
-  // Filter roster for this department (or fallback to full team if demo)
+  // Filter roster for this department
   const currentRoster = roster.filter(
     (m) =>
       m.department.toLowerCase().includes(currentDept.name.toLowerCase().split(' ')[0]) ||
-      m.department.toLowerCase().includes(currentDept.code.toLowerCase()) ||
-      roster.length <= 3
+      m.department.toLowerCase().includes(currentDept.code.toLowerCase())
   );
-  const displayRoster = currentRoster.length > 0 ? currentRoster : roster.slice(0, 4);
+  const displayRoster = currentRoster.length > 0 ? currentRoster : roster;
 
-  const handleDispatchTask = (e: React.FormEvent) => {
+  const handleDispatchTask = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!taskTitle.trim() || !taskAssignee) return;
+    if (!taskTitle.trim() || !taskAssignee || isDispatching) return;
 
-    setDispatchSuccess(true);
-    setTimeout(() => {
-      setDispatchSuccess(false);
-      setShowDispatchModal(false);
-      setTaskTitle('');
-      setTaskDescription('');
-    }, 1200);
+    setIsDispatching(true);
+    try {
+      const selectedMember = roster.find((m) => m.name === taskAssignee || String(m.id) === taskAssignee);
+      const assignedUserId = selectedMember ? Number(selectedMember.id) : 1;
+      const projectId = projects[0]?.id || 1;
+
+      await api.createTask({
+        project_id: projectId,
+        assigned_user: isNaN(assignedUserId) ? 1 : assignedUserId,
+        task_title: taskTitle.trim(),
+        description: taskDescription.trim() || undefined,
+        priority: taskPriority,
+        deadline: taskDeadline,
+      });
+
+      setDispatchSuccess(true);
+      setTimeout(() => {
+        setDispatchSuccess(false);
+        setShowDispatchModal(false);
+        setTaskTitle('');
+        setTaskDescription('');
+      }, 1000);
+    } catch (err: any) {
+      alert(err.message || 'Failed to dispatch task to server.');
+    } finally {
+      setIsDispatching(false);
+    }
   };
 
   const toggleDeliverableSignOff = (delivId: string) => {
@@ -464,7 +515,23 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
               </tr>
             </thead>
             <tbody>
-              {displayRoster.map((member) => {
+              {isLoading ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF' }}>
+                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                      <Loader2 size={16} className="tc-spin" color="#dfae32" />
+                      <span>Loading team capacity & workload roster...</span>
+                    </div>
+                  </td>
+                </tr>
+              ) : displayRoster.length === 0 ? (
+                <tr>
+                  <td colSpan={7} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF', fontSize: '13px' }}>
+                    No team members found for this department.
+                  </td>
+                </tr>
+              ) : (
+                displayRoster.map((member) => {
                 const statusColors = {
                   Optimal: { bg: 'rgba(16, 185, 129, 0.12)', text: '#10B981', border: 'rgba(16, 185, 129, 0.3)' },
                   High: { bg: 'rgba(245, 158, 11, 0.12)', text: '#F59E0B', border: 'rgba(245, 158, 11, 0.3)' },
@@ -616,7 +683,7 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>

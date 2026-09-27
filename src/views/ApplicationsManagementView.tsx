@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   CheckCircle2,
   ExternalLink,
@@ -6,8 +6,10 @@ import {
   Globe,
   X,
   Search,
+  Loader2,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
+import { api } from '../services/api';
 
 interface Application {
   id: string;
@@ -24,73 +26,57 @@ interface Application {
   reviewNotes?: string;
 }
 
-const INITIAL_APPLICATIONS: Application[] = [
-  {
-    id: 'APP-501',
-    applicantName: 'David K. Mensah',
-    email: 'david.mensah@techlead.dev',
-    phone: '+233 24 123 4567',
-    department: 'Fullstack Engineering',
-    status: 'Pending',
-    appliedDate: '2026-09-18',
-    githubUrl: 'https://github.com/davidmensah-dev',
-    portfolioUrl: 'https://davidmensah.design',
-    experienceYears: 4,
-    coverNote: 'Experienced in React, TypeScript, FastAPI and building high-concurrency microservices. Excited about contributing to TitanCode scalable platforms.',
-  },
-  {
-    id: 'APP-502',
-    applicantName: 'Sarah Al-Mansoor',
-    email: 'sarah.ux@flowstudio.io',
-    phone: '+971 50 987 6543',
-    department: 'UI/UX Design',
-    status: 'Pending',
-    appliedDate: '2026-09-19',
-    githubUrl: '',
-    portfolioUrl: 'https://sarahdesign.framer.website',
-    experienceYears: 5,
-    coverNote: 'Senior Product Designer specializing in dark-mode FinTech design systems, mobile design tokens, and user conversion psychology.',
-  },
-  {
-    id: 'APP-503',
-    applicantName: 'Emmanuel Adeyemi',
-    email: 'emmanuel.code@swiftmail.ng',
-    phone: '+234 803 765 4321',
-    department: 'Mobile Development',
-    status: 'Approved',
-    appliedDate: '2026-09-10',
-    githubUrl: 'https://github.com/e-adeyemi',
-    portfolioUrl: 'https://emmanuelmobile.dev',
-    experienceYears: 3,
-    coverNote: 'Flutter and React Native developer with 6 apps published on the App Store and Google Play.',
-    reviewNotes: 'Strong Flutter portfolio and solid live demo apps. Approved for mobile sprint team.',
-  },
-  {
-    id: 'APP-504',
-    applicantName: 'Carlos Rodriguez',
-    email: 'carlos@botnet-security.es',
-    phone: '+34 612 345 678',
-    department: 'Digital Products',
-    status: 'Rejected',
-    appliedDate: '2026-09-05',
-    githubUrl: 'https://github.com/carlos-r-dev',
-    portfolioUrl: '',
-    experienceYears: 1,
-    coverNote: 'Junior developer looking for my first internship in software engineering.',
-    reviewNotes: 'Looking for senior/lead level engineer for our algorithmic trading systems at this time.',
-  },
-];
+const mapApiApp = (rec: any): Application => {
+  const statusMap: Record<string, 'Pending' | 'Approved' | 'Rejected'> = {
+    pending: 'Pending',
+    approved: 'Approved',
+    rejected: 'Rejected',
+  };
+  return {
+    id: `APP-${rec.id}`,
+    applicantName: rec.applicant_name,
+    email: rec.email,
+    phone: rec.phone || 'N/A',
+    department: rec.department_name || 'Engineering',
+    status: statusMap[rec.status] || 'Pending',
+    appliedDate: rec.created_at ? rec.created_at.split('T')[0] : '2026-09-18',
+    githubUrl: rec.github_url || '',
+    portfolioUrl: rec.portfolio_url || '',
+    experienceYears: rec.experience_years || 1,
+    coverNote: rec.skills?.length > 0 ? `Skills: ${rec.skills.join(', ')}` : 'Applicant engineering submission.',
+    reviewNotes: rec.rejection_reason,
+  };
+};
 
 interface ApplicationsManagementViewProps {
   onNavigate?: (view: ScreenId) => void;
 }
 
 export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProps> = () => {
-  const [applications, setApplications] = useState<Application[]>(INITIAL_APPLICATIONS);
+  const [applications, setApplications] = useState<Application[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [tab, setTab] = useState<'Pending' | 'Approved' | 'Rejected' | 'All'>('Pending');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [reviewNoteInput, setReviewNoteInput] = useState('');
+
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+    api.getApplicantRecords()
+      .then((records) => {
+        if (!mounted) return;
+        setApplications(records.map(mapApiApp));
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setApplications([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+    return () => { mounted = false; };
+  }, []);
 
   const filteredApps = applications.filter((app) => {
     const matchesTab = tab === 'All' || app.status === tab;
@@ -101,20 +87,38 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
     return matchesTab && matchesSearch;
   });
 
-  const handleApprove = (appId: string) => {
+  const handleApprove = async (appId: string) => {
+    const numericId = parseInt(appId.replace('APP-', ''), 10);
     setApplications((prev) =>
       prev.map((a) => (a.id === appId ? { ...a, status: 'Approved', reviewNotes: reviewNoteInput || 'Approved by reviewer.' } : a))
     );
     setSelectedApp(null);
     setReviewNoteInput('');
+
+    if (!isNaN(numericId)) {
+      try {
+        await api.approveApplication(numericId);
+      } catch (err: any) {
+        alert(err.message || 'Failed to approve application on server');
+      }
+    }
   };
 
-  const handleReject = (appId: string) => {
+  const handleReject = async (appId: string) => {
+    const numericId = parseInt(appId.replace('APP-', ''), 10);
     setApplications((prev) =>
       prev.map((a) => (a.id === appId ? { ...a, status: 'Rejected', reviewNotes: reviewNoteInput || 'Application declined.' } : a))
     );
     setSelectedApp(null);
     setReviewNoteInput('');
+
+    if (!isNaN(numericId)) {
+      try {
+        await api.rejectApplication(numericId, reviewNoteInput || undefined);
+      } catch (err: any) {
+        alert(err.message || 'Failed to record rejection on server');
+      }
+    }
   };
 
   return (
@@ -227,72 +231,89 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
             </tr>
           </thead>
           <tbody>
-            {filteredApps.map((app) => (
-              <tr
-                key={app.id}
-                onClick={() => setSelectedApp(app)}
-                style={{
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.15s',
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)')}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-              >
-                <td style={{ padding: '14px 18px' }}>
-                  <div style={{ fontWeight: 700, color: '#FFFFFF' }}>{app.applicantName}</div>
-                  <div style={{ color: '#9CA3AF', fontSize: '12px' }}>{app.email}</div>
-                </td>
-                <td style={{ padding: '14px 18px', color: '#dfae32', fontWeight: 600 }}>{app.department}</td>
-                <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{app.experienceYears} Years</td>
-                <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{app.appliedDate}</td>
-                <td style={{ padding: '14px 18px' }}>
-                  <span
-                    style={{
-                      padding: '4px 10px',
-                      borderRadius: '999px',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      backgroundColor:
-                        app.status === 'Approved'
-                          ? 'rgba(16, 185, 129, 0.15)'
-                          : app.status === 'Rejected'
-                          ? 'rgba(239, 68, 68, 0.15)'
-                          : 'rgba(223, 174, 50, 0.15)',
-                      color:
-                        app.status === 'Approved'
-                          ? '#10B981'
-                          : app.status === 'Rejected'
-                          ? '#EF4444'
-                          : '#dfae32',
-                    }}
-                  >
-                    ● {app.status}
-                  </span>
-                </td>
-                <td style={{ padding: '14px 18px', textAlign: 'right' }}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedApp(app);
-                    }}
-                    style={{
-                      backgroundColor: '#dfae32',
-                      color: '#0A0D14',
-                      fontWeight: 700,
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '6px 14px',
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Review
-                  </button>
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
+                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                    <Loader2 size={18} className="tc-spin" color="#dfae32" />
+                    <span>Loading applicant records...</span>
+                  </div>
                 </td>
               </tr>
-            ))}
+            ) : filteredApps.length === 0 ? (
+              <tr>
+                <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
+                  No applicant records found matching the current criteria.
+                </td>
+              </tr>
+            ) : (
+              filteredApps.map((app) => (
+                <tr
+                  key={app.id}
+                  onClick={() => setSelectedApp(app)}
+                  style={{
+                    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
+                    cursor: 'pointer',
+                    transition: 'background-color 0.15s',
+                  }}
+                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)')}
+                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                >
+                  <td style={{ padding: '14px 18px' }}>
+                    <div style={{ fontWeight: 700, color: '#FFFFFF' }}>{app.applicantName}</div>
+                    <div style={{ color: '#9CA3AF', fontSize: '12px' }}>{app.email}</div>
+                  </td>
+                  <td style={{ padding: '14px 18px', color: '#dfae32', fontWeight: 600 }}>{app.department}</td>
+                  <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{app.experienceYears} Years</td>
+                  <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{app.appliedDate}</td>
+                  <td style={{ padding: '14px 18px' }}>
+                    <span
+                      style={{
+                        padding: '4px 10px',
+                        borderRadius: '999px',
+                        fontSize: '11px',
+                        fontWeight: 700,
+                        backgroundColor:
+                          app.status === 'Approved'
+                            ? 'rgba(16, 185, 129, 0.15)'
+                            : app.status === 'Rejected'
+                            ? 'rgba(239, 68, 68, 0.15)'
+                            : 'rgba(223, 174, 50, 0.15)',
+                        color:
+                          app.status === 'Approved'
+                            ? '#10B981'
+                            : app.status === 'Rejected'
+                            ? '#EF4444'
+                            : '#dfae32',
+                      }}
+                    >
+                      ● {app.status}
+                    </span>
+                  </td>
+                  <td style={{ padding: '14px 18px', textAlign: 'right' }}>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedApp(app);
+                      }}
+                      style={{
+                        backgroundColor: '#dfae32',
+                        color: '#0A0D14',
+                        fontWeight: 700,
+                        border: 'none',
+                        borderRadius: '6px',
+                        padding: '6px 14px',
+                        fontSize: '12px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      Review
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

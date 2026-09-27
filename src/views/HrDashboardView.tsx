@@ -11,7 +11,7 @@ import {
   X,
   Send,
 } from 'lucide-react';
-import { api, MOCK_INBOUND_LEADS, MOCK_APPLICANT_RECORDS } from '../services/api';
+import { api } from '../services/api';
 import type { InboundLead, ApplicantRecord, DepartmentInfo } from '../types';
 import type { ScreenId } from '../App';
 
@@ -20,8 +20,8 @@ interface HrDashboardViewProps {
 }
 
 export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) => {
-  const [leads, setLeads] = useState<InboundLead[]>(MOCK_INBOUND_LEADS);
-  const [applicants, setApplicants] = useState<ApplicantRecord[]>(MOCK_APPLICANT_RECORDS);
+  const [leads, setLeads] = useState<InboundLead[]>([]);
+  const [applicants, setApplicants] = useState<ApplicantRecord[]>([]);
   const [departments, setDepartments] = useState<DepartmentInfo[]>([]);
   const [filterStatus, setFilterStatus] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState('');
@@ -322,8 +322,15 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
               </tr>
             </thead>
             <tbody>
-              {filteredLeads.map((lead) => {
-                const whatsappUrl = api.getWhatsAppOutreachLink(
+              {filteredLeads.length === 0 ? (
+                <tr>
+                  <td colSpan={5} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF' }}>
+                    No inbound leads found.
+                  </td>
+                </tr>
+              ) : (
+                filteredLeads.map((lead) => {
+                  const whatsappUrl = api.getWhatsAppOutreachLink(
                   lead.phone,
                   lead.client_name,
                   lead.project_title
@@ -438,7 +445,7 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
                     </td>
                   </tr>
                 );
-              })}
+              }))}
             </tbody>
           </table>
         </div>
@@ -468,8 +475,13 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
-          {applicants.map((app) => (
-            <div
+          {applicants.length === 0 ? (
+            <div style={{ gridColumn: '1 / -1', padding: '36px', textAlign: 'center', color: '#9CA3AF' }}>
+              No candidate applications found in queue.
+            </div>
+          ) : (
+            applicants.map((app) => (
+              <div
               key={app.id}
               style={{
                 backgroundColor: 'rgba(255, 255, 255, 0.03)',
@@ -555,7 +567,7 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
                 </button>
               </div>
             </div>
-          ))}
+          )))}
         </div>
 
         <div style={{ marginTop: '16px', textAlign: 'right' }}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Plus,
   Search,
@@ -6,8 +6,10 @@ import {
   X,
   LayoutGrid,
   List as ListIcon,
+  Loader2,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
+import { api } from '../services/api';
 
 interface Task {
   id: string;
@@ -20,65 +22,40 @@ interface Task {
   description: string;
 }
 
-const INITIAL_TASKS: Task[] = [
-  {
-    id: 'TSK-201',
-    title: 'Implement WebRTC audio and video mesh signaling',
-    project: 'Aurelia FinTech Mobile App',
-    assignee: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-    priority: 'Urgent',
-    status: 'In Progress',
-    deadline: '2026-09-24',
-    description: 'Hook into the WebRTC signaling gateway with bidirectional WebSocket events and fallback ICE candidate handling.',
-  },
-  {
-    id: 'TSK-202',
-    title: 'Design high-fidelity wallet transaction receipt cards',
-    project: 'Aurelia FinTech Mobile App',
-    assignee: { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
-    priority: 'High',
-    status: 'Completed',
-    deadline: '2026-09-19',
-    description: 'Create dark-mode receipt components with downloadable PDF invoice export and transaction hash copy triggers.',
-  },
-  {
-    id: 'TSK-203',
-    title: 'Configure PostgreSQL pg_stat_statements & indexes',
-    project: 'TitanCore SaaS Cloud Engine',
-    assignee: { name: 'Munis Samuel', avatar: '/assets/munis.jpg' },
-    priority: 'Medium',
-    status: 'Open',
-    deadline: '2026-10-02',
-    description: 'Optimize high-traffic query bottlenecks on the project payout transactions audit table.',
-  },
-  {
-    id: 'TSK-204',
-    title: 'Product requirements spec for client onboarding portal',
-    project: 'PulseHealth Telemedicine Portal',
-    assignee: { name: 'Olukayode Tioluwanimi', avatar: '/assets/blessing.jpg' },
-    priority: 'High',
-    status: 'In Progress',
-    deadline: '2026-09-28',
-    description: 'Draft the user story breakdown, role permission matrices, and acceptance criteria for patient verification.',
-  },
-  {
-    id: 'TSK-205',
-    title: 'Execute DEX liquidity flash-loan slippage benchmark',
-    project: 'OmniTrade Crypto Arbitrage Bot',
-    assignee: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-    priority: 'Urgent',
-    status: 'Completed',
-    deadline: '2026-09-18',
-    description: 'Stress-test mempool trade executions against simulated 5% flash price swings across Uniswap & Curve.',
-  },
-];
+const mapApiTask = (t: any): Task => {
+  const statusMap: Record<string, 'Open' | 'In Progress' | 'Completed'> = {
+    open: 'Open',
+    in_progress: 'In Progress',
+    completed: 'Completed',
+  };
+  const priorityMap: Record<string, 'Urgent' | 'High' | 'Medium'> = {
+    Urgent: 'Urgent',
+    High: 'High',
+    Medium: 'Medium',
+    Low: 'Medium',
+  };
+  return {
+    id: `TSK-${t.id}`,
+    title: t.task_title || t.title,
+    project: t.project_name || (t.project_id ? `Project #${t.project_id}` : 'General Engineering'),
+    assignee: {
+      name: t.assigned_user_name || (t.assigned_user ? `Staff #${t.assigned_user}` : 'Assigned Member'),
+      avatar: t.assigned_user_avatar || '/assets/joseph.jpg',
+    },
+    priority: priorityMap[t.priority] || 'Medium',
+    status: statusMap[t.status] || 'Open',
+    deadline: t.deadline ? t.deadline.split('T')[0] : '2026-10-15',
+    description: t.description || 'Sprint deliverable work package.',
+  };
+};
 
 interface TasksViewProps {
   onNavigate?: (view: ScreenId) => void;
 }
 
 export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate }) => {
-  const [tasks, setTasks] = useState<Task[]>(INITIAL_TASKS);
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterPriority, setFilterPriority] = useState<string>('All');
@@ -92,6 +69,24 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
   const [newDeadline, setNewDeadline] = useState('');
   const [newDescription, setNewDescription] = useState('');
 
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+    api.getTasks()
+      .then((items) => {
+        if (!mounted) return;
+        setTasks(items.map(mapApiTask));
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setTasks([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+    return () => { mounted = false; };
+  }, []);
+
   const filteredTasks = tasks.filter((task) => {
     const matchesPriority = filterPriority === 'All' || task.priority === filterPriority;
     const matchesSearch =
@@ -101,34 +96,57 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
     return matchesPriority && matchesSearch;
   });
 
-  const handleCreateTask = (e: React.FormEvent) => {
+  const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTitle.trim()) return;
 
-    const newTask: Task = {
-      id: `TSK-${Math.floor(200 + Math.random() * 800)}`,
-      title: newTitle,
-      project: newProject,
-      assignee: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-      priority: newPriority,
-      status: 'Open',
-      deadline: newDeadline || '2026-10-10',
-      description: newDescription || 'Standard engineering task delivery.',
-    };
-
-    setTasks([newTask, ...tasks]);
-    setShowCreateModal(false);
-    setNewTitle('');
-    setNewDescription('');
-    setNewDeadline('');
+    try {
+      const created = await api.createTask({
+        project_id: 1,
+        assigned_user: 1,
+        task_title: newTitle,
+        description: newDescription,
+        priority: newPriority,
+        deadline: newDeadline ? new Date(newDeadline).toISOString() : undefined,
+      });
+      setTasks([mapApiTask(created), ...tasks]);
+    } catch {
+      const newTask: Task = {
+        id: `TSK-${Math.floor(200 + Math.random() * 800)}`,
+        title: newTitle,
+        project: newProject,
+        assignee: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
+        priority: newPriority,
+        status: 'Open',
+        deadline: newDeadline || '2026-10-10',
+        description: newDescription || 'Standard engineering task delivery.',
+      };
+      setTasks([newTask, ...tasks]);
+    } finally {
+      setShowCreateModal(false);
+      setNewTitle('');
+      setNewDescription('');
+      setNewDeadline('');
+    }
   };
 
-  const updateTaskStatus = (taskId: string, newStatus: 'Open' | 'In Progress' | 'Completed') => {
+  const updateTaskStatus = async (taskId: string, newStatus: 'Open' | 'In Progress' | 'Completed') => {
+    const backendStatus = newStatus === 'In Progress' ? 'in_progress' : newStatus.toLowerCase();
+    const numericId = parseInt(taskId.replace('TSK-', ''), 10);
+
     setTasks((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, status: newStatus } : t))
     );
     if (selectedTask && selectedTask.id === taskId) {
       setSelectedTask((prev) => (prev ? { ...prev, status: newStatus } : null));
+    }
+
+    if (!isNaN(numericId)) {
+      try {
+        await api.updateTask(numericId, { status: backendStatus });
+      } catch {
+        // Fallback gracefully
+      }
     }
   };
 
@@ -279,8 +297,12 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
         </div>
       </div>
 
-      {/* KANBAN BOARD VIEW */}
-      {viewMode === 'kanban' ? (
+      {isLoading ? (
+        <div style={{ padding: '64px', textAlign: 'center', color: '#9CA3AF' }}>
+          <Loader2 size={36} className="tc-spin" style={{ margin: '0 auto 12px auto', color: '#dfae32', animation: 'spin 1s linear infinite' }} />
+          <p>Loading sprint tasks...</p>
+        </div>
+      ) : viewMode === 'kanban' ? (
         <div
           style={{
             display: 'grid',

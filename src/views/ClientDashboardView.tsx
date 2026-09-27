@@ -9,9 +9,10 @@ import {
   FileText,
   Send,
   Sparkles,
+  Loader2,
 } from 'lucide-react';
-import { api, MOCK_CLIENT_MILESTONES } from '../services/api';
-import type { ClientMilestone } from '../types';
+import { api } from '../services/api';
+import type { ClientMilestone, Project } from '../types';
 import type { ScreenId } from '../App';
 
 interface ClientDashboardViewProps {
@@ -19,7 +20,12 @@ interface ClientDashboardViewProps {
 }
 
 export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavigate: _onNavigate }) => {
-  const [milestones, setMilestones] = useState<ClientMilestone[]>(MOCK_CLIENT_MILESTONES);
+  const [milestones, setMilestones] = useState<ClientMilestone[]>([]);
+  const [activeProject, setActiveProject] = useState<Project | null>(null);
+  const [activeUser, setActiveUser] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+
   const [showRequestModal, setShowRequestModal] = useState(false);
   const [newProjectTitle, setNewProjectTitle] = useState('');
   const [newProjectBudget, setNewProjectBudget] = useState('₦10M - ₦25M');
@@ -27,24 +33,57 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
   const [requestSubmitted, setRequestSubmitted] = useState(false);
 
   useEffect(() => {
-    async function loadData() {
-      const data = await api.getClientMilestones();
-      setMilestones(data);
-    }
-    loadData();
+    let mounted = true;
+    setIsLoading(true);
+    const user = api.getActiveUser();
+    setActiveUser(user);
+
+    api.getProjects()
+      .then(async (projs) => {
+        if (!mounted) return;
+        const proj = projs[0] || null;
+        setActiveProject(proj);
+        const data = await api.getClientMilestones(proj ? proj.id : 1);
+        if (!mounted) return;
+        setMilestones(data);
+      })
+      .catch((err) => {
+        console.error('Failed to load client milestones:', err);
+        if (!mounted) return;
+        setMilestones([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const handleRequestSubmit = (e: React.FormEvent) => {
+  const handleRequestSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newProjectTitle.trim()) return;
+    if (!newProjectTitle.trim() || isSubmitting) return;
 
-    setRequestSubmitted(true);
-    setTimeout(() => {
-      setRequestSubmitted(false);
-      setShowRequestModal(false);
-      setNewProjectTitle('');
-      setNewProjectDescription('');
-    }, 1500);
+    setIsSubmitting(true);
+    try {
+      await api.submitHireUs({
+        name: activeUser?.name || 'Enterprise Client',
+        email: activeUser?.email || 'client@titancode.tech',
+        project_type: newProjectTitle.trim(),
+        description: `${newProjectDescription.trim()} (Budget: ${newProjectBudget})`,
+      });
+      setRequestSubmitted(true);
+      setTimeout(() => {
+        setRequestSubmitted(false);
+        setShowRequestModal(false);
+        setNewProjectTitle('');
+        setNewProjectDescription('');
+      }, 1200);
+    } catch (err: any) {
+      alert(err.message || 'Failed to submit project request.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const completedMilestones = milestones.filter((m) => m.status === 'paid' || m.status === 'approved');
@@ -102,10 +141,10 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
             </span>
           </div>
           <h1 style={{ fontSize: '28px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
-            Welcome, Aliko Dangote
+            Welcome, {activeUser?.name || 'Client Partner'}
           </h1>
           <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
-            Tracking active development deliverables for <strong style={{ color: '#FFFFFF' }}>Enterprise ERP & Fleet Suite</strong>.
+            Tracking active development deliverables for <strong style={{ color: '#FFFFFF' }}>{activeProject?.project_name || 'Active Project Engagements'}</strong>.
           </p>
         </div>
 
@@ -258,7 +297,19 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {milestones.map((m) => {
+          {isLoading ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <Loader2 size={18} className="tc-spin" color="#dfae32" />
+                <span>Loading project milestone roadmap...</span>
+              </div>
+            </div>
+          ) : milestones.length === 0 ? (
+            <div style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF', fontSize: '13px' }}>
+              No active deliverables or milestones registered yet. Click &quot;Request Project Scope&quot; above to submit an engagement.
+            </div>
+          ) : (
+            milestones.map((m) => {
             const statusConfig = {
               paid: { label: 'PAID & APPROVED', bg: 'rgba(16, 185, 129, 0.15)', text: '#10B981', border: 'rgba(16, 185, 129, 0.3)' },
               ready_for_review: { label: 'READY FOR REVIEW', bg: 'rgba(223, 174, 50, 0.15)', text: '#dfae32', border: 'rgba(223, 174, 50, 0.3)' },
@@ -442,7 +493,7 @@ export const ClientDashboardView: React.FC<ClientDashboardViewProps> = ({ onNavi
                 </div>
               </div>
             );
-          })}
+          }))}
         </div>
       </div>
 

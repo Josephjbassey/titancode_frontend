@@ -17,8 +17,8 @@ export const SignInView: React.FC<SignInViewProps> = ({
   onNavigateForgotPassword,
   onNavigateQualification,
 }) => {
-  const [email, setEmail] = useState('alex.morgan@titancode.tech');
-  const [password, setPassword] = useState('password123');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);

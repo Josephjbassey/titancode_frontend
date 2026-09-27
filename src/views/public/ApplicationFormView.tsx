@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import type { ScreenId } from '../../App';
-import { AlertCircle, Check, ChevronDown, X } from 'lucide-react';
+import { AlertCircle, Check, ChevronDown, X, Loader2 } from 'lucide-react';
 import '../../styles/public.css';
+import { api } from '../../services/api';
 
 export type ApplicationState = 'default' | 'required' | 'email_exists' | 'submitted';
 
@@ -15,13 +16,15 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
   onNavigate: _onNavigate,
 }) => {
   const [appState, setAppState] = useState<ApplicationState>(initialState);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState('');
 
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    email: initialState === 'email_exists' ? 'Enter Email' : initialState === 'required' ? 'Enter Email' : '',
-    phoneNumber: '1234567890',
-    location: 'Lagos',
+    email: '',
+    phoneNumber: '',
+    location: '',
     department: 'UI/UX Design',
     linkedin: '',
     github: '',
@@ -40,17 +43,40 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
     'DevOps & Cloud',
   ];
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!formData.email.trim()) {
+    if (isSubmitting) return;
+
+    if (!formData.firstName.trim() || !formData.lastName.trim() || !formData.email.trim()) {
       setAppState('required');
       return;
     }
-    if (formData.email.toLowerCase().includes('exists') || formData.email === 'test@titancode.com') {
-      setAppState('email_exists');
-      return;
+
+    setIsSubmitting(true);
+    setSubmitError('');
+    try {
+      await api.submitPublicApplication({
+        first_name: formData.firstName.trim(),
+        last_name: formData.lastName.trim(),
+        email: formData.email.trim(),
+        phone_number: formData.phoneNumber.trim() || undefined,
+        country: formData.location.trim() || undefined,
+        department_name: formData.department,
+        linkedin_url: formData.linkedin.trim() || undefined,
+        github_url: formData.github.trim() || undefined,
+        about: formData.about.trim() || undefined,
+      });
+      setAppState('submitted');
+    } catch (err: any) {
+      const msg = (err.message || '').toLowerCase();
+      if (msg.includes('exists') || msg.includes('duplicate') || msg.includes('registered')) {
+        setAppState('email_exists');
+      } else {
+        setSubmitError(err.message || 'Submission failed. Please check your information.');
+      }
+    } finally {
+      setIsSubmitting(false);
     }
-    setAppState('submitted');
   };
 
   const isEmailError = appState === 'required' || appState === 'email_exists';
@@ -247,10 +273,39 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
             />
           </div>
 
+          {submitError && (
+            <div style={{
+              padding: '12px 16px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(239, 68, 68, 0.12)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#EF4444',
+              fontSize: '14px',
+              textAlign: 'center',
+            }}>
+              {submitError}
+            </div>
+          )}
+
           {/* Submit */}
           <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <button type="submit" className="tc-btn-gold" style={{ padding: '14px 64px', fontSize: '16px', borderRadius: '8px' }}>
-              Submit
+            <button
+              type="submit"
+              disabled={isSubmitting}
+              className="tc-btn-gold"
+              style={{
+                padding: '14px 64px',
+                fontSize: '16px',
+                borderRadius: '8px',
+                opacity: isSubmitting ? 0.7 : 1,
+                cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              {isSubmitting && <Loader2 size={18} className="tc-spin" />}
+              <span>{isSubmitting ? 'Submitting...' : 'Submit'}</span>
             </button>
           </div>
         </form>

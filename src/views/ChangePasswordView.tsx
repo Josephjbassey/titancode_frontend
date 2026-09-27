@@ -8,6 +8,7 @@ import {
 import { Modal } from '../components/Modal';
 import { OtpInput } from '../components/OtpInput';
 import { NotificationModal } from '../components/NotificationModal';
+import { api } from '../services/api';
 
 interface ChangePasswordViewProps {
   onBackToSettings: () => void;
@@ -31,13 +32,20 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
   const [otpCode, setOtpCode] = useState('');
   const [showIncorrectCodeModal, setShowIncorrectCodeModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    setValidationError('');
 
-    // If current password is wrong or user triggers demo
-    if (currentPassword === 'wrong' || currentPassword === 'incorrect') {
-      setHasCurrentPasswordError(true);
+    if (newPassword !== confirmPassword) {
+      setValidationError('New password and confirmation password do not match.');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setValidationError('Password must be at least 8 characters long.');
       return;
     }
 
@@ -45,17 +53,29 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
     setIsConfirmModalOpen(true);
   };
 
-  const handleConfirmOtp = () => {
-    if (otpCode.length < 5) return;
+  const handleConfirmOtp = async () => {
+    if (otpCode.length < 5 || isSubmitting) return;
 
-    setIsConfirmModalOpen(false);
-
-    // Screen 15 test: 00000 triggers Incorrect code
-    if (otpCode === '00000') {
-      setShowIncorrectCodeModal(true);
-    } else {
-      // Screen 16: Password changed successfully
+    setIsSubmitting(true);
+    try {
+      await api.changePassword(currentPassword, newPassword);
+      setIsConfirmModalOpen(false);
       setShowSuccessModal(true);
+      setCurrentPassword('');
+      setNewPassword('');
+      setConfirmPassword('');
+      setOtpCode('');
+      setHasCurrentPasswordError(false);
+    } catch (err: any) {
+      setIsConfirmModalOpen(false);
+      const errMsg = (err.message || '').toLowerCase();
+      if (errMsg.includes('current') || errMsg.includes('incorrect') || errMsg.includes('invalid credentials')) {
+        setHasCurrentPasswordError(true);
+      } else {
+        setShowIncorrectCodeModal(true);
+      }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -104,6 +124,24 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
           }}>
             Your password must be at least 6 characters and should include combination of numbers, letters and special characters.
           </p>
+
+          {validationError && (
+            <div style={{
+              padding: '10px 14px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(239, 68, 68, 0.1)',
+              border: '1px solid rgba(239, 68, 68, 0.3)',
+              color: '#EF4444',
+              fontSize: '13px',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '8px',
+              marginBottom: '16px',
+            }}>
+              <AlertCircle size={16} />
+              <span>{validationError}</span>
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
             {/* Current Password Field */}

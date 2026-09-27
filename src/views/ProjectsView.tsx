@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Plus,
   Search,
   CheckCircle2,
   X,
+  Loader2,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
+import { api } from '../services/api';
 
 interface Project {
   id: string;
@@ -21,95 +23,34 @@ interface Project {
   tasks: { id: string; title: string; completed: boolean }[];
 }
 
-const INITIAL_PROJECTS: Project[] = [
-  {
-    id: 'PRJ-101',
-    name: 'Aurelia FinTech Mobile App',
-    client: 'Apex Global Financials',
-    department: 'Mobile Development',
-    budget: 24500,
-    deadline: '2026-10-15',
-    status: 'Active',
-    progress: 68,
-    description: 'Next-gen cross-platform mobile wallet with biometric security, real-time FX currency conversions, and multi-signature authorization.',
-    members: [
-      { name: 'Joseph John', role: 'Lead Fullstack', avatar: '/assets/joseph.jpg' },
-      { name: 'Benedicta Atagamen', role: 'UI/UX Designer', avatar: '/assets/benedicta.png' },
-      { name: 'Munis Samuel', role: 'Product Architect', avatar: '/assets/munis.jpg' },
-    ],
-    tasks: [
-      { id: 'T-1', title: 'Setup WebRTC streaming & auth endpoints', completed: true },
-      { id: 'T-2', title: 'Implement biometric biometric verification', completed: true },
-      { id: 'T-3', title: 'Build FX swap and liquidity router', completed: false },
-      { id: 'T-4', title: 'QA penetration and stress testing', completed: false },
-    ],
-  },
-  {
-    id: 'PRJ-102',
-    name: 'TitanCore SaaS Cloud Engine',
-    client: 'Helios Enterprise LLC',
-    department: 'Web Engineering',
-    budget: 38000,
-    deadline: '2026-11-01',
-    status: 'Active',
-    progress: 42,
-    description: 'High-throughput event ingestion cloud platform capable of processing 10,000 metrics/sec with automated anomaly detection.',
-    members: [
-      { name: 'Olukayode Tioluwanimi', role: 'Product Manager', avatar: '/assets/blessing.jpg' },
-      { name: 'Joseph John', role: 'Backend Lead', avatar: '/assets/joseph.jpg' },
-    ],
-    tasks: [
-      { id: 'T-5', title: 'Kafka message broker partitioning', completed: true },
-      { id: 'T-6', title: 'PostgreSQL read-replica pool setup', completed: true },
-      { id: 'T-7', title: 'Redis cluster cache tiering', completed: false },
-    ],
-  },
-  {
-    id: 'PRJ-103',
-    name: 'OmniTrade Crypto Arbitrage Bot',
-    client: 'Vanguard Capital',
-    department: 'Digital Products',
-    budget: 18500,
-    deadline: '2026-09-12',
-    status: 'Completed',
-    progress: 100,
-    description: 'Algorithmic trading engine monitoring DEX liquidity pools and executing flash loan swaps under 80 milliseconds.',
-    members: [
-      { name: 'Munis Samuel', role: 'Algorithm Lead', avatar: '/assets/munis.jpg' },
-      { name: 'Joseph John', role: 'Systems Engineer', avatar: '/assets/joseph.jpg' },
-    ],
-    tasks: [
-      { id: 'T-8', title: 'Mempool listener & smart contract execution', completed: true },
-      { id: 'T-9', title: 'Slippage simulation and gas optimizer', completed: true },
-    ],
-  },
-  {
-    id: 'PRJ-104',
-    name: 'PulseHealth Telemedicine Portal',
-    client: 'MedSphere Health Systems',
-    department: 'Web Engineering',
-    budget: 29000,
-    deadline: '2026-12-05',
-    status: 'Pending',
-    progress: 10,
-    description: 'HIPAA-compliant doctor-patient teleconsultation portal with encrypted medical document storage and digital prescriptions.',
-    members: [
-      { name: 'Benedicta Atagamen', role: 'UI/UX Designer', avatar: '/assets/benedicta.png' },
-      { name: 'Olukayode Tioluwanimi', role: 'Product Manager', avatar: '/assets/blessing.jpg' },
-    ],
-    tasks: [
-      { id: 'T-10', title: 'HIPAA compliance audit & wireframes', completed: true },
-      { id: 'T-11', title: 'Encrypted document vault schema', completed: false },
-    ],
-  },
-];
+const mapApiProject = (p: any): Project => ({
+  id: `PRJ-${p.id}`,
+  name: p.project_name || p.name,
+  client: p.client_name || (p.client_id ? `Client #${p.client_id}` : 'Enterprise Client'),
+  department: 'Web Engineering',
+  budget: Number(p.budget) || 0,
+  deadline: p.deadline ? p.deadline.split('T')[0] : '2026-12-31',
+  status: (p.status === 'in_progress' || p.status === 'active') ? 'Active' : (p.status === 'completed' ? 'Completed' : 'Pending'),
+  progress: p.progress_percentage ?? (p.status === 'completed' ? 100 : p.status === 'active' ? 50 : 15),
+  description: p.description || 'Custom software engineering deliverable.',
+  members: [
+    { name: 'Joseph John', role: 'Lead Developer', avatar: '/assets/joseph.jpg' },
+    { name: 'Benedicta Atagamen', role: 'UI/UX Designer', avatar: '/assets/benedicta.png' },
+  ],
+  tasks: [
+    { id: `T-${p.id}-1`, title: 'Core architecture and sprint planning', completed: p.status === 'completed' },
+    { id: `T-${p.id}-2`, title: 'Production deployment and QA audit', completed: p.status === 'completed' },
+  ],
+});
 
 interface ProjectsViewProps {
   onNavigate?: (view: ScreenId) => void;
 }
 
 export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavigate }) => {
-  const [projects, setProjects] = useState<Project[]>(INITIAL_PROJECTS);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
   const [statusFilter, setStatusFilter] = useState<'All' | 'Active' | 'Pending' | 'Completed' | 'Cancelled'>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -122,6 +63,24 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
   const [newProjectDeadline, setNewProjectDeadline] = useState('');
   const [newProjectDesc, setNewProjectDesc] = useState('');
 
+  useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+    api.getProjects()
+      .then((items) => {
+        if (!mounted) return;
+        setProjects(items.map(mapApiProject));
+      })
+      .catch(() => {
+        if (!mounted) return;
+        setProjects([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoading(false);
+      });
+    return () => { mounted = false; };
+  }, []);
+
   const filteredProjects = projects.filter((p) => {
     const matchesStatus = statusFilter === 'All' || p.status === statusFilter;
     const matchesSearch =
@@ -131,31 +90,32 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
     return matchesStatus && matchesSearch;
   });
 
-  const handleCreateProject = (e: React.FormEvent) => {
+  const handleCreateProject = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newProjectName.trim()) return;
 
-    const created: Project = {
-      id: `PRJ-${Math.floor(100 + Math.random() * 900)}`,
-      name: newProjectName,
-      client: newProjectClient || 'Internal Project',
-      department: 'Web Engineering',
-      budget: Number(newProjectBudget) || 20000,
-      deadline: newProjectDeadline || '2026-12-31',
-      status: 'Active',
-      progress: 0,
-      description: newProjectDesc || 'Custom enterprise software development.',
-      members: [{ name: 'Joseph John', role: 'Lead Developer', avatar: '/assets/joseph.jpg' }],
-      tasks: [{ id: `T-${Date.now()}`, title: 'Project kick-off & requirements spec', completed: false }],
-    };
+    setIsCreating(true);
+    try {
+      const created = await api.createProject({
+        name: newProjectName,
+        description: newProjectDesc,
+        client_id: 1,
+        budget: Number(newProjectBudget) || 10000,
+        deadline: newProjectDeadline ? new Date(newProjectDeadline).toISOString() : undefined,
+      });
 
-    setProjects([created, ...projects]);
-    setShowCreateModal(false);
-    setNewProjectName('');
-    setNewProjectClient('');
-    setNewProjectBudget('');
-    setNewProjectDeadline('');
-    setNewProjectDesc('');
+      setProjects([mapApiProject(created), ...projects]);
+      setShowCreateModal(false);
+      setNewProjectName('');
+      setNewProjectClient('');
+      setNewProjectBudget('');
+      setNewProjectDeadline('');
+      setNewProjectDesc('');
+    } catch (err: any) {
+      alert(err.message || 'Failed to create project on server');
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const toggleTask = (projectId: string, taskId: string) => {
@@ -377,7 +337,18 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
           gap: '20px',
         }}
       >
-        {filteredProjects.map((project) => {
+        {isLoading ? (
+          <div style={{ gridColumn: '1 / -1', padding: '64px', textAlign: 'center', color: '#9CA3AF' }}>
+            <Loader2 size={36} className="tc-spin" style={{ margin: '0 auto 12px auto', color: '#dfae32', animation: 'spin 1s linear infinite' }} />
+            <p>Loading projects...</p>
+          </div>
+        ) : filteredProjects.length === 0 ? (
+          <div style={{ gridColumn: '1 / -1', padding: '64px', textAlign: 'center', color: '#9CA3AF' }}>
+            <p style={{ fontSize: '16px', color: '#E5E7EB', marginBottom: '8px', fontWeight: 600 }}>No projects found</p>
+            <p style={{ fontSize: '13px' }}>Create a new project above to start tracking client deliverables and payouts.</p>
+          </div>
+        ) : (
+          filteredProjects.map((project) => {
           const statusColors = {
             Active: { bg: 'rgba(223, 174, 50, 0.15)', text: '#dfae32', border: 'rgba(223, 174, 50, 0.3)' },
             Pending: { bg: 'rgba(156, 163, 175, 0.15)', text: '#9CA3AF', border: 'rgba(156, 163, 175, 0.3)' },
@@ -497,7 +468,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
               </div>
             </div>
           );
-        })}
+        }))}
       </div>
 
       {/* PROJECT DETAIL MODAL */}
@@ -881,6 +852,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                 </button>
                 <button
                   type="submit"
+                  disabled={isCreating}
                   style={{
                     backgroundColor: '#dfae32',
                     color: '#0A0D14',
@@ -888,10 +860,11 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                     padding: '10px 22px',
                     borderRadius: '8px',
                     border: 'none',
-                    cursor: 'pointer',
+                    cursor: isCreating ? 'not-allowed' : 'pointer',
+                    opacity: isCreating ? 0.7 : 1,
                   }}
                 >
-                  Create Project
+                  {isCreating ? 'Creating...' : 'Create Project'}
                 </button>
               </div>
             </form>

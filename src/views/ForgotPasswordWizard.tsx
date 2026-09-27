@@ -19,6 +19,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
   const [step, setStep] = useState<1 | 2 | 3 | 4>(initialStep);
   const [email, setEmail] = useState('');
   const [otpCode, setOtpCode] = useState('');
+  const [resetToken, setResetToken] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -38,10 +39,14 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
 
   const handleRequestOtp = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!email.trim()) {
+      setErrorMessage('Please enter your email address.');
+      return;
+    }
     setIsLoading(true);
     setErrorMessage('');
     try {
-      await api.requestPasswordResetOtp(email || 'user@gmail.com');
+      await api.requestPasswordResetOtp(email.trim());
       setStep(2);
       setResendTimer(45);
     } catch (err: any) {
@@ -61,10 +66,8 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
     setIsLoading(true);
     setErrorMessage('');
     try {
-      if (otpCode === '0000') {
-        throw new Error('Incorrect code.');
-      }
-      await api.verifyOtp(email || 'user@gmail.com', otpCode);
+      const res = await api.verifyOtp(email.trim(), otpCode.trim());
+      setResetToken(res.reset_token);
       setStep(3);
     } catch (err: any) {
       setShowErrorModal(true);
@@ -88,7 +91,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
     setIsLoading(true);
     setErrorMessage('');
     try {
-      await api.resetPassword('mock_token', password);
+      await api.resetPassword(resetToken, password);
       setStep(4);
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to reset password.');

@@ -5,8 +5,9 @@ import {
   ShieldCheck,
   ArrowUpRight,
   Download,
+  Loader2,
 } from 'lucide-react';
-import { api, MOCK_DEPARTMENTS } from '../services/api';
+import { api } from '../services/api';
 import type { DepartmentInfo } from '../types';
 import type { ScreenId } from '../App';
 
@@ -14,65 +15,99 @@ interface CeoDashboardViewProps {
   onNavigate?: (view: ScreenId) => void;
 }
 
+interface ApprovalItem {
+  id: string;
+  title: string;
+  department: string;
+  requestedBy: string;
+  amount: string;
+  status: string;
+}
+
 export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }) => {
-  const [departments, setDepartments] = useState<DepartmentInfo[]>(MOCK_DEPARTMENTS);
+  const [departments, setDepartments] = useState<DepartmentInfo[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [overview, setOverview] = useState({
-    totalRevenue: 84500000,
-    treasuryBalance: 25350000,
-    developerPoolPaid: 59150000,
-    activeProjects: 18,
-    totalStaff: 78,
+    totalRevenue: 0,
+    treasuryBalance: 0,
+    developerPoolPaid: 0,
+    activeProjects: 0,
+    totalStaff: 0,
     splitMemberPercent: 70,
     splitTreasuryPercent: 30,
   });
 
-  const [approvals, setApprovals] = useState([
-    {
-      id: 'APP-01',
-      title: 'H100 GPU Cluster Reservation for R&D AI Labs',
-      department: 'Research & Development (R&D / AI)',
-      requestedBy: 'Dr. Chinedu Eze',
-      amount: '₦4,800,000',
-      status: 'pending',
-    },
-    {
-      id: 'APP-02',
-      title: 'Enterprise ISO-27001 & SOC2 Type II Lead Auditor Retainer',
-      department: 'Internal Audit, Compliance & Legal',
-      requestedBy: 'Barr. Ngozi Okeke',
-      amount: '₦3,500,000',
-      status: 'pending',
-    },
-    {
-      id: 'APP-03',
-      title: 'Global Tech Talent Summit & DevRel Sponsorship',
-      department: 'Strategic Partnerships & DevRel',
-      requestedBy: 'Damian Clarke',
-      amount: '₦2,200,000',
-      status: 'pending',
-    },
-  ]);
+  const [approvals, setApprovals] = useState<ApprovalItem[]>([]);
 
   useEffect(() => {
+    let mounted = true;
+    setIsLoading(true);
+
     async function loadData() {
-      const data = await api.getCeoOverview();
-      setOverview(data);
-      const depts = await api.getDepartments();
-      setDepartments(depts);
+      try {
+        const [data, depts, withdrawals] = await Promise.all([
+          api.getCeoOverview().catch(() => ({
+            totalRevenue: 0,
+            treasuryBalance: 0,
+            developerPoolPaid: 0,
+            activeProjects: 0,
+            totalStaff: 0,
+            splitMemberPercent: 70,
+            splitTreasuryPercent: 30,
+          })),
+          api.getDepartments().catch(() => []),
+          api.listWithdrawals({ status: 'pending' }).catch(() => []),
+        ]);
+
+        if (!mounted) return;
+        setOverview(data);
+        setDepartments(depts);
+
+        const mappedApprovals: ApprovalItem[] = (withdrawals || []).map((w: any) => ({
+          id: `WTH-${w.id}`,
+          title: `Withdrawal Request - ${w.user_name || 'Member Disbursement'}`,
+          department: w.bank_name ? `Bank: ${w.bank_name}` : 'Settlement Pool',
+          requestedBy: w.user_name || `Member #${w.user_id}`,
+          amount: `₦${Number(w.amount).toLocaleString()}`,
+          status: (w.status || 'pending').toLowerCase(),
+        }));
+        setApprovals(mappedApprovals);
+      } finally {
+        if (mounted) setIsLoading(false);
+      }
     }
     loadData();
+    return () => {
+      mounted = false;
+    };
   }, []);
 
-  const handleApprove = (id: string) => {
+  const handleApprove = async (id: string) => {
+    const numericId = parseInt(id.replace('WTH-', ''), 10);
     setApprovals((prev) =>
       prev.map((item) => (item.id === id ? { ...item, status: 'approved' } : item))
     );
+    if (!isNaN(numericId)) {
+      try {
+        await api.processWithdrawal(numericId, 'approve');
+      } catch (err: any) {
+        alert(err.message || 'Failed to approve withdrawal on server');
+      }
+    }
   };
 
-  const handleReject = (id: string) => {
+  const handleReject = async (id: string) => {
+    const numericId = parseInt(id.replace('WTH-', ''), 10);
     setApprovals((prev) =>
       prev.map((item) => (item.id === id ? { ...item, status: 'rejected' } : item))
     );
+    if (!isNaN(numericId)) {
+      try {
+        await api.processWithdrawal(numericId, 'reject');
+      } catch (err: any) {
+        alert(err.message || 'Failed to decline withdrawal on server');
+      }
+    }
   };
 
   return (
@@ -586,83 +621,96 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {approvals.map((app) => (
-              <div
-                key={app.id}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                  borderRadius: '12px',
-                  padding: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '12px',
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
-                    {app.title}
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>
-                    {app.department} • Req by {app.requestedBy}
-                  </div>
-                  <div style={{ fontSize: '13px', fontWeight: 800, color: '#dfae32', marginTop: '4px' }}>
-                    {app.amount}
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  {app.status === 'pending' ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={() => handleReject(app.id)}
-                        style={{
-                          padding: '6px 12px',
-                          borderRadius: '6px',
-                          border: 'none',
-                          backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                          color: '#EF4444',
-                          fontSize: '11px',
-                          fontWeight: 700,
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Decline
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleApprove(app.id)}
-                        className="tc-btn tc-btn-primary"
-                        style={{
-                          padding: '6px 14px',
-                          borderRadius: '6px',
-                          fontSize: '11px',
-                          fontWeight: 700,
-                        }}
-                      >
-                        Authorize
-                      </button>
-                    </>
-                  ) : (
-                    <span
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: '6px',
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        backgroundColor:
-                          app.status === 'approved' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                        color: app.status === 'approved' ? '#10B981' : '#EF4444',
-                      }}
-                    >
-                      {app.status.toUpperCase()}
-                    </span>
-                  )}
+            {isLoading ? (
+              <div style={{ padding: '30px', textAlign: 'center', color: '#9CA3AF' }}>
+                <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <Loader2 size={16} className="tc-spin" color="#dfae32" />
+                  <span>Loading capital sign-off requests...</span>
                 </div>
               </div>
-            ))}
+            ) : approvals.length === 0 ? (
+              <div style={{ padding: '30px', textAlign: 'center', color: '#9CA3AF', fontSize: '13px' }}>
+                No pending capital requests or withdrawals awaiting executive sign-off.
+              </div>
+            ) : (
+              approvals.map((app) => (
+                <div
+                  key={app.id}
+                  style={{
+                    backgroundColor: 'rgba(255, 255, 255, 0.02)',
+                    border: '1px solid rgba(255, 255, 255, 0.06)',
+                    borderRadius: '12px',
+                    padding: '14px',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    gap: '12px',
+                  }}
+                >
+                  <div>
+                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
+                      {app.title}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>
+                      {app.department} • Req by {app.requestedBy}
+                    </div>
+                    <div style={{ fontSize: '13px', fontWeight: 800, color: '#dfae32', marginTop: '4px' }}>
+                      {app.amount}
+                    </div>
+                  </div>
+
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    {app.status === 'pending' ? (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => handleReject(app.id)}
+                          style={{
+                            padding: '6px 12px',
+                            borderRadius: '6px',
+                            border: 'none',
+                            backgroundColor: 'rgba(239, 68, 68, 0.15)',
+                            color: '#EF4444',
+                            fontSize: '11px',
+                            fontWeight: 700,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          Decline
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleApprove(app.id)}
+                          className="tc-btn tc-btn-primary"
+                          style={{
+                            padding: '6px 14px',
+                            borderRadius: '6px',
+                            fontSize: '11px',
+                            fontWeight: 700,
+                          }}
+                        >
+                          Authorize
+                        </button>
+                      </>
+                    ) : (
+                      <span
+                        style={{
+                          padding: '4px 10px',
+                          borderRadius: '6px',
+                          fontSize: '11px',
+                          fontWeight: 700,
+                          backgroundColor:
+                            app.status === 'approved' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                          color: app.status === 'approved' ? '#10B981' : '#EF4444',
+                        }}
+                      >
+                        {app.status.toUpperCase()}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
 
