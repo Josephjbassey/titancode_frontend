@@ -39,18 +39,23 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
 
     setIsLoading(true);
     try {
-      // Register the account — status will be "pending" awaiting admin approval
+      // Register the account
       await api.register({ full_name: fullName.trim(), email, password });
-      // Account created but pending approval — show a success message rather than logging in
-      const pendingUser: User = {
-        id: 0,
-        full_name: fullName.trim(),
-        email,
-        role: 'Member',
-        status: 'pending',
-        created_at: new Date().toISOString(),
-      };
-      onSuccess(pendingUser);
+      try {
+        // Authenticate immediately so the qualification step has an active session
+        const auth = await api.login(email, password);
+        onSuccess(auth.user);
+      } catch {
+        const pendingUser: User = {
+          id: 0,
+          full_name: fullName.trim(),
+          email,
+          role: 'Member',
+          status: 'pending',
+          created_at: new Date().toISOString(),
+        };
+        onSuccess(pendingUser);
+      }
     } catch (err: any) {
       setError(err.message || 'Registration failed. Please try again.');
     } finally {

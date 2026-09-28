@@ -188,6 +188,7 @@ class ApiService {
     full_name: string;
     email: string;
     password: string;
+    role?: string;
     phone_number?: string;
     country?: string;
   }): Promise<User> {
@@ -201,6 +202,21 @@ class ApiService {
       throw new Error(err.detail || 'Registration failed. Please try again.');
     }
     return res.json();
+  }
+
+  async qualify(role: 'Client' | 'Member' | 'Applicant'): Promise<User> {
+    const res = await this.authFetch(`${API_BASE_URL}/auth/qualify`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ role }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to update qualification role.');
+    }
+    const updated: User = await res.json();
+    this.saveActiveUser(updated);
+    return updated;
   }
 
   async logout(): Promise<void> {
@@ -1056,6 +1072,7 @@ class ApiService {
     first_name: string;
     last_name: string;
     email: string;
+    password?: string;
     phone_number?: string;
     country?: string;
     department_name?: string;
@@ -1064,7 +1081,7 @@ class ApiService {
     github_url?: string;
     portfolio_url?: string;
     about?: string;
-  }): Promise<{ success: boolean; message: string; applicant_id?: number }> {
+  }): Promise<{ success: boolean; message: string; applicant_id?: number; access_token?: string; refresh_token?: string; user?: User }> {
     const res = await fetch(`${API_BASE_URL}/applications/public-apply`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -1074,7 +1091,13 @@ class ApiService {
       const err = await res.json().catch(() => ({}));
       throw new Error(err.detail || 'Failed to submit application. Please check your information.');
     }
-    return res.json();
+    const data = await res.json();
+    if (data.access_token) {
+      this.setToken(data.access_token);
+      if (data.refresh_token) this.setRefreshToken(data.refresh_token);
+      if (data.user) this.saveActiveUser(data.user);
+    }
+    return data;
   }
 
   // --- CEO EXECUTIVE OVERVIEW ---

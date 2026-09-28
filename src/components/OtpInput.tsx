@@ -8,7 +8,7 @@ interface OtpInputProps {
 }
 
 export const OtpInput: React.FC<OtpInputProps> = ({
-  length = 4,
+  length = 6,
   value,
   onChange,
   hasError = false,
@@ -59,12 +59,18 @@ export const OtpInput: React.FC<OtpInputProps> = ({
     inputsRef.current[nextFocusIdx]?.focus();
   };
 
+  const boxWidth = length > 4 ? '46px' : '54px';
+  const boxHeight = length > 4 ? '52px' : '56px';
+  const boxGap = length > 4 ? '8px' : '12px';
+  const fontSize = length > 4 ? '20px' : '22px';
+
   return (
     <div style={{
       display: 'flex',
-      gap: '12px',
+      gap: boxGap,
       justifyContent: 'center',
       margin: '24px 0',
+      flexWrap: 'nowrap',
     }}>
       {digits.map((digit, index) => (
         <input
@@ -80,9 +86,9 @@ export const OtpInput: React.FC<OtpInputProps> = ({
           onKeyDown={(e) => handleKeyDown(index, e)}
           onPaste={handlePaste}
           style={{
-            width: '54px',
-            height: '56px',
-            fontSize: '22px',
+            width: boxWidth,
+            height: boxHeight,
+            fontSize: fontSize,
             fontWeight: '700',
             textAlign: 'center',
             backgroundColor: digit ? '#54461B' : 'rgba(255, 255, 255, 0.05)',

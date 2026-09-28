@@ -58,8 +58,8 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
 
   const handleVerifyOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (otpCode.length < 4) {
-      setErrorMessage('Please enter the full 4-digit code.');
+    if (otpCode.length < 6) {
+      setErrorMessage('Please enter the full 6-digit code.');
       return;
     }
 
@@ -290,7 +290,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
             margin: 0,
             lineHeight: '1.5',
           }}>
-            Enter 4-digit code sent to your email
+            Enter 6-digit code sent to your email
           </p>
         </div>
 
@@ -311,7 +311,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
 
           <div style={{ margin: '20px 0' }}>
             <OtpInput
-              length={4}
+              length={6}
               value={otpCode}
               onChange={(val) => {
                 setOtpCode(val);
@@ -324,7 +324,7 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
           {/* Continue Solid Gold Pill */}
           <button
             type="submit"
-            disabled={isLoading || otpCode.length < 4}
+            disabled={isLoading || otpCode.length < 6}
             style={{
               width: '100%',
               height: '46px',

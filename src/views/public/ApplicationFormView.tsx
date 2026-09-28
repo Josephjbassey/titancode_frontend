@@ -13,7 +13,7 @@ interface ApplicationFormViewProps {
 
 export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
   initialState = 'default',
-  onNavigate: _onNavigate,
+  onNavigate,
 }) => {
   const [appState, setAppState] = useState<ApplicationState>(initialState);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -23,6 +23,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
     firstName: '',
     lastName: '',
     email: '',
+    password: '',
     phoneNumber: '',
     location: '',
     department: 'UI/UX Design',
@@ -59,6 +60,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
         first_name: formData.firstName.trim(),
         last_name: formData.lastName.trim(),
         email: formData.email.trim(),
+        password: formData.password.trim() || undefined,
         phone_number: formData.phoneNumber.trim() || undefined,
         country: formData.location.trim() || undefined,
         department_name: formData.department,
@@ -261,7 +263,21 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
             />
           </div>
 
-          {/* Row 8: About */}
+          {/* Row 8: Password for Status Tracking */}
+          <div>
+            <label className="tc-form-label">
+              Create Password <span style={{ color: '#9CA3AF', fontWeight: '400', fontSize: '15px' }}>(set password to log in and track your application status)</span>
+            </label>
+            <input
+              type="password"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+              className="tc-rect-input"
+            />
+          </div>
+
+          {/* Row 9: About */}
           <div>
             <label className="tc-form-label">Tell Us About Yourself</label>
             <textarea
@@ -370,8 +386,27 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
               Application Submitted
             </h2>
             <p style={{ fontSize: '16px', color: '#1F2937', lineHeight: '1.6', maxWidth: '460px', margin: '0 auto', fontWeight: '500', fontFamily: "'Poppins', sans-serif" }}>
-              Thank you for applying! We have received your application and we will be in touch soon.
+              Thank you for applying! Your candidate profile has been created and our team is actively reviewing your qualifications.
             </p>
+            <div style={{ marginTop: '28px' }}>
+              <button
+                type="button"
+                onClick={() => onNavigate('applicant_dashboard')}
+                style={{
+                  padding: '14px 36px',
+                  backgroundColor: '#0B0B0C',
+                  color: '#DFAE32',
+                  border: 'none',
+                  borderRadius: '9999px',
+                  fontWeight: '700',
+                  fontSize: '15px',
+                  cursor: 'pointer',
+                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
+                }}
+              >
+                Go to Candidate Dashboard →
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -22,6 +22,7 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
     projectType: '',
     phoneNumber: '',
     projectDescription: '',
+    password: '',
   });
 
   const [submitted, setSubmitted] = useState(false);
@@ -41,9 +42,28 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
         project_type: formData.projectType || undefined,
         description: formData.projectDescription,
       });
+
+      // If client provided a password, instantly activate and authenticate their client account
+      if (formData.password.trim().length >= 6) {
+        try {
+          await api.register({
+            full_name: formData.fullName.trim(),
+            email: formData.email.trim(),
+            password: formData.password,
+            role: 'Client',
+            phone_number: formData.phoneNumber || undefined,
+          });
+          await api.login(formData.email.trim(), formData.password);
+          _onNavigate('client_dashboard');
+          return;
+        } catch (authErr) {
+          console.warn('Auto-login after hire us inquiry failed:', authErr);
+        }
+      }
+
       setSubmitted(true);
-      setFormData({ fullName: '', email: '', companyName: '', projectType: '', phoneNumber: '', projectDescription: '' });
-      setTimeout(() => setSubmitted(false), 6000);
+      setFormData({ fullName: '', email: '', companyName: '', projectType: '', phoneNumber: '', projectDescription: '', password: '' });
+      setTimeout(() => setSubmitted(false), 8000);
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
     } finally {
@@ -78,9 +98,36 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
         </p>
 
         {submitted && (
-          <div className="tc-form-success" style={{ justifyContent: 'center', marginBottom: '40px', fontSize: '15px' }}>
-            <CheckCircle2 size={20} />
-            <span>Thank you for reaching out! Our project team will review your inquiry and reply within 24 hours.</span>
+          <div className="tc-form-success" style={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '12px',
+            marginBottom: '40px',
+            fontSize: '15px',
+            textAlign: 'center',
+          }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <CheckCircle2 size={20} />
+              <span>Thank you for reaching out! Our project team will review your inquiry and reply within 24 hours.</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => _onNavigate('sign_in')}
+              style={{
+                background: 'transparent',
+                border: '1px solid #DFAE32',
+                color: '#DFAE32',
+                padding: '8px 22px',
+                borderRadius: '9999px',
+                fontSize: '14px',
+                fontWeight: '600',
+                cursor: 'pointer',
+              }}
+            >
+              Sign In to Your Client Portal →
+            </button>
           </div>
         )}
 
@@ -137,13 +184,20 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
               />
             </div>
 
-            {/* Row 3: Phone Number */}
-            <div className="tc-form-row tc-form-row--lg">
+            {/* Row 3: Phone Number | Optional Password */}
+            <div className="tc-form-grid-2col tc-form-grid-2col--wide">
               <input
                 type="tel"
                 placeholder="Phone Number"
                 value={formData.phoneNumber}
                 onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                className="tc-pill-input tc-pill-input--lg"
+              />
+              <input
+                type="password"
+                placeholder="Create Password (Optional — unlocks instant Client Portal)"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                 className="tc-pill-input tc-pill-input--lg"
               />
             </div>

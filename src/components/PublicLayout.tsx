@@ -47,26 +47,45 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           <span />
         </button>
 
-        <nav className={`tc-public-nav${isMenuOpen ? ' is-open' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '40px', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <nav className={`tc-public-nav${isMenuOpen ? ' is-open' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '36px', flexWrap: 'wrap', justifyContent: 'center' }}>
           {[
             { label: 'Home', view: 'home' as ScreenId },
             { label: 'About Us', view: 'about_us' as ScreenId },
             { label: 'Services', view: 'services' as ScreenId },
+            { label: 'Careers', view: 'careers' as ScreenId },
             { label: 'Contact Us', view: 'contact_us' as ScreenId },
           ].map(({ label, view }) => (
             <button
               key={view}
               type="button"
               onClick={() => navigate(view)}
-              className={`tc-nav-link${currentView === view ? ' tc-nav-link--active' : ''}`}
+              className={`tc-nav-link${currentView === view || (view === 'careers' && currentView === 'application_form') ? ' tc-nav-link--active' : ''}`}
             >
               {label}
             </button>
           ))}
         </nav>
 
-        {/* Right CTA Button */}
-        <div className="tc-public-cta">
+        {/* Right CTA Area */}
+        <div className="tc-public-cta" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+          <button
+            type="button"
+            onClick={() => navigate('sign_in')}
+            style={{
+              background: 'transparent',
+              border: 'none',
+              color: '#FFFFFF',
+              fontSize: '14px',
+              fontWeight: '500',
+              cursor: 'pointer',
+              padding: '8px 12px',
+              transition: 'color 0.2s ease',
+            }}
+            onMouseOver={(e) => (e.currentTarget.style.color = '#DFAE32')}
+            onMouseOut={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+          >
+            Sign In
+          </button>
           <button type="button" onClick={() => navigate('hire_us')} className="tc-btn-gold">
             Hire Us
           </button>
@@ -128,6 +147,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
                 { label: 'Home', view: 'home' as ScreenId },
                 { label: 'About', view: 'about_us' as ScreenId },
                 { label: 'Services', view: 'services' as ScreenId },
+                { label: 'Careers', view: 'careers' as ScreenId },
                 { label: 'FAQs', view: 'faqs' as ScreenId },
                 { label: 'Testimonies', view: 'testimonials' as ScreenId },
               ].map(({ label, view }) => (

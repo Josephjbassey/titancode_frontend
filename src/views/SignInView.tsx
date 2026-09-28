@@ -29,6 +29,7 @@ interface SignInViewProps {
   onNavigateSignUp: () => void;
   onNavigateForgotPassword: () => void;
   onNavigateQualification?: () => void;
+  onPendingApproval?: (email: string) => void;
 }
 
 export const SignInView: React.FC<SignInViewProps> = ({
@@ -36,6 +37,7 @@ export const SignInView: React.FC<SignInViewProps> = ({
   onNavigateSignUp,
   onNavigateForgotPassword,
   onNavigateQualification: _onNavigateQualification,
+  onPendingApproval,
 }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -55,7 +57,12 @@ export const SignInView: React.FC<SignInViewProps> = ({
       const response = await api.login(email, password);
       onSuccess(response.user);
     } catch (err: any) {
-      setErrorMessage(err.message || 'Failed to sign in. Please check your credentials.');
+      const msg = err.message || 'Failed to sign in. Please check your credentials.';
+      if (msg.toLowerCase().includes('pending approval') && onPendingApproval) {
+        onPendingApproval(email);
+        return;
+      }
+      setErrorMessage(msg);
     } finally {
       setIsLoading(false);
     }
@@ -69,11 +76,16 @@ export const SignInView: React.FC<SignInViewProps> = ({
       const authResponse = await api.googleLogin(response.credential);
       onSuccess(authResponse.user);
     } catch (err: any) {
-      setErrorMessage(err.message || 'Google sign-in failed. Please try again.');
+      const msg = err.message || 'Google sign-in failed. Please try again.';
+      if (msg.toLowerCase().includes('pending approval') && onPendingApproval) {
+        onPendingApproval('');
+        return;
+      }
+      setErrorMessage(msg);
     } finally {
       setIsGoogleLoading(false);
     }
-  }, [onSuccess]);
+  }, [onSuccess, onPendingApproval]);
 
   // Initialize Google Identity Services
   useEffect(() => {

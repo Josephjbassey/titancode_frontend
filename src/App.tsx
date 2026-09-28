@@ -36,6 +36,7 @@ import { ManagerDashboardView } from './views/ManagerDashboardView';
 import { CeoDashboardView } from './views/CeoDashboardView';
 import { ClientDashboardView } from './views/ClientDashboardView';
 import { ApplicantDashboardView } from './views/ApplicantDashboardView';
+import { NotFoundView, ForbiddenView, ServerErrorView, BadRequestView } from './views/errors';
 import { api } from './services/api';
 import type { User } from './types';
 import './App.css';
@@ -45,6 +46,8 @@ export type ScreenId =
   | 'about_us'
   | 'services'
   | 'hire_us'
+  | 'hire-us'
+  | 'careers'
   | 'contact_us'
   | 'faqs'
   | 'testimonials'
@@ -81,7 +84,11 @@ export type ScreenId =
   | 'profile_settings'
   | 'password_settings'
   | 'change_password'
-  | 'incorrect_current_password';
+  | 'incorrect_current_password'
+  | 'not_found'
+  | 'forbidden'
+  | 'server_error'
+  | 'bad_request';
 
 const fallbackUser: User = {
   id: 0,
@@ -101,7 +108,7 @@ export function App() {
   const [currentUser, setCurrentUser] = useState<User | null>(() => api.getActiveUser());
   const [settingsTab, setSettingsTab] = useState<'profile' | 'password' | 'notifications'>('profile');
 
-  // Attempt session hydration on mount
+  // Attempt session hydration on mount & synchronize browser URL path
   useEffect(() => {
     if (api.isAuthenticated()) {
       api.getCurrentUser()
@@ -114,9 +121,62 @@ export function App() {
           setCurrentUser(null);
         });
     }
+
+    const rawPath = window.location.pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
+    const pathToView: Record<string, ScreenId> = {
+      '': 'home',
+      'home': 'home',
+      'about': 'about_us',
+      'about-us': 'about_us',
+      'about_us': 'about_us',
+      'services': 'services',
+      'hire': 'hire_us',
+      'hire-us': 'hire_us',
+      'hire_us': 'hire_us',
+      'careers': 'careers',
+      'apply': 'careers',
+      'application_form': 'careers',
+      'contact': 'contact_us',
+      'contact-us': 'contact_us',
+      'contact_us': 'contact_us',
+      'faqs': 'faqs',
+      'faq': 'faqs',
+      'testimonials': 'testimonials',
+      'signin': 'sign_in',
+      'sign-in': 'sign_in',
+      'login': 'sign_in',
+      'signup': 'sign_up',
+      'sign-up': 'sign_up',
+      'register': 'sign_up',
+      'qualification': 'qualification',
+      'forgot-password': 'forgot_password_1',
+      'client-dashboard': 'client_dashboard',
+      'applicant-dashboard': 'applicant_dashboard',
+    };
+
+    if (rawPath in pathToView) {
+      setCurrentView(pathToView[rawPath]);
+    }
+
+    const handlePopState = () => {
+      const p = window.location.pathname.replace(/^\/+|\/+$/g, '').toLowerCase();
+      if (p in pathToView) {
+        setCurrentView(pathToView[p]);
+      }
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
   const activeUser: User = currentUser || fallbackUser;
+
+  const [errorContext, setErrorContext] = useState<{
+    variant?: 'pending_approval' | 'access_denied';
+    message?: string;
+    requestedPath?: string;
+    requiredRole?: string;
+    userEmail?: string;
+  }>({});
 
   // Determine view group
   const isWorkspaceView = [
@@ -150,6 +210,8 @@ export function App() {
     'about_us',
     'services',
     'hire_us',
+    'hire-us',
+    'careers',
     'contact_us',
     'faqs',
     'testimonials',
@@ -157,6 +219,23 @@ export function App() {
     'application_required',
     'application_email_exists',
     'application_submitted',
+  ].includes(currentView);
+
+  const isErrorView = [
+    'not_found',
+    'forbidden',
+    'server_error',
+    'bad_request',
+  ].includes(currentView);
+
+  const isAuthOrWizardView = [
+    'sign_in',
+    'sign_up',
+    'qualification',
+    'forgot_password_1',
+    'forgot_password_2',
+    'forgot_password_3',
+    'successful_password',
   ].includes(currentView);
 
   return (
@@ -169,11 +248,11 @@ export function App() {
         <PublicLayout currentView={currentView} onNavigate={setCurrentView}>
           {currentView === 'about_us' && <AboutUsView onNavigate={setCurrentView} />}
           {currentView === 'services' && <ServicesView onNavigate={setCurrentView} />}
-          {currentView === 'hire_us' && <HireUsView onNavigate={setCurrentView} />}
+          {(currentView === 'hire_us' || currentView === 'hire-us') && <HireUsView onNavigate={setCurrentView} />}
           {currentView === 'contact_us' && <ContactUsView onNavigate={setCurrentView} />}
           {currentView === 'faqs' && <FaqsView onNavigate={setCurrentView} />}
           {currentView === 'testimonials' && <TestimonialsView onNavigate={setCurrentView} />}
-          {currentView === 'application_form' && (
+          {(currentView === 'careers' || currentView === 'application_form') && (
             <ApplicationFormView key={currentView} initialState="default" onNavigate={setCurrentView} />
           )}
           {currentView === 'application_required' && (
@@ -343,8 +422,45 @@ export function App() {
             </main>
           </div>
         </div>
-      ) : (
-        /* 3. STANDALONE AUTH & WIZARD VIEWS */
+      ) : isErrorView ? (
+        /* 3. DEDICATED ERROR PAGES (404, 403, 500, 400) */
+        <div style={{ width: '100%', minHeight: '100vh' }}>
+          {currentView === 'not_found' && (
+            <NotFoundView
+              onNavigate={setCurrentView}
+              requestedPath={errorContext.requestedPath}
+            />
+          )}
+          {currentView === 'forbidden' && (
+            <ForbiddenView
+              variant={errorContext.variant || 'pending_approval'}
+              userEmail={errorContext.userEmail || currentUser?.email}
+              requiredRole={errorContext.requiredRole}
+              onNavigate={setCurrentView}
+              onLogout={() => {
+                api.logout();
+                setCurrentUser(null);
+                setCurrentView('sign_in');
+              }}
+            />
+          )}
+          {currentView === 'server_error' && (
+            <ServerErrorView
+              errorMessage={errorContext.message}
+              onNavigate={setCurrentView}
+              onRetry={() => window.location.reload()}
+            />
+          )}
+          {currentView === 'bad_request' && (
+            <BadRequestView
+              message={errorContext.message}
+              onNavigate={setCurrentView}
+              onBack={() => setCurrentView('home')}
+            />
+          )}
+        </div>
+      ) : isAuthOrWizardView ? (
+        /* 4. STANDALONE AUTH & WIZARD VIEWS */
         <div style={{ width: '100%', minHeight: '100vh' }}>
           {currentView === 'sign_in' && (
             <SignInView
@@ -361,6 +477,13 @@ export function App() {
               onNavigateSignUp={() => setCurrentView('sign_up')}
               onNavigateForgotPassword={() => setCurrentView('forgot_password_1')}
               onNavigateQualification={() => setCurrentView('qualification')}
+              onPendingApproval={(email) => {
+                setErrorContext({
+                  variant: 'pending_approval',
+                  userEmail: email,
+                });
+                setCurrentView('forbidden');
+              }}
             />
           )}
 
@@ -420,6 +543,12 @@ export function App() {
             />
           )}
         </div>
+      ) : (
+        /* 5. ULTIMATE 404 FALLBACK */
+        <NotFoundView
+          onNavigate={setCurrentView}
+          requestedPath={currentView}
+        />
       )}
 
     </div>

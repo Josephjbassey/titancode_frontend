@@ -3,7 +3,7 @@ import { Users, Briefcase, Check } from 'lucide-react';
 import { AuthLayout } from '../components/AuthLayout';
 
 interface QualificationViewProps {
-  onSelectRole: (role: 'Member' | 'Client') => void;
+  onSelectRole: (role: 'Member' | 'Client') => Promise<void> | void;
   onBack: () => void;
 }
 
@@ -11,7 +11,17 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
   onSelectRole,
   onBack,
 }) => {
-  const [selectedRole, setSelectedRole] = useState<'Member' | 'Client'>('Member');
+  const [selectedRole, setSelectedRole] = useState<'Member' | 'Client'>('Client');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleContinue = async () => {
+    setIsSubmitting(true);
+    try {
+      await onSelectRole(selectedRole);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <AuthLayout
@@ -150,7 +160,8 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
         {/* Action Button: Solid Gold Pill */}
         <button
           type="button"
-          onClick={() => onSelectRole(selectedRole)}
+          onClick={handleContinue}
+          disabled={isSubmitting}
           style={{
             width: '100%',
             height: '46px',
@@ -160,12 +171,14 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
             fontSize: '15px',
             fontWeight: '700',
             border: 'none',
-            cursor: 'pointer',
+            cursor: isSubmitting ? 'not-allowed' : 'pointer',
+            opacity: isSubmitting ? 0.75 : 1,
             boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
             marginBottom: '24px',
+            transition: 'opacity 0.2s ease',
           }}
         >
-          Continue
+          {isSubmitting ? 'Configuring your portal...' : 'Continue'}
         </button>
 
         {/* Bottom Switch Link */}
