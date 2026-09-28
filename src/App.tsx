@@ -36,6 +36,7 @@ import { ManagerDashboardView } from './views/ManagerDashboardView';
 import { CeoDashboardView } from './views/CeoDashboardView';
 import { ClientDashboardView } from './views/ClientDashboardView';
 import { ApplicantDashboardView } from './views/ApplicantDashboardView';
+import { OnboardView } from './views/OnboardView';
 import { NotFoundView, ForbiddenView, ServerErrorView, BadRequestView } from './views/errors';
 import { api } from './services/api';
 import type { User } from './types';
@@ -58,6 +59,7 @@ export type ScreenId =
   | 'sign_in'
   | 'sign_up'
   | 'qualification'
+  | 'onboard'
   | 'forgot_password_1'
   | 'forgot_password_2'
   | 'forgot_password_3'
@@ -149,6 +151,11 @@ export function App() {
       'sign-up': 'sign_up',
       'register': 'sign_up',
       'qualification': 'qualification',
+      'onboard': 'onboard',
+      'verify-otp': 'forgot_password_2',
+      'otp': 'forgot_password_2',
+      'reset-password': 'forgot_password_3',
+      'successful-password': 'successful_password',
       'forgot-password': 'forgot_password_1',
       'client-dashboard': 'client_dashboard',
       'applicant-dashboard': 'applicant_dashboard',
@@ -232,6 +239,7 @@ export function App() {
     'sign_in',
     'sign_up',
     'qualification',
+    'onboard',
     'forgot_password_1',
     'forgot_password_2',
     'forgot_password_3',
@@ -500,14 +508,43 @@ export function App() {
 
           {currentView === 'qualification' && (
             <QualificationView
-              onSelectRole={(role) => {
-                const base = currentUser || fallbackUser;
-                const updated = { ...base, role };
-                setCurrentUser(updated);
-                api.saveActiveUser(updated);
-                setCurrentView(role === 'Client' ? 'client_dashboard' : 'dashboard');
+              onSelectRole={async (role) => {
+                try {
+                  const updated = await api.qualify(role);
+                  setCurrentUser(updated);
+                  api.saveActiveUser(updated);
+                  if (role === 'Client') {
+                    setCurrentView('client_dashboard');
+                  } else {
+                    if (updated.status === 'pending') {
+                      setErrorContext({
+                        variant: 'pending_approval',
+                        userEmail: updated.email,
+                      });
+                      setCurrentView('forbidden');
+                    } else {
+                      setCurrentView('dashboard');
+                    }
+                  }
+                } catch {
+                  const base = currentUser || fallbackUser;
+                  const updated = { ...base, role };
+                  setCurrentUser(updated);
+                  api.saveActiveUser(updated);
+                  setCurrentView(role === 'Client' ? 'client_dashboard' : 'dashboard');
+                }
               }}
               onBack={() => setCurrentView('sign_in')}
+            />
+          )}
+
+          {currentView === 'onboard' && (
+            <OnboardView
+              onSuccess={(user) => {
+                setCurrentUser(user);
+                setCurrentView('client_dashboard');
+              }}
+              onNavigate={setCurrentView}
             />
           )}
 

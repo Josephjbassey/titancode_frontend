@@ -219,6 +219,23 @@ class ApiService {
     return updated;
   }
 
+  /**
+   * Consumes a client magic onboarding link token and returns user and tokens.
+   */
+  async activateClientOnboard(token: string): Promise<{ access_token: string; refresh_token: string; user: User; message: string }> {
+    const res = await fetch(`${API_BASE_URL}/client/onboard?token=${encodeURIComponent(token)}`);
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'This magic link is invalid or has expired.');
+    }
+    const data = await res.json();
+    this.setToken(data.access_token);
+    if (data.refresh_token) this.setRefreshToken(data.refresh_token);
+    const user = await this.getCurrentUser();
+    this.saveActiveUser(user);
+    return { ...data, user };
+  }
+
   async logout(): Promise<void> {
     this.clearAuth();
   }

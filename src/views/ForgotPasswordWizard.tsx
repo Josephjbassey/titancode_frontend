@@ -25,7 +25,9 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [resendSuccessMessage, setResendSuccessMessage] = useState('');
   const [resendTimer, setResendTimer] = useState(45);
   const [showErrorModal, setShowErrorModal] = useState(false);
 
@@ -49,10 +51,27 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
       await api.requestPasswordResetOtp(email.trim());
       setStep(2);
       setResendTimer(45);
+      setResendSuccessMessage('');
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to send OTP code.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleResendOtp = async () => {
+    if (resendTimer > 0 || isResending) return;
+    setIsResending(true);
+    setErrorMessage('');
+    setResendSuccessMessage('');
+    try {
+      await api.requestPasswordResetOtp(email.trim());
+      setResendTimer(45);
+      setResendSuccessMessage('A fresh 6-digit code has been sent to your email.');
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to resend code.');
+    } finally {
+      setIsResending(false);
     }
   };
 
@@ -309,6 +328,21 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
             </div>
           )}
 
+          {resendSuccessMessage && (
+            <div style={{
+              padding: '10px 14px',
+              borderRadius: '8px',
+              backgroundColor: 'rgba(16, 185, 129, 0.15)',
+              border: '1px solid rgba(16, 185, 129, 0.3)',
+              color: '#10B981',
+              fontSize: '13px',
+              marginBottom: '14px',
+              textAlign: 'center',
+            }}>
+              {resendSuccessMessage}
+            </div>
+          )}
+
           <div style={{ margin: '20px 0' }}>
             <OtpInput
               length={6}
@@ -334,7 +368,8 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
               fontSize: '15px',
               fontWeight: '700',
               border: 'none',
-              cursor: 'pointer',
+              cursor: (isLoading || otpCode.length < 6) ? 'not-allowed' : 'pointer',
+              opacity: (isLoading || otpCode.length < 6) ? 0.6 : 1,
               marginBottom: '18px',
               boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
             }}
@@ -351,17 +386,18 @@ export const ForgotPasswordWizard: React.FC<ForgotPasswordWizardProps> = ({
             Didn't get code?{' '}
             <button
               type="button"
-              onClick={() => setResendTimer(45)}
+              onClick={handleResendOtp}
+              disabled={resendTimer > 0 || isResending}
               style={{
                 background: 'none',
                 border: 'none',
-                color: '#dfae32',
+                color: resendTimer > 0 ? '#6B7280' : '#dfae32',
                 fontWeight: '600',
-                cursor: 'pointer',
+                cursor: resendTimer > 0 ? 'default' : 'pointer',
                 padding: 0,
               }}
             >
-              Resend code {resendTimer > 0 && `(${resendTimer}s)`}
+              {isResending ? 'Sending…' : resendTimer > 0 ? `Resend code (${resendTimer}s)` : 'Resend code'}
             </button>
           </div>
 

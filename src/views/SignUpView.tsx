@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { Eye, EyeOff, Mail, User as UserIcon } from 'lucide-react';
 import { AuthLayout } from '../components/AuthLayout';
 import { api } from '../services/api';
 import type { User } from '../types';
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 interface SignUpViewProps {
   onSuccess: (user: User) => void;
@@ -21,7 +23,66 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [agreeTerms, setAgreeTerms] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const [error, setError] = useState('');
+  const googleInitialized = useRef(false);
+
+  // Google OAuth callback
+  const handleGoogleCredential = useCallback(async (response: { credential: string }) => {
+    setError('');
+    setIsGoogleLoading(true);
+    try {
+      const authResponse = await api.googleLogin(response.credential);
+      onSuccess(authResponse.user);
+    } catch (err: any) {
+      setError(err.message || 'Google sign-up failed. Please try again.');
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  }, [onSuccess]);
+
+  // Initialize Google Identity Services
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID || googleInitialized.current) return;
+
+    const initGoogle = () => {
+      if (window.google?.accounts?.id) {
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredential,
+        });
+        googleInitialized.current = true;
+      }
+    };
+
+    if (window.google?.accounts?.id) {
+      initGoogle();
+    } else {
+      const checkInterval = setInterval(() => {
+        if (window.google?.accounts?.id) {
+          initGoogle();
+          clearInterval(checkInterval);
+        }
+      }, 200);
+      const timeout = setTimeout(() => clearInterval(checkInterval), 10000);
+      return () => {
+        clearInterval(checkInterval);
+        clearTimeout(timeout);
+      };
+    }
+  }, [handleGoogleCredential]);
+
+  const handleGoogleClick = () => {
+    if (!GOOGLE_CLIENT_ID) {
+      setError('Google Sign-In is not configured. Please set VITE_GOOGLE_CLIENT_ID.');
+      return;
+    }
+    if (window.google?.accounts?.id) {
+      window.google.accounts.id.prompt();
+    } else {
+      setError('Google Sign-In is still loading. Please try again in a moment.');
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -296,6 +357,8 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
           <button
             type="button"
+            onClick={handleGoogleClick}
+            disabled={isGoogleLoading}
             style={{
               height: '44px',
               borderRadius: '9999px',
@@ -308,40 +371,46 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
               alignItems: 'center',
               justifyContent: 'center',
               gap: '10px',
-              cursor: 'pointer',
+              cursor: isGoogleLoading ? 'wait' : 'pointer',
+              opacity: isGoogleLoading ? 0.6 : 1,
+              transition: 'opacity 0.2s, background-color 0.2s',
             }}
+            onMouseEnter={(e) => { if (!isGoogleLoading) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'; }}
           >
             <img
               src="/assets/google.png"
               alt="Google"
               style={{ width: '20px', height: '20px', objectFit: 'contain' }}
             />
-            Google
+            {isGoogleLoading ? 'Signing in…' : 'Google'}
           </button>
 
           <button
             type="button"
+            disabled
+            title="Apple Sign-In — Coming Soon"
             style={{
               height: '44px',
               borderRadius: '9999px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid #FFFFFF59',
-              color: '#FFFFFF',
+              backgroundColor: 'rgba(255, 255, 255, 0.03)',
+              border: '1px solid rgba(255, 255, 255, 0.15)',
+              color: 'rgba(255, 255, 255, 0.35)',
               fontSize: '14px',
               fontWeight: '500',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               gap: '10px',
-              cursor: 'pointer',
+              cursor: 'not-allowed',
             }}
           >
             <img
               src="/assets/apple.png"
               alt="Apple"
-              style={{ width: '20px', height: '20px', objectFit: 'contain' }}
+              style={{ width: '20px', height: '20px', objectFit: 'contain', opacity: 0.4 }}
             />
-            iphone
+            Apple
           </button>
         </div>
 
