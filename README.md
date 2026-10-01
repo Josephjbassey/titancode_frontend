@@ -1,32 +1,109 @@
-# React + TypeScript + Vite
+# TitanCode Frontend
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A React + TypeScript + Vite frontend for the TitanCode platform, built to support a multi-role workforce and client experience.
 
-Currently, two official plugins are available:
+This application includes public marketing pages, onboarding and authentication flows, role-based dashboards, project and team management views, client request workflows, and settings screens.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Tech Stack
 
-## React Compiler
+- React 19
+- TypeScript
+- Vite
+- Lucide React
+- Oxlint
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the Oxlint configuration
+- Public marketing pages for company information, services, FAQs, testimonials, and career applications
+- Sign in / sign up flow with qualification and onboarding flow
+- Role-based access across multiple dashboards:
+  - CEO Dashboard
+  - Manager Dashboard
+  - HR Dashboard
+  - Client Dashboard
+  - Applicant Dashboard
+  - Team dashboard
+- Client and project management views
+- Tasks, meetings, users, departments, financials, and system settings screens
+- Password and profile settings
+- Error and access denial states for restricted access
 
-If you are developing a production application, we recommend enabling type-aware lint rules by installing `oxlint-tsgolint` and editing `.oxlintrc.json`:
+## Project Structure
 
-```json
-{
-  "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["react", "typescript", "oxc"],
-  "options": {
-    "typeAware": true
-  },
-  "rules": {
-    "react/rules-of-hooks": "error",
-    "react/only-export-components": ["warn", { "allowConstantExport": true }]
-  }
-}
+```bash
+src/
+├── App.tsx
+├── App.css
+├── components/
+├── services/
+├── types/
+├── views/
+├── utils/
+├── main.tsx
+└── index.css
 ```
 
-See the [Oxlint rules documentation](https://oxc.rs/docs/guide/usage/linter/rules) for the full list of rules and categories.
+## Prerequisites
+
+Make sure you have the following installed:
+
+- Node.js 18+
+- npm or pnpm or yarn
+
+## Installation
+
+```bash
+npm install
+```
+
+## Available Scripts
+
+```bash
+npm run dev
+```
+
+Starts the Vite development server.
+
+```bash
+npm run build
+```
+
+Builds the app for production.
+
+```bash
+npm run preview
+```
+
+Serves the production build locally.
+
+```bash
+npm run lint
+```
+
+Runs the linter using Oxlint.
+
+## Development
+
+From the project root:
+
+```bash
+npm run dev
+```
+
+Then open the local Vite URL shown in the terminal.
+
+## Production Build
+
+```bash
+npm run build
+```
+
+The production files are generated in the `dist/` directory.
+
+## Notes
+
+This project is a front-end application and relies on app state and service-layer logic for navigation, auth/session behavior, and view rendering. If you are integrating with a backend, ensure the corresponding API contracts match the existing service structure in `src/services`.
+
+## License
+
+This project is currently unlicensed unless otherwise specified by the repository owner.
