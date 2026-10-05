@@ -47,70 +47,43 @@ export const OnboardView: React.FC<OnboardViewProps> = ({ onSuccess, onNavigate 
 
   return (
     <AuthLayout title="Client Portal Activation">
-      <div className="tc-fade-in" style={{ textAlign: 'center', padding: '10px 0' }}>
+      <div className="tc-fade-in tc-text-center tc-py-1">
         {status === 'verifying' && (
-          <div style={{ padding: '40px 0' }}>
+          <div className="tc-py-40">
             <Loader2
               size={48}
               color="#dfae32"
-              className="animate-spin"
-              style={{ margin: '0 auto 20px', animation: 'spin 1s linear infinite' }}
+              className="animate-spin tc-spin tc-mx-auto tc-mb-4"
             />
-            <h2 style={{ fontSize: '20px', fontWeight: '700', color: '#FFFFFF', marginBottom: '8px' }}>
+            <h2 className="tc-modal-title tc-mb-2">
               Activating your Client Portal
             </h2>
-            <p style={{ fontSize: '14px', color: '#9CA3AF' }}>
+            <p className="tc-text-muted">
               Please wait while we verify your invitation token...
             </p>
           </div>
         )}
 
         {status === 'success' && (
-          <div style={{ textAlign: 'left' }}>
-            <div style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(16, 185, 129, 0.15)',
-              border: '2px solid rgba(16, 185, 129, 0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '20px',
-            }}>
+          <div className="tc-text-left">
+            <div className="tc-onboard-icon-badge tc-onboard-icon-badge--success">
               <CheckCircle2 size={32} color="#10B981" />
             </div>
 
-            <h1 style={{
-              fontSize: '26px',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              marginBottom: '8px',
-            }}>
+            <h1 className="tc-page-title tc-mb-2">
               Welcome to TitanCode!
             </h1>
 
-            <p style={{
-              fontSize: '15px',
-              color: '#9CA3AF',
-              lineHeight: '1.6',
-              marginBottom: '24px',
-            }}>
-              Hi <strong style={{ color: '#FFFFFF' }}>{clientUser?.full_name || 'Client'}</strong>, your account is now fully approved and your dedicated Client Portal is ready.
+            <p className="tc-line-relaxed tc-mb-4 tc-text-muted">
+              Hi <strong className="tc-text-white">{clientUser?.full_name || 'Client'}</strong>, your account is now fully approved and your dedicated Client Portal is ready.
             </p>
 
-            <div style={{
-              backgroundColor: 'rgba(223, 174, 50, 0.08)',
-              border: '1px solid rgba(223, 174, 50, 0.25)',
-              borderRadius: '12px',
-              padding: '16px 20px',
-              marginBottom: '28px',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#dfae32', fontWeight: '600', marginBottom: '6px' }}>
+            <div className="tc-onboard-info-box">
+              <div className="tc-onboard-info-title">
                 <ShieldCheck size={18} />
                 <span>Zero-Friction Access Granted</span>
               </div>
-              <p style={{ fontSize: '13px', color: 'rgba(255, 255, 255, 0.7)', margin: 0 }}>
+              <p className="tc-onboard-info-desc">
                 You can now review project architecture, track deliverables, communicate with your lead engineer, and fund project milestones via Escrow.
               </p>
             </div>
@@ -118,23 +91,7 @@ export const OnboardView: React.FC<OnboardViewProps> = ({ onSuccess, onNavigate 
             <button
               type="button"
               onClick={handleEnterDashboard}
-              style={{
-                width: '100%',
-                height: '50px',
-                borderRadius: '9999px',
-                backgroundColor: '#dfae32',
-                color: '#000000',
-                fontSize: '15px',
-                fontWeight: '700',
-                border: 'none',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
-                marginBottom: '16px',
-              }}
+              className="tc-btn-submit-gold-full tc-flex-center-gap tc-mb-4"
             >
               <span>Enter Client Portal</span>
               <ArrowRight size={18} />
@@ -143,57 +100,26 @@ export const OnboardView: React.FC<OnboardViewProps> = ({ onSuccess, onNavigate 
         )}
 
         {status === 'expired_or_used' && (
-          <div style={{ textAlign: 'left' }}>
-            <div style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(223, 174, 50, 0.15)',
-              border: '2px solid rgba(223, 174, 50, 0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '20px',
-            }}>
+          <div className="tc-text-left">
+            <div className="tc-onboard-icon-badge tc-onboard-icon-badge--warning">
               <KeyRound size={28} color="#dfae32" />
             </div>
 
-            <h1 style={{
-              fontSize: '24px',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              marginBottom: '8px',
-            }}>
+            <h1 className="tc-card-title tc-mb-2">
               Link Already Activated or Expired
             </h1>
 
-            <p style={{
-              fontSize: '14px',
-              color: '#9CA3AF',
-              lineHeight: '1.6',
-              marginBottom: '24px',
-            }}>
+            <p className="tc-line-relaxed tc-mb-4 tc-text-muted">
               {errorMessage.includes('already')
                 ? 'Your client portal has already been activated! You can sign in directly or request a password reset below.'
                 : 'This invitation link has expired (24h limit) or has already been used. Please log in or request a new login code.'}
             </p>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '24px' }}>
+            <div className="tc-flex-col-gap tc-mb-4">
               <button
                 type="button"
                 onClick={() => onNavigate('sign_in')}
-                style={{
-                  width: '100%',
-                  height: '46px',
-                  borderRadius: '9999px',
-                  backgroundColor: '#dfae32',
-                  color: '#000000',
-                  fontSize: '15px',
-                  fontWeight: '700',
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
-                }}
+                className="tc-btn-submit-gold-full"
               >
                 Sign In to Portal
               </button>
@@ -201,17 +127,7 @@ export const OnboardView: React.FC<OnboardViewProps> = ({ onSuccess, onNavigate 
               <button
                 type="button"
                 onClick={() => onNavigate('forgot_password_1')}
-                style={{
-                  width: '100%',
-                  height: '46px',
-                  borderRadius: '9999px',
-                  backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#FFFFFF',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                }}
+                className="tc-btn-pill-full-outline"
               >
                 Reset Password / Send OTP
               </button>
@@ -220,67 +136,29 @@ export const OnboardView: React.FC<OnboardViewProps> = ({ onSuccess, onNavigate 
         )}
 
         {status === 'no_token' && (
-          <div style={{ textAlign: 'left' }}>
-            <div style={{
-              width: '60px',
-              height: '60px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(239, 68, 68, 0.15)',
-              border: '2px solid rgba(239, 68, 68, 0.4)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: '20px',
-            }}>
+          <div className="tc-text-left">
+            <div className="tc-onboard-icon-badge tc-onboard-icon-badge--error">
               <AlertTriangle size={28} color="#EF4444" />
             </div>
 
-            <h1 style={{
-              fontSize: '24px',
-              fontWeight: '700',
-              color: '#FFFFFF',
-              marginBottom: '8px',
-            }}>
+            <h1 className="tc-card-title tc-mb-2">
               Missing Activation Token
             </h1>
 
-            <p style={{
-              fontSize: '14px',
-              color: '#9CA3AF',
-              lineHeight: '1.6',
-              marginBottom: '24px',
-            }}>
+            <p className="tc-line-relaxed tc-mb-4 tc-text-muted">
               Please click the direct link provided in your TitanCode invitation email, or sign in using your existing credentials.
             </p>
 
             <button
               type="button"
               onClick={() => onNavigate('sign_in')}
-              style={{
-                width: '100%',
-                height: '46px',
-                borderRadius: '9999px',
-                backgroundColor: '#dfae32',
-                color: '#000000',
-                fontSize: '15px',
-                fontWeight: '700',
-                border: 'none',
-                cursor: 'pointer',
-                boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
-              }}
+              className="tc-btn-submit-gold-full"
             >
               Go to Sign In
             </button>
           </div>
         )}
       </div>
-
-      <style>{`
-        @keyframes spin {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
     </AuthLayout>
   );
 };

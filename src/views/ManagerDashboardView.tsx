@@ -15,10 +15,8 @@ import {
   MessageSquare,
   Loader2,
 } from 'lucide-react';
-import {
-  api,
-} from '../services/api';
-import type { DepartmentInfo, TeamMemberWorkload, TaskPriority, Project } from '../types';
+import { api } from '../services/api';
+import type { DepartmentInfo, TeamMemberWorkload, TaskPriority, Project, ApplicantRecord } from '../types';
 import type { ScreenId } from '../App';
 
 interface ManagerDashboardViewProps {
@@ -34,6 +32,7 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
   const [selectedDeptCode, setSelectedDeptCode] = useState<string>(initialDepartmentCode);
   const [roster, setRoster] = useState<TeamMemberWorkload[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [applicants, setApplicants] = useState<ApplicantRecord[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -42,17 +41,17 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
   const [taskTitle, setTaskTitle] = useState('');
   const [taskPriority, setTaskPriority] = useState<TaskPriority>('Medium');
   const [taskAssignee, setTaskAssignee] = useState('');
-  const [taskDeadline, setTaskDeadline] = useState('2026-10-01');
+  const [taskDeadline, setTaskDeadline] = useState(() => {
+    const d = new Date();
+    d.setDate(d.getDate() + 14);
+    return d.toISOString().split('T')[0];
+  });
   const [taskDescription, setTaskDescription] = useState('');
   const [isDispatching, setIsDispatching] = useState(false);
   const [dispatchSuccess, setDispatchSuccess] = useState(false);
 
   // Deliverables sign-off state
-  const [signedDeliverables, setSignedDeliverables] = useState<Record<string, boolean>>({
-    'DEL-01': true,
-    'DEL-02': false,
-    'DEL-03': false,
-  });
+  const [signedDeliverables, setSignedDeliverables] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     let mounted = true;
@@ -60,15 +59,17 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
 
     async function loadData() {
       try {
-        const [depts, members, projs] = await Promise.all([
+        const [depts, members, projs, appRecords] = await Promise.all([
           api.getDepartments().catch(() => []),
           api.getTeamWorkload(selectedDeptCode).catch(() => []),
           api.getProjects().catch(() => []),
+          api.getApplicantRecords().catch(() => []),
         ]);
         if (!mounted) return;
         setDepartments(depts);
         setRoster(members);
         setProjects(projs);
+        setApplicants(appRecords);
       } finally {
         if (mounted) setIsLoading(false);
       }
@@ -87,12 +88,12 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
       name: 'Engineering',
       description: 'Departmental management and agile execution overview.',
       manager_name: 'Lead Engineer',
-      manager_avatar: '/assets/joseph.jpg',
+      manager_avatar: null,
       manager_email: 'engineering@titancode.tech',
       member_count: 0,
       active_projects_count: 0,
       monthly_budget: 0,
-      currency: 'NGN',
+      currency: 'USD',
       profit_pool_share_percent: 10,
       category: 'Engineering',
     };
@@ -104,6 +105,27 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
       m.department.toLowerCase().includes(currentDept.code.toLowerCase())
   );
   const displayRoster = currentRoster.length > 0 ? currentRoster : roster;
+
+  // Dynamic capacity & sprint metrics
+  const activeSprintTasksCount =
+    displayRoster.reduce((sum, m) => sum + (m.active_tasks_count || 0), 0) ||
+    currentDept.active_projects_count * 4 + 7;
+  const availableStaff = displayRoster.filter((m) => m.allocation_status === 'Available').length;
+  const totalStaff = displayRoster.length || currentDept.member_count;
+  const allocationPct = totalStaff > 0 ? Math.round(((totalStaff - availableStaff) / totalStaff) * 100) : 85;
+
+  const formattedBudget =
+    currentDept.monthly_budget >= 1000000
+      ? `$${(currentDept.monthly_budget / 1000000).toFixed(1)}M`
+      : `$${(currentDept.monthly_budget / 1000).toFixed(0)}k`;
+
+  // Filter applicants for current department or top pending
+  const deptApplicants = applicants.filter(
+    (a) =>
+      a.department_id === Number(currentDept.id) ||
+      a.department_name?.toLowerCase().includes(currentDept.name.toLowerCase().split(' ')[0])
+  );
+  const displayApplicants = deptApplicants.length > 0 ? deptApplicants.slice(0, 3) : applicants.slice(0, 3);
 
   const handleDispatchTask = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -153,79 +175,37 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
       : departments.filter((d) => d.category === selectedCategory);
 
   return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', gap: '0', paddingBottom: '40px' }}>
+    <div className="tc-fade-in tc-view-wrapper">
       {/* 1. TOP HEADER & DEPARTMENT SELECTOR */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '28px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      <div className="tc-page-header">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '4px 10px',
-                borderRadius: '9999px',
-                backgroundColor: 'rgba(223, 174, 50, 0.15)',
-                color: '#dfae32',
-                fontSize: '12px',
-                fontWeight: 700,
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}
-            >
+          <div className="tc-flex-wrap-gap tc-mb-1">
+            <span className="tc-dept-badge">
               <Building2 size={13} />
               Department Head Hub
             </span>
-            <span
-              style={{
-                padding: '4px 10px',
-                borderRadius: '9999px',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                color: '#9CA3AF',
-                fontSize: '12px',
-                fontWeight: 600,
-              }}
-            >
+            <span className="tc-dept-category-pill">
               {currentDept.category}
             </span>
           </div>
-          <h1 style={{ fontSize: '28px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+          <h1 className="tc-page-title">
             {currentDept.name} Dashboard
           </h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
+          <p className="tc-page-subtitle">
             {currentDept.description}
           </p>
         </div>
 
         {/* Action Controls */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap' }}>
+        <div className="tc-header-actions">
           {/* Category Filter */}
-          <div style={{ display: 'flex', gap: '4px', background: 'rgba(255, 255, 255, 0.04)', padding: '4px', borderRadius: '10px' }}>
+          <div className="tc-category-bar">
             {categories.map((cat) => (
               <button
                 key={cat}
                 type="button"
                 onClick={() => setSelectedCategory(cat)}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  backgroundColor: selectedCategory === cat ? '#dfae32' : 'transparent',
-                  color: selectedCategory === cat ? '#000000' : '#9CA3AF',
-                  fontSize: '12px',
-                  fontWeight: selectedCategory === cat ? 700 : 500,
-                  cursor: 'pointer',
-                  transition: 'all 0.15s ease',
-                }}
+                className={`tc-category-btn ${selectedCategory === cat ? 'tc-category-btn--active' : ''}`}
               >
                 {cat}
               </button>
@@ -233,22 +213,11 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
           </div>
 
           {/* Department Switcher Dropdown */}
-          <div style={{ position: 'relative' }}>
+          <div className="tc-select-wrapper">
             <select
               value={selectedDeptCode}
               onChange={(e) => setSelectedDeptCode(e.target.value)}
-              style={{
-                appearance: 'none',
-                backgroundColor: '#1C1C1E',
-                border: '1px solid rgba(223, 174, 50, 0.4)',
-                borderRadius: '10px',
-                padding: '10px 38px 10px 14px',
-                color: '#FFFFFF',
-                fontSize: '13px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                outline: 'none',
-              }}
+              className="tc-dept-select"
             >
               {filteredDepartments.map((d) => (
                 <option key={d.code} value={d.code}>
@@ -256,33 +225,14 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
                 </option>
               ))}
             </select>
-            <ChevronDown
-              size={15}
-              style={{
-                position: 'absolute',
-                right: '12px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                pointerEvents: 'none',
-                color: '#dfae32',
-              }}
-            />
+            <ChevronDown size={15} className="tc-select-chevron" />
           </div>
 
           {/* Dispatch Sprint Task CTA */}
           <button
             type="button"
-            className="tc-btn tc-btn-primary"
+            className="tc-gold-btn"
             onClick={() => setShowDispatchModal(true)}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              padding: '10px 16px',
-              borderRadius: '10px',
-              fontWeight: 700,
-              fontSize: '13px',
-            }}
           >
             <Plus size={16} />
             Dispatch Sprint Task
@@ -291,652 +241,363 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
       </div>
 
       {/* 2. DEPARTMENT LEADERSHIP & METRIC CARDS BANNER */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '16px',
-          marginBottom: '28px',
-        }}
-      >
+      <div className="tc-metrics-grid-4">
         {/* Leadership Card */}
-        <div
-          style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
-            borderRadius: '16px',
-            padding: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-          }}
-        >
-          <img
-            src={currentDept.manager_avatar}
-            alt={currentDept.manager_name}
-            style={{
-              width: '56px',
-              height: '56px',
-              borderRadius: '50%',
-              objectFit: 'cover',
-              border: '2px solid #dfae32',
-            }}
-          />
+        <div className="tc-workspace-card tc-metric-card-inner">
+          {currentDept.manager_avatar ? (
+            <img
+              src={currentDept.manager_avatar}
+              alt={currentDept.manager_name}
+              className="tc-avatar-lg"
+            />
+          ) : (
+            <div className="tc-avatar-placeholder-lg">
+              {currentDept.manager_name
+                ?.split(' ')
+                .map((n) => n[0])
+                .join('')
+                .slice(0, 2)}
+            </div>
+          )}
           <div>
-            <div style={{ fontSize: '11px', color: '#dfae32', fontWeight: 700, textTransform: 'uppercase' }}>
-              Department Head
-            </div>
-            <div style={{ fontSize: '16px', fontWeight: 700, color: '#FFFFFF', marginTop: '2px' }}>
-              {currentDept.manager_name}
-            </div>
-            <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>
-              {currentDept.manager_email}
-            </div>
+            <div className="tc-dept-head-label">Department Head</div>
+            <div className="tc-dept-head-name">{currentDept.manager_name}</div>
+            <div className="tc-dept-head-email">{currentDept.manager_email}</div>
             {currentDept.assistant_name && (
-              <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px' }}>
-                Asst: {currentDept.assistant_name}
-              </div>
+              <div className="tc-dept-head-asst">Asst: {currentDept.assistant_name}</div>
             )}
           </div>
         </div>
 
         {/* Metric 1: Active Sprint Tasks */}
-        <div
-          style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
-            borderRadius: '16px',
-            padding: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-          }}
-        >
-          <div
-            style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(223, 174, 50, 0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#dfae32',
-            }}
-          >
+        <div className="tc-workspace-card tc-metric-card-inner">
+          <div className="tc-metric-icon-box tc-metric-icon-box--gold">
             <CheckSquare size={22} />
           </div>
           <div>
-            <div style={{ fontSize: '12px', color: '#9CA3AF', fontWeight: 600 }}>Active Sprint Tasks</div>
-            <div style={{ fontSize: '24px', fontWeight: 800, color: '#FFFFFF', marginTop: '2px' }}>
-              {currentDept.active_projects_count * 4 + 7}
-            </div>
-            <div style={{ fontSize: '11px', color: '#10B981', fontWeight: 600, marginTop: '2px' }}>
-              ↑ 85% on schedule
-            </div>
+            <div className="tc-metric-label">Active Sprint Tasks</div>
+            <div className="tc-metric-value">{activeSprintTasksCount}</div>
+            <div className="tc-metric-subtext tc-text-success">↑ 85% on schedule</div>
           </div>
         </div>
 
         {/* Metric 2: Department Roster & Capacity */}
-        <div
-          style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
-            borderRadius: '16px',
-            padding: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-          }}
-        >
-          <div
-            style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(59, 130, 246, 0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#3B82F6',
-            }}
-          >
+        <div className="tc-workspace-card tc-metric-card-inner">
+          <div className="tc-metric-icon-box tc-metric-icon-box--blue">
             <Users size={22} />
           </div>
           <div>
-            <div style={{ fontSize: '12px', color: '#9CA3AF', fontWeight: 600 }}>Staff Roster & Capacity</div>
-            <div style={{ fontSize: '24px', fontWeight: 800, color: '#FFFFFF', marginTop: '2px' }}>
-              {currentDept.member_count} Members
-            </div>
-            <div style={{ fontSize: '11px', color: '#9CA3AF', fontWeight: 500, marginTop: '2px' }}>
-              88% allocated • 2 available
+            <div className="tc-metric-label">Staff Roster & Capacity</div>
+            <div className="tc-metric-value">{totalStaff} Members</div>
+            <div className="tc-metric-subtext">
+              {allocationPct}% allocated • {availableStaff} available
             </div>
           </div>
         </div>
 
         {/* Metric 3: Profit Share & Monthly Budget */}
-        <div
-          style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
-            borderRadius: '16px',
-            padding: '20px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '16px',
-          }}
-        >
-          <div
-            style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(16, 185, 129, 0.12)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#10B981',
-            }}
-          >
+        <div className="tc-workspace-card tc-metric-card-inner">
+          <div className="tc-metric-icon-box tc-metric-icon-box--green">
             <Award size={22} />
           </div>
           <div>
-            <div style={{ fontSize: '12px', color: '#9CA3AF', fontWeight: 600 }}>70/30 Profit Pool Allocation</div>
-            <div style={{ fontSize: '24px', fontWeight: 800, color: '#FFFFFF', marginTop: '2px' }}>
-              {currentDept.profit_pool_share_percent}% Share
-            </div>
-            <div style={{ fontSize: '11px', color: '#dfae32', fontWeight: 600, marginTop: '2px' }}>
-              ₦{(currentDept.monthly_budget / 1000000).toFixed(1)}M Monthly Budget
-            </div>
+            <div className="tc-metric-label">70/30 Profit Pool Allocation</div>
+            <div className="tc-metric-value">{currentDept.profit_pool_share_percent}% Share</div>
+            <div className="tc-metric-subtext tc-text-gold">{formattedBudget} Monthly Budget</div>
           </div>
         </div>
       </div>
 
       {/* 3. MAIN SECTION: SPRINT ROSTER & WORKLOAD TABLE */}
-      <div
-        style={{
-          backgroundColor: '#232324',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '24px',
-          marginBottom: '28px',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '20px',
-            flexWrap: 'wrap',
-            gap: '12px',
-          }}
-        >
+      <div className="tc-workspace-card tc-grid-card tc-mt-3">
+        <div className="tc-card-header-row">
           <div>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
-              Team Roster & Workload Allocation
-            </h2>
-            <p style={{ fontSize: '13px', color: '#9CA3AF', margin: '2px 0 0' }}>
+            <h2 className="tc-card-title">Team Roster & Workload Allocation</h2>
+            <p className="tc-dashboard-subtitle">
               Real-time sprint capacity, logged hours, and task distribution for {currentDept.name}.
             </p>
           </div>
-          <div style={{ display: 'flex', gap: '8px' }}>
-            <span style={{ fontSize: '12px', color: '#9CA3AF', alignSelf: 'center' }}>
+          <div className="tc-flex-center-gap">
+            <span className="tc-table-subtext">
               Showing {displayRoster.length} department members
             </span>
           </div>
         </div>
 
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+        <div className="tc-table-wrap">
+          <table className="tc-data-table">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase' }}>
-                  Member
-                </th>
-                <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase' }}>
-                  Role & Seniority
-                </th>
-                <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase' }}>
-                  Current Project
-                </th>
-                <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase' }}>
-                  Active Tasks
-                </th>
-                <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase' }}>
-                  Sprint Hours
-                </th>
-                <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase' }}>
-                  Capacity Status
-                </th>
-                <th style={{ padding: '12px 16px', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', textTransform: 'uppercase', textAlign: 'right' }}>
-                  Actions
-                </th>
+              <tr className="tc-table-head-row">
+                <th className="tc-table-th">Member</th>
+                <th className="tc-table-th">Role & Seniority</th>
+                <th className="tc-table-th">Current Project</th>
+                <th className="tc-table-th">Active Tasks</th>
+                <th className="tc-table-th">Sprint Hours</th>
+                <th className="tc-table-th">Capacity Status</th>
+                <th className="tc-table-th tc-text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                      <Loader2 size={16} className="tc-spin" color="#dfae32" />
-                      <span>Loading team capacity & workload roster...</span>
+                  <td colSpan={7} className="tc-table-td tc-text-center">
+                    <div className="tc-flex-center-gap tc-justify-center tc-py-6">
+                      <Loader2 size={16} className="tc-spin tc-text-gold" />
+                      <span className="tc-text-muted">Loading team capacity & workload roster...</span>
                     </div>
                   </td>
                 </tr>
               ) : displayRoster.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF', fontSize: '13px' }}>
+                  <td colSpan={7} className="tc-table-td tc-text-center tc-text-muted">
                     No team members found for this department.
                   </td>
                 </tr>
               ) : (
                 displayRoster.map((member) => {
-                const statusColors = {
-                  Optimal: { bg: 'rgba(16, 185, 129, 0.12)', text: '#10B981', border: 'rgba(16, 185, 129, 0.3)' },
-                  High: { bg: 'rgba(245, 158, 11, 0.12)', text: '#F59E0B', border: 'rgba(245, 158, 11, 0.3)' },
-                  Overloaded: { bg: 'rgba(239, 68, 68, 0.12)', text: '#EF4444', border: 'rgba(239, 68, 68, 0.3)' },
-                  Available: { bg: 'rgba(59, 130, 246, 0.12)', text: '#3B82F6', border: 'rgba(59, 130, 246, 0.3)' },
-                };
-                const sc = statusColors[member.allocation_status] || statusColors.Optimal;
+                  const statusClassMap: Record<string, string> = {
+                    Optimal: 'tc-status-pill success',
+                    High: 'tc-status-pill warning',
+                    Overloaded: 'tc-status-pill danger',
+                    Available: 'tc-status-pill info',
+                  };
+                  const statusClass = statusClassMap[member.allocation_status] || 'tc-status-pill success';
 
-                return (
-                  <tr
-                    key={member.id}
-                    style={{
-                      borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                      transition: 'background-color 0.15s ease',
-                    }}
-                  >
-                    {/* Member Profile */}
-                    <td style={{ padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                        <img
-                          src={member.avatar}
-                          alt={member.name}
-                          style={{
-                            width: '38px',
-                            height: '38px',
-                            borderRadius: '50%',
-                            objectFit: 'cover',
-                            border: '1px solid rgba(255, 255, 255, 0.15)',
-                          }}
-                        />
-                        <div>
-                          <div style={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF' }}>
-                            {member.name}
+                  return (
+                    <tr key={member.id} className="tc-table-row">
+                      {/* Member Profile */}
+                      <td className="tc-table-td">
+                        <div className="tc-flex-center-gap">
+                          {member.avatar ? (
+                            <img
+                              src={member.avatar}
+                              alt={member.name}
+                              className="tc-avatar-sm"
+                            />
+                          ) : (
+                            <div className="tc-avatar-placeholder-sm">
+                              {member.name
+                                ?.split(' ')
+                                .map((n) => n[0])
+                                .join('')
+                                .slice(0, 2)}
+                            </div>
+                          )}
+                          <div>
+                            <div className="tc-font-bold">{member.name}</div>
+                            <div className="tc-text-muted-xs">{member.department}</div>
                           </div>
-                          <div style={{ fontSize: '11px', color: '#9CA3AF' }}>{member.department}</div>
                         </div>
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Role & Seniority */}
-                    <td style={{ padding: '14px 16px' }}>
-                      <div style={{ fontSize: '13px', fontWeight: 600, color: '#E5E7EB' }}>{member.role}</div>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          fontSize: '10px',
-                          fontWeight: 700,
-                          textTransform: 'uppercase',
-                          color: '#dfae32',
-                          marginTop: '2px',
-                        }}
-                      >
-                        {member.seniority}
-                      </span>
-                    </td>
+                      {/* Role & Seniority */}
+                      <td className="tc-table-td">
+                        <div className="tc-font-semibold">{member.role}</div>
+                        <span className="tc-seniority-tag">{member.seniority}</span>
+                      </td>
 
-                    {/* Current Project */}
-                    <td style={{ padding: '14px 16px' }}>
-                      <span style={{ fontSize: '13px', color: '#D1D5DB' }}>{member.current_project}</span>
-                    </td>
+                      {/* Current Project */}
+                      <td className="tc-table-td">
+                        <span className="tc-font-semibold">{member.current_project}</span>
+                      </td>
 
-                    {/* Active Tasks */}
-                    <td style={{ padding: '14px 16px' }}>
-                      <span
-                        style={{
-                          fontSize: '13px',
-                          fontWeight: 700,
-                          color: member.active_tasks_count > 3 ? '#EF4444' : '#FFFFFF',
-                        }}
-                      >
-                        {member.active_tasks_count} active
-                      </span>
-                      <span style={{ fontSize: '11px', color: '#6B7280', marginLeft: '4px' }}>
-                        ({member.completed_tasks_count} done)
-                      </span>
-                    </td>
-
-                    {/* Hours Logged */}
-                    <td style={{ padding: '14px 16px' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                        <Clock size={13} style={{ color: '#9CA3AF' }} />
-                        <span style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF' }}>
-                          {member.hours_logged_this_sprint}h
+                      {/* Active Tasks */}
+                      <td className="tc-table-td">
+                        <span
+                          className={member.active_tasks_count > 3 ? 'tc-text-danger tc-font-bold' : 'tc-font-bold'}
+                        >
+                          {member.active_tasks_count} active
                         </span>
-                      </div>
-                    </td>
+                        <span className="tc-text-muted-xs tc-ml-2">
+                          ({member.completed_tasks_count} done)
+                        </span>
+                      </td>
 
-                    {/* Allocation Status Badge */}
-                    <td style={{ padding: '14px 16px' }}>
-                      <span
-                        style={{
-                          display: 'inline-block',
-                          padding: '4px 10px',
-                          borderRadius: '9999px',
-                          fontSize: '11px',
-                          fontWeight: 700,
-                          backgroundColor: sc.bg,
-                          color: sc.text,
-                          border: `1px solid ${sc.border}`,
-                        }}
-                      >
-                        {member.allocation_status}
-                      </span>
-                    </td>
+                      {/* Hours Logged */}
+                      <td className="tc-table-td">
+                        <div className="tc-flex-center-gap">
+                          <Clock size={13} className="tc-text-muted" />
+                          <span className="tc-font-semibold">
+                            {member.hours_logged_this_sprint}h
+                          </span>
+                        </div>
+                      </td>
 
-                    {/* Action Buttons */}
-                    <td style={{ padding: '14px 16px', textAlign: 'right' }}>
-                      <div style={{ display: 'inline-flex', gap: '6px' }}>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setTaskAssignee(member.name);
-                            setShowDispatchModal(true);
-                          }}
-                          style={{
-                            padding: '6px 10px',
-                            borderRadius: '8px',
-                            backgroundColor: 'rgba(223, 174, 50, 0.15)',
-                            color: '#dfae32',
-                            border: '1px solid rgba(223, 174, 50, 0.3)',
-                            fontSize: '11px',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                          }}
-                        >
-                          + Task
-                        </button>
-                        <a
-                          href={`https://slack.com/app_redirect?channel=${member.name.toLowerCase().replace(' ', '.')}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            padding: '6px',
-                            borderRadius: '8px',
-                            backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                            color: '#9CA3AF',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            cursor: 'pointer',
-                            textDecoration: 'none',
-                          }}
-                          title={`Message ${member.name} on Slack`}
-                        >
-                          <MessageSquare size={13} />
-                        </a>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              }))}
+                      {/* Allocation Status Badge */}
+                      <td className="tc-table-td">
+                        <span className={statusClass}>
+                          {member.allocation_status}
+                        </span>
+                      </td>
+
+                      {/* Action Buttons */}
+                      <td className="tc-table-td tc-text-right">
+                        <div className="tc-flex-end-gap">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setTaskAssignee(member.name);
+                              setShowDispatchModal(true);
+                            }}
+                            className="tc-btn-gold-sm"
+                          >
+                            + Task
+                          </button>
+                          <a
+                            href={api.getTeamMemberChatUrl(member)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="tc-btn-icon-sm"
+                            title={
+                              member.slack_url
+                                ? `Open Slack direct chat with ${member.name}`
+                                : member.email
+                                ? `Message ${member.name} (${member.email}) on Workspace`
+                                : `Message ${member.name} on Slack / Workspace`
+                            }
+                          >
+                            <MessageSquare size={13} />
+                          </a>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
       {/* 4. LOWER 2-COLUMN GRID: DELIVERABLES SIGN-OFF & ATS APPLICANTS */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))',
-          gap: '20px',
-          marginBottom: '28px',
-        }}
-      >
+      <div className="tc-dashboard-grid-2x2 tc-mt-3">
         {/* Left Card: Department Technical Deliverables & QA Sign-Off */}
-        <div
-          style={{
-            backgroundColor: '#232324',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '16px',
-            padding: '24px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <div className="tc-grid-card">
+          <div className="tc-card-header-row">
             <div>
-              <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
-                Technical Deliverables & QA Gate
-              </h3>
-              <p style={{ fontSize: '12px', color: '#9CA3AF', margin: '2px 0 0' }}>
+              <h3 className="tc-card-title">Technical Deliverables & QA Gate</h3>
+              <p className="tc-dashboard-subtitle">
                 Sign off verified code and architectural milestones for client release.
               </p>
             </div>
-            <FileCheck size={18} style={{ color: '#dfae32' }} />
+            <FileCheck size={18} className="tc-text-gold" />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {[
-              {
-                id: 'DEL-01',
-                title: 'High-Throughput WebSocket ConnectionManager',
-                repo: 'titanCode_backend / app/core/websockets.py',
-                tested: 'Passed 10,000 concurrent connection load tests (k6)',
-              },
-              {
-                id: 'DEL-02',
-                title: 'Sumsub WebSDK KYC Webhook Listener & Escrow Split',
-                repo: 'titanCode_backend / app/api/v1/kyc.py',
-                tested: 'Unit & integration tests passing with 98.4% coverage',
-              },
-              {
-                id: 'DEL-03',
-                title: '14 Startup Business Departments Dashboard Architecture',
-                repo: 'titanCode_frontend / src/views/ManagerDashboardView.tsx',
-                tested: 'Dual-mode API verified, zero build or typing errors',
-              },
-            ].map((deliv) => {
-              const isSigned = signedDeliverables[deliv.id];
-              return (
-                <div
-                  key={deliv.id}
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                    border: `1px solid ${isSigned ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255, 255, 255, 0.06)'}`,
-                    borderRadius: '12px',
-                    padding: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    gap: '12px',
-                  }}
-                >
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
-                        {deliv.title}
-                      </span>
-                      {isSigned && (
-                        <span
-                          style={{
-                            fontSize: '10px',
-                            fontWeight: 700,
-                            padding: '2px 6px',
-                            borderRadius: '4px',
-                            backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                            color: '#10B981',
-                          }}
-                        >
-                          APPROVED BY LEAD
-                        </span>
-                      )}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#9CA3AF', fontFamily: 'monospace', marginTop: '2px' }}>
-                      {deliv.repo}
-                    </div>
-                    <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '2px' }}>
-                      ✓ {deliv.tested}
-                    </div>
-                  </div>
+          <div className="tc-flex-col-gap">
+            {projects.length === 0 ? (
+              <div className="tc-text-center tc-text-muted tc-py-6">
+                No active project deliverables or milestones pending QA sign-off.
+              </div>
+            ) : (
+              projects.slice(0, 4).map((p, idx) => {
+                const delivId = `DEL-${p.id || idx + 1}`;
+                const isSigned = Boolean(signedDeliverables[delivId]) || p.status === 'completed';
+                const pName = p.project_name || p.name || `Sprint Milestone #${idx + 1}`;
+                const safeName = pName.toLowerCase().replace(/[^a-z0-9]/g, '_');
+                const repoPath = `titanCode_backend / app/services/${safeName}.py`;
+                const statusLabel = p.status ? p.status.toUpperCase() : 'IN PROGRESS';
+                const testedInfo = `Status: ${statusLabel} • Budget: $${Number(p.budget || 0).toLocaleString()}${p.deadline ? ` • Target: ${p.deadline}` : ''}`;
 
-                  <button
-                    type="button"
-                    onClick={() => toggleDeliverableSignOff(deliv.id)}
-                    style={{
-                      padding: '8px 14px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      backgroundColor: isSigned ? 'rgba(16, 185, 129, 0.15)' : '#dfae32',
-                      color: isSigned ? '#10B981' : '#000000',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      transition: 'all 0.15s ease',
-                      flexShrink: 0,
-                    }}
+                return (
+                  <div
+                    key={delivId}
+                    className={`tc-deliverable-box ${isSigned ? 'tc-deliverable-box--signed' : ''}`}
                   >
-                    {isSigned ? 'Signed Off ✓' : 'Sign Off'}
-                  </button>
-                </div>
-              );
-            })}
+                    <div className="tc-flex-1">
+                      <div className="tc-flex-center-gap">
+                        <span className="tc-deliverable-title">{pName}</span>
+                        {isSigned && (
+                          <span className="tc-deliverable-approved-badge">APPROVED BY LEAD</span>
+                        )}
+                      </div>
+                      <div className="tc-deliverable-repo">{repoPath}</div>
+                      <div className="tc-deliverable-tested">✓ {testedInfo}</div>
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => toggleDeliverableSignOff(delivId)}
+                      className={`tc-btn-gold-sm ${isSigned ? 'tc-btn-gold-sm--signed' : 'tc-btn-gold-sm--solid'}`}
+                    >
+                      {isSigned ? 'Signed Off ✓' : 'Sign Off'}
+                    </button>
+                  </div>
+                );
+              })
+            )}
           </div>
         </div>
 
         {/* Right Card: Technical Candidate Screening Pipeline for this Department */}
-        <div
-          style={{
-            backgroundColor: '#232324',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '16px',
-            padding: '24px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
+        <div className="tc-grid-card">
+          <div className="tc-card-header-row">
             <div>
-              <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
-                Technical Screening ATS Queue
-              </h3>
-              <p style={{ fontSize: '12px', color: '#9CA3AF', margin: '2px 0 0' }}>
+              <h3 className="tc-card-title">Technical Screening ATS Queue</h3>
+              <p className="tc-dashboard-subtitle">
                 Review technical applicant code samples for {currentDept.name}.
               </p>
             </div>
-            <Sparkles size={18} style={{ color: '#dfae32' }} />
+            <Sparkles size={18} className="tc-text-gold" />
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-            {[
-              {
-                id: 1,
-                name: 'Korede Babalola',
-                experience: '6 years',
-                skills: ['React 19', 'TypeScript', 'Tailwind', 'Next.js'],
-                github: 'https://github.com/korede-dev',
-                status: 'Portfolio Review',
-              },
-              {
-                id: 2,
-                name: 'Amaka Eze',
-                experience: '4 years',
-                skills: ['FastAPI', 'PostgreSQL', 'Docker', 'Redis'],
-                github: 'https://github.com/amaka-code',
-                status: 'Technical Interview',
-              },
-            ].map((cand) => (
-              <div
-                key={cand.id}
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                  borderRadius: '12px',
-                  padding: '14px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: '12px',
-                }}
-              >
-                <div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF' }}>
-                    {cand.name}
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>
-                    {cand.experience} experience • {cand.status}
-                  </div>
-                  <div style={{ display: 'flex', gap: '4px', marginTop: '6px', flexWrap: 'wrap' }}>
-                    {cand.skills.map((s) => (
-                      <span
-                        key={s}
-                        style={{
-                          fontSize: '10px',
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                          color: '#dfae32',
-                        }}
-                      >
-                        {s}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', alignItems: 'flex-end' }}>
-                  <a
-                    href={cand.github}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      fontSize: '11px',
-                      color: '#3B82F6',
-                      textDecoration: 'none',
-                    }}
-                  >
-                    GitHub Code <ExternalLink size={11} />
-                  </a>
-                  <button
-                    type="button"
-                    onClick={() => alert(`Scheduled technical assessment with ${cand.name}`)}
-                    style={{
-                      padding: '6px 12px',
-                      borderRadius: '6px',
-                      border: 'none',
-                      backgroundColor: 'rgba(223, 174, 50, 0.2)',
-                      color: '#dfae32',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Schedule Interview
-                  </button>
-                </div>
+          <div className="tc-flex-col-gap">
+            {displayApplicants.length === 0 ? (
+              <div className="tc-text-center tc-text-muted tc-py-6">
+                No applicants currently pending review in this department.
               </div>
-            ))}
+            ) : (
+              displayApplicants.map((cand) => (
+                <div key={cand.id} className="tc-applicant-item">
+                  <div>
+                    <div className="tc-applicant-name">
+                      {cand.full_name || cand.applicant_name || `Applicant #${cand.id}`}
+                    </div>
+                    <div className="tc-applicant-meta">
+                      {cand.experience_years ? `${cand.experience_years} years experience` : 'Experienced'} •{' '}
+                      {cand.status ? cand.status.replace(/_/g, ' ') : 'Under Review'}
+                    </div>
+                    <div className="tc-flex-wrap-gap tc-mt-3">
+                      {(cand.skills || ['React', 'TypeScript', 'API']).slice(0, 4).map((s) => (
+                        <span key={s} className="tc-skill-chip">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="tc-flex-col-gap tc-items-end">
+                    {cand.github_url && (
+                      <a
+                        href={cand.github_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="tc-link-blue"
+                      >
+                        GitHub Code <ExternalLink size={11} />
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() =>
+                        alert(
+                          `Scheduled technical assessment with ${cand.full_name || cand.applicant_name || 'candidate'}`
+                        )
+                      }
+                      className="tc-btn-gold-sm"
+                    >
+                      Schedule Interview
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
 
-          <div style={{ marginTop: '16px', textAlign: 'right' }}>
+          <div className="tc-text-right tc-mt-3">
             <button
               type="button"
               onClick={() => onNavigate && onNavigate('applications_management')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#dfae32',
-                fontSize: '12px',
-                fontWeight: 600,
-                cursor: 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '4px',
-              }}
+              className="tc-link-gold"
             >
               Open Full ATS Screening Hub →
             </button>
@@ -946,73 +607,35 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
 
       {/* 5. MODAL: SPRINT TASK DISPATCHER */}
       {showDispatchModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100,
-            padding: '20px',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: '#1C1C1E',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
-              borderRadius: '16px',
-              padding: '28px',
-              maxWidth: '520px',
-              width: '100%',
-              boxShadow: '0 20px 40px rgba(0, 0, 0, 0.6)',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <CheckSquare size={20} style={{ color: '#dfae32' }} />
-                <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
-                  Dispatch Sprint Task
-                </h3>
+        <div className="tc-modal-overlay">
+          <div className="tc-modal-card tc-modal-sm">
+            <div className="tc-modal-header">
+              <div className="tc-flex-center-gap">
+                <CheckSquare size={20} className="tc-text-gold" />
+                <h3 className="tc-modal-title">Dispatch Sprint Task</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setShowDispatchModal(false)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#9CA3AF',
-                  cursor: 'pointer',
-                }}
+                className="tc-modal-close-btn"
               >
                 <X size={20} />
               </button>
             </div>
 
             {dispatchSuccess ? (
-              <div
-                style={{
-                  padding: '24px',
-                  backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                  border: '1px solid rgba(16, 185, 129, 0.3)',
-                  borderRadius: '12px',
-                  textAlign: 'center',
-                  color: '#10B981',
-                }}
-              >
-                <div style={{ fontSize: '20px', fontWeight: 700, marginBottom: '4px' }}>
+              <div className="tc-modal-success-banner">
+                <div className="tc-modal-success-title">
                   Task Dispatched!
                 </div>
-                <div style={{ fontSize: '13px' }}>
+                <div className="tc-modal-success-sub">
                   Assigned to {taskAssignee} and notified on Slack & TitanCode.
                 </div>
               </div>
             ) : (
               <form onSubmit={handleDispatchTask}>
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+                <div className="tc-form-group">
+                  <label className="tc-form-label">
                     Task Title *
                   </label>
                   <input
@@ -1021,38 +644,20 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
                     value={taskTitle}
                     onChange={(e) => setTaskTitle(e.target.value)}
                     placeholder="e.g. Implement WebSocket heartbeat & ping-pong"
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      borderRadius: '8px',
-                      backgroundColor: '#121214',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      color: '#FFFFFF',
-                      fontSize: '14px',
-                      outline: 'none',
-                    }}
+                    className="tc-form-input"
                   />
                 </div>
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '16px' }}>
+                <div className="tc-grid-2col">
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+                    <label className="tc-form-label">
                       Assignee *
                     </label>
                     <select
                       required
                       value={taskAssignee}
                       onChange={(e) => setTaskAssignee(e.target.value)}
-                      style={{
-                        width: '100%',
-                        padding: '12px 14px',
-                        borderRadius: '8px',
-                        backgroundColor: '#121214',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        color: '#FFFFFF',
-                        fontSize: '13px',
-                        outline: 'none',
-                      }}
+                      className="tc-form-select"
                     >
                       <option value="">Select Member</option>
                       {displayRoster.map((m) => (
@@ -1064,22 +669,13 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
                   </div>
 
                   <div>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+                    <label className="tc-form-label">
                       Priority
                     </label>
                     <select
                       value={taskPriority}
                       onChange={(e) => setTaskPriority(e.target.value as TaskPriority)}
-                      style={{
-                        width: '100%',
-                        padding: '12px 14px',
-                        borderRadius: '8px',
-                        backgroundColor: '#121214',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        color: '#FFFFFF',
-                        fontSize: '13px',
-                        outline: 'none',
-                      }}
+                      className="tc-form-select"
                     >
                       <option value="Low">Low</option>
                       <option value="Medium">Medium</option>
@@ -1089,29 +685,20 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
                   </div>
                 </div>
 
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+                <div className="tc-form-group">
+                  <label className="tc-form-label">
                     Sprint Target Deadline
                   </label>
                   <input
                     type="date"
                     value={taskDeadline}
                     onChange={(e) => setTaskDeadline(e.target.value)}
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      borderRadius: '8px',
-                      backgroundColor: '#121214',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      color: '#FFFFFF',
-                      fontSize: '14px',
-                      outline: 'none',
-                    }}
+                    className="tc-form-input"
                   />
                 </div>
 
-                <div style={{ marginBottom: '24px' }}>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+                <div className="tc-form-group">
+                  <label className="tc-form-label">
                     Technical Requirements / Description
                   </label>
                   <textarea
@@ -1119,49 +706,21 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
                     value={taskDescription}
                     onChange={(e) => setTaskDescription(e.target.value)}
                     placeholder="Provide acceptance criteria and reference links..."
-                    style={{
-                      width: '100%',
-                      padding: '12px 14px',
-                      borderRadius: '8px',
-                      backgroundColor: '#121214',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      color: '#FFFFFF',
-                      fontSize: '13px',
-                      outline: 'none',
-                      resize: 'none',
-                    }}
+                    className="tc-form-textarea"
                   />
                 </div>
 
-                <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+                <div className="tc-actions-end">
                   <button
                     type="button"
                     onClick={() => setShowDispatchModal(false)}
-                    style={{
-                      padding: '10px 18px',
-                      borderRadius: '8px',
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      fontSize: '13px',
-                      fontWeight: 600,
-                      cursor: 'pointer',
-                    }}
+                    className="tc-modal-cancel-btn"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="tc-btn tc-btn-primary"
-                    style={{
-                      padding: '10px 22px',
-                      borderRadius: '8px',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                    }}
+                    className="tc-gold-btn"
                   >
                     <Send size={15} />
                     Dispatch Task

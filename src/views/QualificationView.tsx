@@ -30,67 +30,24 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
     >
       <div className="tc-fade-in">
         {/* Two Side-by-Side Role Cards matching Figma Frame 597:44 */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: '1fr 1fr',
-          gap: '16px',
-          margin: '28px 0 32px',
-        }}>
+        <div className="tc-role-selection-grid">
           {/* Member Card */}
           <div
             onClick={() => setSelectedRole('Member')}
-            style={{
-              padding: '24px 20px',
-              borderRadius: '16px',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: `2px solid ${selectedRole === 'Member' ? '#dfae32' : 'rgba(255, 255, 255, 0.1)'}`,
-              cursor: 'pointer',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              minHeight: '144px',
-              transition: 'all 0.2s ease',
-            }}
+            className={`tc-role-card ${selectedRole === 'Member' ? 'tc-role-card--active' : ''}`}
           >
             {/* Top row: Squircle Gold Icon Container matching Figma Frame 2147223471 */}
-            <div style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '12px',
-              backgroundColor: '#dfae32',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+            <div className="tc-role-icon-box">
               <Users size={22} color="#0b0b0c" strokeWidth={2.4} />
             </div>
 
             {/* Bottom row: Label on left, Radio check on right */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginTop: '28px',
-            }}>
-              <span style={{
-                fontSize: '18px',
-                fontWeight: '700',
-                color: '#FFFFFF',
-              }}>
+            <div className="tc-role-bottom-row">
+              <span className="tc-role-title">
                 Member
               </span>
 
-              <div style={{
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                backgroundColor: selectedRole === 'Member' ? '#dfae32' : 'transparent',
-                border: `2px solid ${selectedRole === 'Member' ? '#dfae32' : 'rgba(255, 255, 255, 0.3)'}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#000000',
-              }}>
+              <div className={`tc-role-radio ${selectedRole === 'Member' ? 'tc-role-radio--checked' : ''}`}>
                 {selectedRole === 'Member' && <Check size={13} strokeWidth={3} />}
               </div>
             </div>
@@ -99,58 +56,20 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
           {/* Client Card */}
           <div
             onClick={() => setSelectedRole('Client')}
-            style={{
-              padding: '24px 20px',
-              borderRadius: '16px',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              border: `2px solid ${selectedRole === 'Client' ? '#dfae32' : 'rgba(255, 255, 255, 0.1)'}`,
-              cursor: 'pointer',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              minHeight: '144px',
-              transition: 'all 0.2s ease',
-            }}
+            className={`tc-role-card ${selectedRole === 'Client' ? 'tc-role-card--active' : ''}`}
           >
             {/* Top row: Squircle Gold Icon Container matching Figma Frame 2147223472 */}
-            <div style={{
-              width: '42px',
-              height: '42px',
-              borderRadius: '12px',
-              backgroundColor: '#dfae32',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
+            <div className="tc-role-icon-box">
               <Briefcase size={22} color="#0b0b0c" strokeWidth={2.4} />
             </div>
 
             {/* Bottom row: Label on left, Radio check on right */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              marginTop: '28px',
-            }}>
-              <span style={{
-                fontSize: '18px',
-                fontWeight: '700',
-                color: '#FFFFFF',
-              }}>
+            <div className="tc-role-bottom-row">
+              <span className="tc-role-title">
                 Client
               </span>
 
-              <div style={{
-                width: '20px',
-                height: '20px',
-                borderRadius: '50%',
-                backgroundColor: selectedRole === 'Client' ? '#dfae32' : 'transparent',
-                border: `2px solid ${selectedRole === 'Client' ? '#dfae32' : 'rgba(255, 255, 255, 0.3)'}`,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#000000',
-              }}>
+              <div className={`tc-role-radio ${selectedRole === 'Client' ? 'tc-role-radio--checked' : ''}`}>
                 {selectedRole === 'Client' && <Check size={13} strokeWidth={3} />}
               </div>
             </div>
@@ -162,43 +81,18 @@ export const QualificationView: React.FC<QualificationViewProps> = ({
           type="button"
           onClick={handleContinue}
           disabled={isSubmitting}
-          style={{
-            width: '100%',
-            height: '46px',
-            borderRadius: '9999px',
-            backgroundColor: '#dfae32',
-            color: '#000000',
-            fontSize: '15px',
-            fontWeight: '700',
-            border: 'none',
-            cursor: isSubmitting ? 'not-allowed' : 'pointer',
-            opacity: isSubmitting ? 0.75 : 1,
-            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
-            marginBottom: '24px',
-            transition: 'opacity 0.2s ease',
-          }}
+          className="tc-btn-submit-gold-full tc-mb-4"
         >
           {isSubmitting ? 'Configuring your portal...' : 'Continue'}
         </button>
 
         {/* Bottom Switch Link */}
-        <div style={{
-          textAlign: 'center',
-          fontSize: '14px',
-          color: '#9CA3AF',
-        }}>
+        <div className="tc-auth-footer-prompt">
           Already have an account?{' '}
           <button
             type="button"
             onClick={onBack}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#dfae32',
-              fontWeight: '600',
-              cursor: 'pointer',
-              padding: 0,
-            }}
+            className="tc-text-btn-gold"
           >
             Login
           </button>

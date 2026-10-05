@@ -137,114 +137,49 @@ export const SignInView: React.FC<SignInViewProps> = ({
     <AuthLayout title="Sign In">
       <form onSubmit={handleSubmit} className="tc-fade-in">
         {errorMessage && (
-          <div style={{
-            padding: '10px 14px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(239, 68, 68, 0.15)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            color: '#EF4444',
-            fontSize: '13px',
-            marginBottom: '18px',
-          }}>
+          <div className="tc-form-error-banner">
             {errorMessage}
           </div>
         )}
 
         {/* Email Field */}
-        <div style={{ marginBottom: '18px' }}>
-          <label style={{
-            display: 'block',
-            fontSize: '14px',
-            fontWeight: '500',
-            color: '#FFFFFF',
-            marginBottom: '8px',
-          }}>
+        <div className="tc-auth-input-group">
+          <label className="tc-auth-label">
             Email
           </label>
-          <div style={{ position: 'relative' }}>
+          <div className="tc-relative">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="youremail@gmail.com"
               required
-              style={{
-                width: '100%',
-                height: '58px',
-                borderRadius: '12px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#FFFFFF',
-                padding: '0 44px 0 18px',
-                fontSize: '15px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#dfae32'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+              className="tc-auth-input"
             />
-            <span style={{
-              position: 'absolute',
-              right: '16px',
-              top: '50%',
-              transform: 'translateY(-50%)',
-              color: 'rgba(255, 255, 255, 0.4)',
-              pointerEvents: 'none',
-              display: 'flex',
-            }}>
+            <span className="tc-auth-icon-end">
               <Mail size={18} />
             </span>
           </div>
         </div>
 
         {/* Password Field */}
-        <div style={{ marginBottom: '16px' }}>
-          <label style={{
-            display: 'block',
-            fontSize: '14px',
-            fontWeight: '500',
-            color: '#FFFFFF',
-            marginBottom: '8px',
-          }}>
+        <div className="tc-auth-input-group">
+          <label className="tc-auth-label">
             Password
           </label>
-          <div style={{ position: 'relative' }}>
+          <div className="tc-relative">
             <input
               type={showPassword ? 'text' : 'password'}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
               required
-              style={{
-                width: '100%',
-                height: '58px',
-                borderRadius: '12px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#FFFFFF',
-                padding: '0 44px 0 18px',
-                fontSize: '15px',
-                outline: 'none',
-                transition: 'border-color 0.2s',
-              }}
-              onFocus={(e) => e.target.style.borderColor = '#dfae32'}
-              onBlur={(e) => e.target.style.borderColor = 'rgba(255, 255, 255, 0.12)'}
+              className="tc-auth-input"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              style={{
-                position: 'absolute',
-                right: '16px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                background: 'none',
-                border: 'none',
-                color: 'rgba(255, 255, 255, 0.4)',
-                cursor: 'pointer',
-                display: 'flex',
-                padding: 0,
-              }}
+              className="tc-auth-icon-btn-end"
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -252,31 +187,13 @@ export const SignInView: React.FC<SignInViewProps> = ({
         </div>
 
         {/* Remember Me & Forgot Password Row */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '24px',
-        }}>
-          <label style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            cursor: 'pointer',
-            fontSize: '13px',
-            color: '#9CA3AF',
-          }}>
+        <div className="tc-auth-checkbox-row">
+          <label className="tc-auth-checkbox-label">
             <input
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
-              style={{
-                accentColor: '#dfae32',
-                width: '16px',
-                height: '16px',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
+              className="tc-auth-checkbox-input"
             />
             Remember Me
           </label>
@@ -284,85 +201,40 @@ export const SignInView: React.FC<SignInViewProps> = ({
           <button
             type="button"
             onClick={onNavigateForgotPassword}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#dfae32',
-              fontSize: '13px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              padding: 0,
-            }}
+            className="tc-text-btn-gold"
           >
             Forgot Password?
           </button>
         </div>
 
-        {/* Submit Solid Gold Button (Matching Figma Frame 149 height=52) */}
+        {/* Submit Solid Gold Button */}
         <button
           type="submit"
           disabled={isLoading}
-          style={{
-            width: '100%',
-            height: '52px',
-            borderRadius: '9999px',
-            backgroundColor: '#dfae32',
-            color: '#000000',
-            fontSize: '16px',
-            fontWeight: '700',
-            border: 'none',
-            cursor: 'pointer',
-            boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
-            transition: 'opacity 0.2s, transform 0.1s',
-          }}
-          onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.99)'}
-          onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+          className="tc-auth-btn-primary"
         >
           {isLoading ? 'Signing In...' : 'Sign In'}
         </button>
 
         {/* Social Auth Divider */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          margin: '24px 0 20px',
-          color: '#6B7280',
-          fontSize: '13px',
-        }}>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
-          <span style={{ padding: '0 14px', whiteSpace: 'nowrap' }}>Or continue with</span>
-          <div style={{ flex: 1, height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.1)' }} />
+        <div className="tc-auth-divider">
+          <div className="tc-auth-divider-line" />
+          <span className="tc-auth-divider-text">Or continue with</span>
+          <div className="tc-auth-divider-line" />
         </div>
 
         {/* Social Buttons: Google & Apple */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '24px' }}>
+        <div className="tc-auth-social-grid">
           <button
             type="button"
             onClick={handleGoogleClick}
             disabled={isGoogleLoading}
-            style={{
-              height: '44px',
-              borderRadius: '9999px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid #FFFFFF59',
-              color: '#FFFFFF',
-              fontSize: '14px',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px',
-              cursor: isGoogleLoading ? 'wait' : 'pointer',
-              opacity: isGoogleLoading ? 0.6 : 1,
-              transition: 'opacity 0.2s, background-color 0.2s',
-            }}
-            onMouseEnter={(e) => { if (!isGoogleLoading) e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.1)'; }}
-            onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)'; }}
+            className="tc-auth-social-btn"
           >
             <img
               src="/assets/google.png"
               alt="Google"
-              style={{ width: '20px', height: '20px', objectFit: 'contain' }}
+              className="tc-auth-social-icon"
             />
             {isGoogleLoading ? 'Signing in…' : 'Google'}
           </button>
@@ -371,48 +243,24 @@ export const SignInView: React.FC<SignInViewProps> = ({
             type="button"
             disabled
             title="Apple Sign-In — Coming Soon"
-            style={{
-              height: '44px',
-              borderRadius: '9999px',
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              color: 'rgba(255, 255, 255, 0.35)',
-              fontSize: '14px',
-              fontWeight: '500',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '10px',
-              cursor: 'not-allowed',
-            }}
+            className="tc-auth-social-btn"
           >
             <img
               src="/assets/apple.png"
               alt="Apple"
-              style={{ width: '20px', height: '20px', objectFit: 'contain', opacity: 0.4 }}
+              className="tc-auth-social-icon"
             />
             Apple
           </button>
         </div>
 
         {/* Bottom Switch Link */}
-        <div style={{
-          textAlign: 'center',
-          fontSize: '14px',
-          color: '#9CA3AF',
-        }}>
+        <div className="tc-auth-footer-prompt">
           Don't have an account?{' '}
           <button
             type="button"
             onClick={onNavigateSignUp}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#dfae32',
-              fontWeight: '600',
-              cursor: 'pointer',
-              padding: 0,
-            }}
+            className="tc-text-btn-gold"
           >
             Sign Up
           </button>

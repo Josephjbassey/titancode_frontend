@@ -20,86 +20,29 @@ export const MetricCard: React.FC<MetricCardProps> = ({
   icon: Icon,
   color = 'gold',
 }) => {
-  const colorMap = {
-    gold: {
-      bg: 'var(--tc-brand-gold-light)',
-      text: 'var(--tc-brand-gold)',
-      border: 'rgba(223, 174, 50, 0.25)',
-    },
-    green: {
-      bg: 'var(--tc-status-green-bg)',
-      text: 'var(--tc-status-green)',
-      border: 'rgba(16, 185, 129, 0.25)',
-    },
-    blue: {
-      bg: 'var(--tc-status-blue-bg)',
-      text: 'var(--tc-status-blue)',
-      border: 'rgba(59, 130, 246, 0.25)',
-    },
-    purple: {
-      bg: 'var(--tc-status-purple-bg)',
-      text: 'var(--tc-status-purple)',
-      border: 'rgba(139, 92, 246, 0.25)',
-    },
-  }[color];
-
   return (
-    <div className="tc-card" style={{ padding: '20px 22px' }}>
-      <div style={{
-        display: 'flex',
-        alignItems: 'flex-start',
-        justifyContent: 'space-between',
-        marginBottom: '14px',
-      }}>
-        <div style={{
-          fontSize: '13px',
-          fontWeight: '500',
-          color: 'var(--tc-text-secondary)',
-        }}>
+    <div className="tc-card tc-metric-card-inner">
+      <div className="tc-metric-header-row">
+        <div className="tc-metric-title">
           {title}
         </div>
-        <div style={{
-          width: '38px',
-          height: '38px',
-          borderRadius: 'var(--tc-radius-md)',
-          backgroundColor: colorMap.bg,
-          color: colorMap.text,
-          border: `1px solid ${colorMap.border}`,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
+        <div className={`tc-metric-icon-box tc-metric-icon-box--${color}`}>
           <Icon size={20} />
         </div>
       </div>
 
-      <div style={{
-        fontSize: '26px',
-        fontWeight: '700',
-        color: '#FFFFFF',
-        letterSpacing: '-0.5px',
-        lineHeight: 1.1,
-        marginBottom: '8px',
-      }}>
+      <div className="tc-metric-value">
         {value}
       </div>
 
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-        fontSize: '12px',
-      }}>
+      <div className="tc-metric-footer-row">
         {change && (
-          <span style={{
-            color: isPositive ? 'var(--tc-status-green)' : 'var(--tc-status-red)',
-            fontWeight: '600',
-          }}>
+          <span className={`tc-metric-change ${isPositive ? 'tc-metric-change--positive' : 'tc-metric-change--negative'}`}>
             {isPositive ? '↑' : '↓'} {change}
           </span>
         )}
         {subtitle && (
-          <span style={{ color: 'var(--tc-text-muted)' }}>
+          <span className="tc-metric-subtitle">
             {subtitle}
           </span>
         )}

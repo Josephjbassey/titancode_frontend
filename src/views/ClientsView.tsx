@@ -17,10 +17,12 @@ interface ClientItem {
   id: number;
   date: string;
   name: string;
-  avatar: string;
+  avatar: string | null;
   company: string;
   amount: string;
   status: string;
+  email?: string;
+  phone?: string;
 }
 
 export const ClientsView: React.FC = () => {
@@ -43,11 +45,13 @@ export const ClientsView: React.FC = () => {
         const mapped = records.map((c) => ({
           id: c.id,
           date: c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : 'Recent',
-          name: c.full_name || 'Client Representative',
-          avatar: '/assets/dashprofile.jpg',
-          company: c.email ? c.email.split('@')[1] : 'Enterprise Client',
-          amount: '₦2,000,000',
+          name: c.name || c.full_name || 'Client Representative',
+          avatar: null,
+          company: c.company || (c.email ? c.email.split('@')[1] : 'Enterprise Client'),
+          amount: '$2,000,000',
           status: c.status || 'Active',
+          email: c.email,
+          phone: c.phone,
         }));
         setClientRows(mapped);
       })
@@ -81,16 +85,16 @@ export const ClientsView: React.FC = () => {
         email: `${newClientName.toLowerCase().replace(/[^a-z0-9]/g, '.')}@client.titan`,
         company: newCompany.trim() || undefined,
         project_type: 'Enterprise Retainer',
-        description: `Client onboarded with retainer: ₦${newAmount}`,
+        description: `Client onboarded with retainer: $${newAmount}`,
       });
 
       const newEntry: ClientItem = {
         id: Date.now(),
         date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }),
         name: newClientName,
-        avatar: '/assets/dashprofile.jpg',
+        avatar: null,
         company: newCompany || 'Enterprise Partner',
-        amount: `₦${newAmount}`,
+        amount: `$${newAmount}`,
         status: 'Active',
       };
 
@@ -114,36 +118,22 @@ export const ClientsView: React.FC = () => {
   }, 0);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '40px', width: '100%' }} className="tc-fade-in">
+    <div className="tc-fade-in tc-dept-view-container tc-gap-4">
       {/* Top Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <h1 style={{
-          fontSize: '24px',
-          fontWeight: '700',
-          color: '#FFFFFF',
-          letterSpacing: '-0.4px',
-          margin: 0,
-        }}>
-          Clients
-        </h1>
+      <div className="tc-page-header-row">
+        <div>
+          <h1 className="tc-page-title">
+            Clients
+          </h1>
+          <p className="tc-page-subtitle">
+            Enterprise client accounts, project engagements, and gross contract commitments.
+          </p>
+        </div>
 
         <button
           type="button"
           onClick={() => setIsAddModalOpen(true)}
-          style={{
-            height: '40px',
-            borderRadius: '9999px',
-            backgroundColor: '#dfae32',
-            color: '#000000',
-            fontSize: '13px',
-            fontWeight: '700',
-            border: 'none',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '0 18px',
-          }}
+          className="tc-gold-btn"
         >
           <Plus size={16} />
           Add Client
@@ -151,301 +141,204 @@ export const ClientsView: React.FC = () => {
       </div>
 
       {/* 4 KPI Metric Cards (Card 1 is Solid Gold in Figma) */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-        gap: '16px',
-      }}>
+      <div className="tc-projects-stats-grid">
         {/* Card 1: Active Clients (SOLID GOLD #dfae32 in Figma) */}
-        <div style={{
-          backgroundColor: '#dfae32',
-          borderRadius: '16px',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          color: '#000000',
-          boxShadow: '0 8px 24px rgba(223, 174, 50, 0.25)',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span style={{ fontSize: '14px', fontWeight: '600', color: '#1F2937' }}>Active Clients</span>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(0, 0, 0, 0.1)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#000000',
-            }}>
+        <div className="tc-card-kpi-gold">
+          <div className="tc-card-header-row tc-mb-3">
+            <span className="tc-font-semibold tc-text-dark">Active Clients</span>
+            <div className="tc-kpi-icon-circle--gold">
               <Users size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '36px', fontWeight: '800', color: '#000000', marginBottom: '8px', lineHeight: 1 }}>
+          <div className="tc-kpi-val-hero--dark">
             {activeCount}
           </div>
-          <div style={{ fontSize: '12px', fontWeight: '600', color: '#1F2937' }}>
+          <div className="tc-text-xs tc-font-semibold tc-text-dark">
             Verified enterprise contracts
           </div>
         </div>
 
         {/* Card 2: Pending Clients */}
-        <div style={{
-          backgroundColor: '#232324',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>Pending Clients</span>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#9CA3AF',
-            }}>
+        <div className="tc-card-kpi-dark">
+          <div className="tc-card-header-row tc-mb-3">
+            <span className="tc-text-muted-xs">Pending Clients</span>
+            <div className="tc-kpi-icon-circle">
               <Users size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '36px', fontWeight: '800', color: '#FFFFFF', marginBottom: '8px', lineHeight: 1 }}>
+          <div className="tc-kpi-val-hero">
             {pendingCount}
           </div>
-          <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
+          <div className="tc-text-muted-xs">
             Awaiting contract sign-off
           </div>
         </div>
 
         {/* Card 3: Total Clients */}
-        <div style={{
-          backgroundColor: '#232324',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>Total Clients</span>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#9CA3AF',
-            }}>
+        <div className="tc-card-kpi-dark">
+          <div className="tc-card-header-row tc-mb-3">
+            <span className="tc-text-muted-xs">Total Clients</span>
+            <div className="tc-kpi-icon-circle">
               <Users size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '36px', fontWeight: '800', color: '#FFFFFF', marginBottom: '8px', lineHeight: 1 }}>
+          <div className="tc-kpi-val-hero">
             {totalCount}
           </div>
-          <div style={{ fontSize: '12px', color: '#10B981', fontWeight: '600' }}>
+          <div className="tc-text-success tc-text-xs tc-font-semibold">
             All-time registered accounts
           </div>
         </div>
 
         {/* Card 4: Total Amount */}
-        <div style={{
-          backgroundColor: '#232324',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '20px',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-        }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-            <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>Total Amount</span>
-            <div style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '50%',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#9CA3AF',
-            }}>
+        <div className="tc-card-kpi-dark">
+          <div className="tc-card-header-row tc-mb-3">
+            <span className="tc-text-muted-xs">Total Amount</span>
+            <div className="tc-kpi-icon-circle">
               <DollarSign size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: '800', color: '#FFFFFF', marginBottom: '8px', lineHeight: 1 }}>
-            ₦{totalAmount.toLocaleString()}
+          <div className="tc-kpi-val-hero">
+            ${totalAmount.toLocaleString()}
           </div>
-          <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
+          <div className="tc-text-muted-xs">
             Gross client commitments
           </div>
         </div>
       </div>
 
       {/* Clients Table Card (Figma 100%) */}
-      <div style={{
-        backgroundColor: '#232324',
-        border: '1px solid rgba(255, 255, 255, 0.08)',
-        borderRadius: '16px',
-        padding: '24px',
-      }}>
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+      <div className="tc-clients-table-card">
+        <div className="tc-overflow-x-auto">
+          <table className="tc-table">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', color: '#9CA3AF' }}>
-                <th style={{ padding: '12px 14px 16px', fontWeight: '500' }}>Date</th>
-                <th style={{ padding: '12px 14px 16px', fontWeight: '500' }}>Clients</th>
-                <th style={{ padding: '12px 14px 16px', fontWeight: '500' }}>Company Name</th>
-                <th style={{ padding: '12px 14px 16px', fontWeight: '500' }}>Amount</th>
-                <th style={{ padding: '12px 14px 16px', fontWeight: '500' }}>Status</th>
-                <th style={{ padding: '12px 14px 16px', fontWeight: '500', textAlign: 'right' }}>Actions</th>
+              <tr className="tc-table-header-dark">
+                <th>Date</th>
+                <th>Clients</th>
+                <th>Company Name</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th className="tc-text-right">Actions</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                      <Loader2 size={18} className="tc-spin" color="#dfae32" />
+                  <td colSpan={6} className="tc-dept-empty-box">
+                    <div className="tc-flex-center-gap tc-justify-center">
+                      <Loader2 size={18} className="tc-spin tc-text-gold" />
                       <span>Loading client records...</span>
                     </div>
                   </td>
                 </tr>
               ) : clientRows.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
+                  <td colSpan={6} className="tc-dept-empty-box">
                     No clients on record yet. Click &quot;Add Client&quot; above to onboard one.
                   </td>
                 </tr>
               ) : (
                 clientRows.map((row) => (
-                <tr key={row.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                  {/* Date */}
-                  <td style={{ padding: '16px 14px', color: '#9CA3AF' }}>
-                    {row.date}
-                  </td>
+                  <tr key={row.id} className="tc-table-row-hover">
+                    {/* Date */}
+                    <td className="tc-text-muted">
+                      {row.date}
+                    </td>
 
-                  {/* Clients */}
-                  <td style={{ padding: '16px 14px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <img
-                        src={row.avatar}
-                        alt={row.name}
-                        style={{
-                          width: '32px',
-                          height: '32px',
-                          borderRadius: '50%',
-                          objectFit: 'cover',
-                        }}
-                      />
-                      <span style={{ color: '#FFFFFF', fontWeight: '600' }}>
-                        {row.name}
+                    {/* Clients */}
+                    <td>
+                      <div className="tc-flex-center-gap">
+                        {row.avatar ? (
+                          <img
+                            src={row.avatar}
+                            alt={row.name}
+                            className="tc-avatar-sm"
+                          />
+                        ) : (
+                          <div className="tc-avatar-fallback">
+                            {row.name
+                              ?.split(' ')
+                              .map((n) => n[0])
+                              .join('')
+                              .slice(0, 2)}
+                          </div>
+                        )}
+                        <span className="tc-font-semibold tc-text-white">
+                          {row.name}
+                        </span>
+                      </div>
+                    </td>
+
+                    {/* Company Name */}
+                    <td className="tc-text-muted">
+                      {row.company}
+                    </td>
+
+                    {/* Amount */}
+                    <td className="tc-font-semibold tc-text-white">
+                      {row.amount}
+                    </td>
+
+                    {/* Status */}
+                    <td>
+                      <span className="tc-badge-status tc-badge-status--approved tc-flex-center-gap">
+                        {row.status} <ChevronDown size={12} />
                       </span>
-                    </div>
-                  </td>
+                    </td>
 
-                  {/* Company Name */}
-                  <td style={{ padding: '16px 14px', color: '#D1D5DB' }}>
-                    {row.company}
-                  </td>
+                    {/* Actions (4 icons: copy, chat, mail, more) */}
+                    <td className="tc-text-right">
+                      <div className="tc-flex-center-gap tc-justify-end">
+                        {/* Copy */}
+                        <button
+                          type="button"
+                          onClick={() => handleCopy(row.id, `${row.name} - ${row.company}`)}
+                          title="Copy Details"
+                          className={`tc-action-icon-btn ${copiedId === row.id ? 'tc-action-icon-btn--success' : ''}`}
+                        >
+                          <Copy size={16} />
+                        </button>
 
-                  {/* Amount */}
-                  <td style={{ padding: '16px 14px', color: '#FFFFFF', fontWeight: '600' }}>
-                    {row.amount}
-                  </td>
+                        {/* WhatsApp / Chat */}
+                        <a
+                          href={api.getClientConciergeWhatsAppUrl({ clientName: row.name, projectName: row.company })}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          title="Chat with Client on WhatsApp"
+                          className="tc-action-icon-btn"
+                        >
+                          <MessageSquare size={16} />
+                        </a>
 
-                  {/* Status */}
-                  <td style={{ padding: '16px 14px' }}>
-                    <span style={{
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px',
-                      padding: '4px 10px',
-                      borderRadius: '9999px',
-                      backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                      color: '#10B981',
-                      fontSize: '12px',
-                      fontWeight: '600',
-                    }}>
-                      {row.status} <ChevronDown size={12} />
-                    </span>
-                  </td>
+                        {/* Mail */}
+                        <a
+                          href={row.email ? `mailto:${row.email}` : undefined}
+                          onClick={(e) => {
+                            if (!row.email) {
+                              e.preventDefault();
+                              alert(`No email configured for ${row.name}`);
+                            }
+                          }}
+                          title={row.email ? `Email ${row.email}` : 'No email available'}
+                          className="tc-action-icon-btn"
+                        >
+                          <Mail size={16} />
+                        </a>
 
-                  {/* Actions (4 icons: copy, chat, mail, more) */}
-                  <td style={{ padding: '16px 14px', textAlign: 'right' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
-                      {/* Copy */}
-                      <button
-                        type="button"
-                        onClick={() => handleCopy(row.id, `${row.name} - ${row.company}`)}
-                        title="Copy Details"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: copiedId === row.id ? '#10B981' : '#9CA3AF',
-                          cursor: 'pointer',
-                          padding: '4px',
-                        }}
-                      >
-                        <Copy size={16} />
-                      </button>
-
-                      {/* Chat */}
-                      <button
-                        type="button"
-                        title="Open Chat"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#9CA3AF',
-                          cursor: 'pointer',
-                          padding: '4px',
-                        }}
-                      >
-                        <MessageSquare size={16} />
-                      </button>
-
-                      {/* Mail */}
-                      <button
-                        type="button"
-                        title="Send Email"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#9CA3AF',
-                          cursor: 'pointer',
-                          padding: '4px',
-                        }}
-                      >
-                        <Mail size={16} />
-                      </button>
-
-                      {/* More */}
-                      <button
-                        type="button"
-                        title="More Options"
-                        style={{
-                          background: 'none',
-                          border: 'none',
-                          color: '#9CA3AF',
-                          cursor: 'pointer',
-                          padding: '4px',
-                        }}
-                      >
-                        <MoreHorizontal size={16} />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              )))}
+                        {/* More */}
+                        <button
+                          type="button"
+                          title="More Options"
+                          onClick={() => alert(`Client Profile: ${row.name} (${row.company}) - Status: ${row.status}`)}
+                          className="tc-action-icon-btn"
+                        >
+                          <MoreHorizontal size={16} />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -458,12 +351,12 @@ export const ClientsView: React.FC = () => {
         title="Add New Client"
         maxWidth="460px"
       >
-        <form onSubmit={handleAddClient} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div>
-            <label className="tc-label">Client Name</label>
+        <form onSubmit={handleAddClient} className="tc-flex-col-gap">
+          <div className="tc-form-group">
+            <label className="tc-form-label">Client Name</label>
             <input
               type="text"
-              className="tc-input"
+              className="tc-form-input"
               placeholder="e.g. John Peter"
               value={newClientName}
               onChange={(e) => setNewClientName(e.target.value)}
@@ -471,11 +364,11 @@ export const ClientsView: React.FC = () => {
             />
           </div>
 
-          <div>
-            <label className="tc-label">Company Name</label>
+          <div className="tc-form-group">
+            <label className="tc-form-label">Company Name</label>
             <input
               type="text"
-              className="tc-input"
+              className="tc-form-input"
               placeholder="e.g. Tesla, Inc. (TSLA)"
               value={newCompany}
               onChange={(e) => setNewCompany(e.target.value)}
@@ -483,26 +376,26 @@ export const ClientsView: React.FC = () => {
             />
           </div>
 
-          <div>
-            <label className="tc-label">Amount (NGN)</label>
+          <div className="tc-form-group">
+            <label className="tc-form-label">Amount (USD)</label>
             <input
               type="text"
-              className="tc-input"
+              className="tc-form-input"
               value={newAmount}
               onChange={(e) => setNewAmount(e.target.value)}
               required
             />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '16px' }}>
+          <div className="tc-actions-end tc-mt-3">
             <button
               type="button"
-              className="tc-btn tc-btn-secondary"
+              className="tc-modal-cancel-btn"
               onClick={() => setIsAddModalOpen(false)}
             >
               Cancel
             </button>
-            <button type="submit" className="tc-btn tc-btn-primary">
+            <button type="submit" className="tc-gold-btn">
               Save Client
             </button>
           </div>

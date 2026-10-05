@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   UploadCloud,
   CheckCircle2,
+  Loader2,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
+import { api } from '../services/api';
+import type { PricingTier } from '../types';
 
 interface ClientProjectRequest {
   id: string;
@@ -22,109 +25,124 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
   const [timeline, setTimeline] = useState('2 - 3 Months');
   const [brief, setBrief] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
+  const [isLoadingTiers, setIsLoadingTiers] = useState(true);
+  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
+  const [myProjects, setMyProjects] = useState<ClientProjectRequest[]>([]);
 
-  const [myProjects, setMyProjects] = useState<ClientProjectRequest[]>([
-    {
-      id: 'REQ-401',
-      projectName: 'Aurelia FinTech Cross-border Mobile App',
-      budgetTier: '$24,500',
-      deadlinePreference: '2026-10-15',
-      status: 'Active Development',
-      submittedDate: '2026-08-01',
-      description: 'End-to-end multi-currency wallet with automated escrow conversion.',
-    },
-    {
-      id: 'REQ-402',
-      projectName: 'Institutional Wealth Management Dashboard',
-      budgetTier: '$35,000 - $50,000',
-      deadlinePreference: '2026-12-01',
-      status: 'In Review',
-      submittedDate: '2026-09-17',
-      description: 'Portfolio balancing dashboard with live Bloomberg API data feeds.',
-    },
-  ]);
+  useEffect(() => {
+    let mounted = true;
+    setIsLoadingTiers(true);
+    setIsLoadingProjects(true);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!projectName.trim()) return;
+    api.getFinancialSettings()
+      .then((settings) => {
+        if (!mounted) return;
+        if (settings.pricing_tiers && settings.pricing_tiers.length > 0) {
+          const active = settings.pricing_tiers.filter((t: PricingTier) => t.is_active);
+          setPricingTiers(active);
+          if (active.length > 0) {
+            setBudgetTier(active[0].label);
+          }
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (mounted) setIsLoadingTiers(false);
+      });
 
-    const newReq: ClientProjectRequest = {
-      id: `REQ-${Math.floor(400 + Math.random() * 600)}`,
-      projectName,
-      budgetTier,
-      deadlinePreference: timeline,
-      status: 'In Review',
-      submittedDate: new Date().toISOString().split('T')[0],
-      description: brief,
+    api.getProjects()
+      .then((projs) => {
+        if (!mounted) return;
+        if (projs && projs.length > 0) {
+          const mapped: ClientProjectRequest[] = projs.map((p) => ({
+            id: `PRJ-${p.id}`,
+            projectName: p.project_name || p.name || 'Enterprise Project',
+            budgetTier: `$${(p.budget || 25000).toLocaleString()} USD`,
+            deadlinePreference: p.deadline ? p.deadline.split('T')[0] : '2 - 3 Months',
+            status: p.status === 'completed'
+              ? 'Completed'
+              : p.status === 'in_progress'
+              ? 'Active Development'
+              : 'In Review',
+            submittedDate: p.created_at ? p.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+            description: p.description || 'Enterprise solution engineered by TitanCode.',
+          }));
+          setMyProjects(mapped);
+        }
+      })
+      .catch(() => {})
+      .finally(() => {
+        if (mounted) setIsLoadingProjects(false);
+      });
+
+    return () => {
+      mounted = false;
     };
+  }, []);
 
-    setMyProjects([newReq, ...myProjects]);
-    setSubmitted(true);
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!projectName.trim() || isSubmitting) return;
+
+    setIsSubmitting(true);
+    const activeUser = api.getActiveUser();
+    try {
+      await api.submitHireUs({
+        name: activeUser?.name || 'Valued Client',
+        email: activeUser?.email || 'client@titancode.tech',
+        project_type: projectName.trim(),
+        description: `${brief.trim()} (Budget: ${budgetTier}, Timeline: ${timeline})`,
+      });
+
+      const newReq: ClientProjectRequest = {
+        id: `REQ-${Math.floor(400 + Math.random() * 600)}`,
+        projectName,
+        budgetTier,
+        deadlinePreference: timeline,
+        status: 'In Review',
+        submittedDate: new Date().toISOString().split('T')[0],
+        description: brief,
+      };
+
+      setMyProjects((prev) => [newReq, ...prev]);
+      setSubmitted(true);
+    } catch (err: any) {
+      alert(err.message || 'Failed to submit project request.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+    <div className="tc-fade-in tc-req-proj-container">
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '28px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      <div className="tc-req-header-row">
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+          <h1 className="tc-page-title">
             Client Project Portal
           </h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
+          <p className="tc-page-subtitle">
             Commission bespoke software solutions, upload technical briefs, and monitor milestones.
           </p>
         </div>
 
-        <div
-          style={{
-            display: 'flex',
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            borderRadius: '8px',
-            padding: '3px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-          }}
-        >
+        <div className="tc-view-mode-toggle">
           <button
             type="button"
             onClick={() => {
               setActiveTab('request_form');
               setSubmitted(false);
             }}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '6px',
-              border: 'none',
-              backgroundColor: activeTab === 'request_form' ? '#dfae32' : 'transparent',
-              color: activeTab === 'request_form' ? '#0A0D14' : '#9CA3AF',
-              fontWeight: 700,
-              fontSize: '13px',
-              cursor: 'pointer',
-            }}
+            className={`tc-view-mode-btn ${activeTab === 'request_form' ? 'tc-view-mode-btn--active' : ''}`}
           >
             Submit New Request
           </button>
           <button
             type="button"
             onClick={() => setActiveTab('my_projects')}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '6px',
-              border: 'none',
-              backgroundColor: activeTab === 'my_projects' ? '#dfae32' : 'transparent',
-              color: activeTab === 'my_projects' ? '#0A0D14' : '#9CA3AF',
-              fontWeight: 700,
-              fontSize: '13px',
-              cursor: 'pointer',
-            }}
+            className={`tc-view-mode-btn ${activeTab === 'my_projects' ? 'tc-view-mode-btn--active' : ''}`}
           >
             My Commissioned Projects ({myProjects.length})
           </button>
@@ -133,60 +151,32 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
 
       {activeTab === 'request_form' ? (
         submitted ? (
-          <div
-            style={{
-              backgroundColor: '#FFFFFF1A',
-              borderRadius: '16px',
-              padding: '48px',
-              textAlign: 'center',
-              maxWidth: '640px',
-              margin: '40px auto',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
-            }}
-          >
-            <CheckCircle2 size={54} color="#10B981" style={{ margin: '0 auto 16px' }} />
-            <h2 style={{ fontSize: '24px', fontWeight: 800, color: '#FFFFFF', marginBottom: '10px' }}>
+          <div className="tc-req-success-card">
+            <CheckCircle2 size={54} color="#10B981" className="tc-mx-auto tc-mb-4" />
+            <h2 className="tc-card-title tc-text-xl tc-mb-2">
               Project Request Received
             </h2>
-            <p style={{ color: '#9CA3AF', fontSize: '15px', lineHeight: 1.6, marginBottom: '28px' }}>
+            <p className="tc-text-muted tc-text-base tc-mb-4">
               Our engineering leadership will review your specifications and prepare an architectural
               milestone breakdown and binding escrow quote within 24 hours.
             </p>
             <button
               type="button"
               onClick={() => setActiveTab('my_projects')}
-              style={{
-                backgroundColor: '#dfae32',
-                color: '#0A0D14',
-                fontWeight: 700,
-                fontSize: '14px',
-                padding: '12px 28px',
-                borderRadius: '8px',
-                border: 'none',
-                cursor: 'pointer',
-              }}
+              className="tc-action-btn-gold"
             >
               View In My Projects
             </button>
           </div>
         ) : (
-          <div
-            style={{
-              backgroundColor: '#FFFFFF1A',
-              borderRadius: '16px',
-              padding: '36px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              maxWidth: '720px',
-              margin: '0 auto',
-            }}
-          >
-            <h2 style={{ fontSize: '20px', fontWeight: 800, marginBottom: '20px', color: '#FFFFFF' }}>
+          <div className="tc-req-form-card tc-mx-auto">
+            <h2 className="tc-card-title tc-text-xl tc-mb-4">
               Project Commissioning Brief
             </h2>
 
             <form onSubmit={handleSubmit}>
-              <div style={{ marginBottom: '18px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Project / Platform Name
                 </label>
                 <input
@@ -195,62 +185,42 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                   placeholder="e.g. Next-Gen Cross-Border Logistics Engine"
                   value={projectName}
                   onChange={(e) => setProjectName(e.target.value)}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '12px 14px',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input"
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '18px' }}>
+              <div className="tc-grid-2col tc-mb-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+                  <label className="tc-form-label">
                     Target Budget Range
                   </label>
                   <select
                     value={budgetTier}
                     onChange={(e) => setBudgetTier(e.target.value)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#161617',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      padding: '12px 14px',
-                      color: '#FFFFFF',
-                      fontSize: '13px',
-                      outline: 'none',
-                    }}
+                    className="tc-form-input"
                   >
-                    <option value="$10,000 - $20,000">$10,000 - $20,000 USD</option>
-                    <option value="$20,000 - $40,000">$20,000 - $40,000 USD</option>
-                    <option value="$40,000 - $75,000">$40,000 - $75,000 USD</option>
-                    <option value="$75,000+">$75,000+ USD (Enterprise)</option>
+                    {isLoadingTiers ? (
+                      <option value="">Loading tiers...</option>
+                    ) : pricingTiers.length === 0 ? (
+                      <option value="">No tiers configured (admin setup required)</option>
+                    ) : (
+                      pricingTiers.map((tier) => (
+                        <option key={tier.id} value={`${tier.min_amount} - ${tier.max_amount ?? '∞'}`}>
+                          {tier.label}: ${tier.min_amount.toLocaleString()}{tier.max_amount !== null ? ` - $${tier.max_amount.toLocaleString()}` : '+'} USD
+                        </option>
+                      ))
+                    )}
                   </select>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+                  <label className="tc-form-label">
                     Target Completion Timeline
                   </label>
                   <select
                     value={timeline}
                     onChange={(e) => setTimeline(e.target.value)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#161617',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      padding: '12px 14px',
-                      color: '#FFFFFF',
-                      fontSize: '13px',
-                      outline: 'none',
-                    }}
+                    className="tc-form-input"
                   >
                     <option value="1 - 2 Months">1 - 2 Months (Rapid MVP)</option>
                     <option value="2 - 3 Months">2 - 3 Months (Standard)</option>
@@ -259,8 +229,8 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                 </div>
               </div>
 
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Functional Requirements & Target Deliverables
                 </label>
                 <textarea
@@ -269,114 +239,80 @@ export const ClientRequestProjectView: React.FC<{ onNavigate?: (view: ScreenId) 
                   placeholder="Outline key user workflows, integrations, target platforms, and performance targets..."
                   value={brief}
                   onChange={(e) => setBrief(e.target.value)}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '12px 14px',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                    resize: 'none',
-                  }}
+                  className="tc-form-input tc-resize-none"
                 />
               </div>
 
               {/* Upload brief attachment box */}
-              <div
-                style={{
-                  border: '2px dashed rgba(223, 174, 50, 0.3)',
-                  borderRadius: '10px',
-                  padding: '24px',
-                  textAlign: 'center',
-                  marginBottom: '28px',
-                  backgroundColor: '#161617',
-                }}
-              >
-                <UploadCloud size={32} color="#dfae32" style={{ margin: '0 auto 8px' }} />
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF' }}>
+              <div className="tc-req-dropzone tc-mb-4">
+                <UploadCloud size={32} color="#dfae32" className="tc-mx-auto tc-mb-2" />
+                <div className="tc-font-semibold tc-text-sm tc-text-white">
                   Upload Technical Brief or Architecture Diagrams
                 </div>
-                <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '4px' }}>
+                <div className="tc-text-muted tc-text-xs tc-mt-1">
                   PDF, DOCX, Figma or ZIP up to 50MB
                 </div>
               </div>
 
               <button
                 type="submit"
-                style={{
-                  width: '100%',
-                  backgroundColor: '#dfae32',
-                  color: '#0A0D14',
-                  fontWeight: 700,
-                  fontSize: '15px',
-                  padding: '14px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
-                }}
+                className="tc-action-btn-gold tc-w-full"
+                disabled={isSubmitting}
               >
-                Submit Project Request to TitanCode
+                {isSubmitting ? 'Submitting Request...' : 'Submit Project Request to TitanCode'}
               </button>
             </form>
           </div>
         )
       ) : (
         /* MY PROJECTS LIST */
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          {myProjects.map((p) => (
-            <div
-              key={p.id}
-              style={{
-                backgroundColor: '#FFFFFF1A',
-                borderRadius: '14px',
-                padding: '24px',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '16px',
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                  <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>{p.id}</span>
-                  <span
-                    style={{
-                      padding: '3px 8px',
-                      borderRadius: '999px',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      backgroundColor:
-                        p.status === 'Active Development'
-                          ? 'rgba(16, 185, 129, 0.15)'
-                          : 'rgba(223, 174, 50, 0.15)',
-                      color: p.status === 'Active Development' ? '#10B981' : '#dfae32',
-                    }}
-                  >
-                    ● {p.status}
-                  </span>
-                  <span style={{ color: '#9CA3AF', fontSize: '12px' }}>Submitted {p.submittedDate}</span>
-                </div>
-                <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', margin: '0 0 6px' }}>
-                  {p.projectName}
-                </h3>
-                <p style={{ color: '#9CA3AF', fontSize: '13px', margin: 0 }}>{p.description}</p>
-              </div>
-
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '18px', fontWeight: 800, color: '#dfae32' }}>{p.budgetTier}</div>
-                <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '4px' }}>
-                  Target: {p.deadlinePreference}
-                </div>
+        <div className="tc-req-projects-list">
+          {isLoadingProjects ? (
+            <div className="tc-empty-state">
+              <div className="tc-flex-center-all">
+                <Loader2 size={20} className="tc-spin" color="#dfae32" />
+                <span>Loading commissioned projects...</span>
               </div>
             </div>
-          ))}
+          ) : myProjects.length === 0 ? (
+            <div className="tc-empty-state">
+              No commissioned projects on file yet. Submit your first request using the form above!
+            </div>
+          ) : (
+            myProjects.map((p) => (
+              <div key={p.id} className="tc-req-project-card">
+                <div>
+                  <div className="tc-flex-center-gap tc-mb-2">
+                    <span className="tc-text-xs tc-font-bold tc-text-gold">{p.id}</span>
+                    <span
+                      className={
+                        p.status === 'Active Development'
+                          ? 'tc-badge-healthy'
+                          : 'tc-badge-pending'
+                      }
+                    >
+                      ● {p.status}
+                    </span>
+                    <span className="tc-text-xs tc-text-muted">Submitted {p.submittedDate}</span>
+                  </div>
+                  <h3 className="tc-card-title tc-mb-1">
+                    {p.projectName}
+                  </h3>
+                  <p className="tc-text-muted tc-text-sm">{p.description}</p>
+                </div>
+
+                <div className="tc-text-right">
+                  <div className="tc-text-lg tc-font-bold tc-text-gold">{p.budgetTier}</div>
+                  <div className="tc-text-xs tc-text-muted tc-mt-1">
+                    Target: {p.deadlinePreference}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
       )}
     </div>
   );
 };
+

@@ -108,23 +108,14 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
   };
 
   return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+    <div className="tc-fade-in tc-products-container">
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '28px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      <div className="tc-card-header-row tc-mb-4">
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+          <h1 className="tc-page-title">
             Products & Revenue Engine
           </h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
+          <p className="tc-page-subtitle">
             Register TitanCode intellectual property, generate telemetry API keys, and monitor MRR cashflow.
           </p>
         </div>
@@ -133,7 +124,6 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
           type="button"
           onClick={() => setShowAddModal(true)}
           className="tc-action-btn-gold"
-          style={{ fontSize: '14px', padding: '11px 22px', height: 'auto' }}
         >
           <Plus size={18} strokeWidth={2.5} />
           <span>Register Product</span>
@@ -141,225 +131,124 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
       </div>
 
       {/* KPI Cards */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-          gap: '20px',
-          marginBottom: '28px',
-        }}
-      >
-        <div style={{ backgroundColor: '#FFFFFF1A', borderRadius: '14px', padding: '24px', border: '1px solid rgba(223, 174, 50, 0.3)' }}>
-          <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Total Cumulative Revenue</div>
-          <div style={{ fontSize: '32px', fontWeight: 800, color: '#dfae32', marginTop: '6px' }}>
+      <div className="tc-product-kpi-grid">
+        <div className="tc-product-kpi-card tc-product-kpi-card--gold">
+          <div className="tc-product-kpi-label">Total Cumulative Revenue</div>
+          <div className="tc-product-kpi-value tc-product-kpi-value--gold">
             ${totalEarnings.toLocaleString()} USD
           </div>
-          <div style={{ color: '#10B981', fontSize: '12px', marginTop: '4px' }}>All live products verified</div>
+          <div className="tc-product-kpi-sub tc-product-kpi-sub--emerald">All live products verified</div>
         </div>
 
-        <div style={{ backgroundColor: '#FFFFFF1A', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-          <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Current Monthly MRR Run-rate</div>
-          <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>
+        <div className="tc-product-kpi-card">
+          <div className="tc-product-kpi-label">Current Monthly MRR Run-rate</div>
+          <div className="tc-product-kpi-value tc-product-kpi-value--white">
             ${totalMonthly.toLocaleString()} / mo
           </div>
-          <div style={{ color: '#10B981', fontSize: '12px', marginTop: '4px' }}>+22% growth vs last quarter</div>
+          <div className="tc-product-kpi-sub tc-product-kpi-sub--emerald">+22% growth vs last quarter</div>
         </div>
 
-        <div style={{ backgroundColor: '#FFFFFF1A', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-          <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Live Endpoints & APIs</div>
-          <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>
+        <div className="tc-product-kpi-card">
+          <div className="tc-product-kpi-label">Live Endpoints & APIs</div>
+          <div className="tc-product-kpi-value tc-product-kpi-value--white">
             {products.length} Active Services
           </div>
-          <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '4px' }}>99.98% uptime SLA</div>
+          <div className="tc-product-kpi-sub tc-product-kpi-sub--muted">99.98% uptime SLA</div>
         </div>
       </div>
 
       {/* Products Grid */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+      <div className="tc-products-list">
         {isLoading ? (
-          <div
-            style={{
-              padding: '60px 20px',
-              textAlign: 'center',
-              backgroundColor: '#FFFFFF1A',
-              borderRadius: '14px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              color: '#9CA3AF',
-            }}
-          >
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+          <div className="tc-empty-state">
+            <div className="tc-flex-center-all">
               <Loader2 size={20} className="tc-spin" color="#dfae32" />
               <span>Loading registered products...</span>
             </div>
           </div>
         ) : products.length === 0 ? (
-          <div
-            style={{
-              padding: '60px 20px',
-              textAlign: 'center',
-              backgroundColor: '#FFFFFF1A',
-              borderRadius: '14px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              color: '#9CA3AF',
-            }}
-          >
+          <div className="tc-empty-state">
             No digital products registered yet. Click &quot;Register Product&quot; above to connect one.
           </div>
         ) : (
           products.map((product) => (
-            <div
-            key={product.id}
-            style={{
-              backgroundColor: '#FFFFFF1A',
-              borderRadius: '14px',
-              padding: '24px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '20px',
-            }}
-          >
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '8px' }}>
-                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>{product.id}</span>
-                <span
-                  style={{
-                    backgroundColor: 'rgba(223, 174, 50, 0.15)',
-                    color: '#dfae32',
-                    padding: '2px 8px',
-                    borderRadius: '4px',
-                    fontSize: '11px',
-                    fontWeight: 700,
-                  }}
-                >
-                  {product.type}
-                </span>
-                <span style={{ color: '#9CA3AF', fontSize: '12px' }}>Created {product.createdDate}</span>
-              </div>
-
-              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', margin: '0 0 10px' }}>
-                {product.name}
-              </h3>
-
-              {/* API Key Box */}
-              <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  backgroundColor: '#161617',
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  border: '1px solid rgba(255, 255, 255, 0.08)',
-                  fontSize: '12px',
-                }}
-              >
-                <Key size={13} color="#dfae32" />
-                <span style={{ color: '#9CA3AF', fontFamily: 'monospace' }}>
-                  {product.apiKey.slice(0, 16)}••••••••••••••••
-                </span>
-                <button
-                  type="button"
-                  onClick={() => copyApiKey(product.apiKey)}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: copiedKey === product.apiKey ? '#10B981' : '#dfae32',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                  }}
-                >
-                  {copiedKey === product.apiKey ? <Check size={12} /> : <Copy size={12} />}
-                  <span>{copiedKey === product.apiKey ? 'Copied' : 'Copy Key'}</span>
-                </button>
-              </div>
-            </div>
-
-            {/* Financial Metrics & URL */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '32px' }}>
-              <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '20px', fontWeight: 800, color: '#dfae32' }}>
-                  ${product.totalRevenue.toLocaleString()} USD
+            <div key={product.id} className="tc-product-card">
+              <div>
+                <div className="tc-flex-center-gap tc-mb-2">
+                  <span className="tc-text-xs tc-font-bold tc-text-gold">{product.id}</span>
+                  <span className="tc-product-type-badge">
+                    {product.type}
+                  </span>
+                  <span className="tc-text-xs tc-text-muted">Created {product.createdDate}</span>
                 </div>
-                <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>
-                  +${product.monthlyRevenue.toLocaleString()}/mo MRR
+
+                <h3 className="tc-card-title tc-mb-2">
+                  {product.name}
+                </h3>
+
+                {/* API Key Box */}
+                <div className="tc-product-apikey-box">
+                  <Key size={13} color="#dfae32" />
+                  <span className="tc-product-apikey-code">
+                    {product.apiKey.slice(0, 16)}••••••••••••••••
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => copyApiKey(product.apiKey)}
+                    className="tc-filter-pill-btn tc-flex-center-gap tc-text-xs"
+                  >
+                    {copiedKey === product.apiKey ? <Check size={12} /> : <Copy size={12} />}
+                    <span>{copiedKey === product.apiKey ? 'Copied' : 'Copy Key'}</span>
+                  </button>
                 </div>
               </div>
 
-              <a
-                href={product.url}
-                target="_blank"
-                rel="noreferrer"
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                  color: '#FFFFFF',
-                  padding: '10px 16px',
-                  borderRadius: '8px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  fontSize: '13px',
-                  textDecoration: 'none',
-                  fontWeight: 600,
-                }}
-              >
-                <span>Live URL</span>
-                <ExternalLink size={14} />
-              </a>
+              {/* Financial Metrics & URL */}
+              <div className="tc-flex-center-gap tc-flex-wrap">
+                <div className="tc-text-right">
+                  <div className="tc-text-xl tc-font-bold tc-text-gold">
+                    ${product.totalRevenue.toLocaleString()} USD
+                  </div>
+                  <div className="tc-text-xs tc-text-muted tc-mt-1">
+                    +${product.monthlyRevenue.toLocaleString()}/mo MRR
+                  </div>
+                </div>
+
+                <a
+                  href={product.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="tc-filter-pill-btn tc-flex-center-gap"
+                >
+                  <span>Live URL</span>
+                  <ExternalLink size={14} />
+                </a>
+              </div>
             </div>
-          </div>
-        )))}
+          ))
+        )}
       </div>
 
       {/* REGISTER PRODUCT MODAL */}
       {showAddModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px',
-          }}
-          onClick={() => setShowAddModal(false)}
-        >
-          <div
-            style={{
-              backgroundColor: '#1C1C1E',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              maxWidth: '520px',
-              width: '100%',
-              padding: '28px',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+        <div className="tc-modal-overlay" onClick={() => setShowAddModal(false)}>
+          <div className="tc-modal-card tc-modal-md" onClick={(e) => e.stopPropagation()}>
+            <div className="tc-modal-header">
+              <h3 className="tc-modal-title">
                 Register Digital Product
               </h3>
               <button
                 type="button"
                 onClick={() => setShowAddModal(false)}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
+                className="tc-modal-close-btn"
               >
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleCreateProduct}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Product Name
                 </label>
                 <input
@@ -368,37 +257,19 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
                   placeholder="e.g. TitanCore Auth Gateway"
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px 14px',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input"
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+              <div className="tc-grid-2col tc-mb-4">
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+                  <label className="tc-form-label">
                     Product Type
                   </label>
                   <select
                     value={newType}
                     onChange={(e) => setNewType(e.target.value as any)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#161617',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      padding: '10px 14px',
-                      color: '#FFFFFF',
-                      fontSize: '13px',
-                      outline: 'none',
-                    }}
+                    className="tc-form-input"
                   >
                     <option value="Platform">Platform / SaaS</option>
                     <option value="Mobile App">Mobile App</option>
@@ -407,7 +278,7 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
                   </select>
                 </div>
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+                  <label className="tc-form-label">
                     Production URL
                   </label>
                   <input
@@ -415,46 +286,23 @@ export const RevenueProductsView: React.FC<{ onNavigate?: (view: ScreenId) => vo
                     placeholder="https://..."
                     value={newUrl}
                     onChange={(e) => setNewUrl(e.target.value)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#161617',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      padding: '10px 14px',
-                      color: '#FFFFFF',
-                      fontSize: '14px',
-                      outline: 'none',
-                    }}
+                    className="tc-form-input"
                   />
                 </div>
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px', marginTop: '24px' }}>
+              <div className="tc-flex-end-gap tc-mt-4">
                 <button
                   type="button"
                   onClick={() => setShowAddModal(false)}
-                  style={{
-                    backgroundColor: 'transparent',
-                    color: '#9CA3AF',
-                    padding: '10px 16px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="tc-filter-pill-btn"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    backgroundColor: '#dfae32',
-                    color: '#0A0D14',
-                    fontWeight: 700,
-                    padding: '10px 22px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="tc-action-btn-gold"
+                  disabled={isSubmitting}
                 >
                   Generate API Key & Register
                 </button>

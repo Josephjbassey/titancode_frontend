@@ -104,37 +104,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
     currentView === 'change_password';
 
   return (
-    <aside
-      style={{
-        width: '280px',
-        height: '100vh',
-        backgroundColor: 'var(--tc-figma-black)',
-        borderRight: '1px solid var(--tc-figma-card-border)',
-        display: 'flex',
-        flexDirection: 'column',
-        position: 'sticky',
-        top: 0,
-        zIndex: 40,
-        flexShrink: 0,
-        overflowY: 'auto',
-      }}
-    >
+    <aside className="tc-app-sidebar">
       {/* Brand Logo Header (Figma 606:58) */}
-      <div
-        style={{
-          height: '100px',
-          padding: '0 28px',
-          display: 'flex',
-          alignItems: 'center',
-          flexShrink: 0,
-          borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-        }}
-      >
+      <div className="tc-sidebar-logo-header">
         <div
-          className="tc-logo-crop tc-logo-crop--sidebar"
+          className="tc-logo-crop tc-logo-crop--sidebar tc-cursor-pointer"
           role="img"
           aria-label="TitanCode"
-          style={{ cursor: 'pointer' }}
           onClick={() => onNavigate(userRole === 'Admin' || userRole === 'CEO' ? 'ceo_dashboard' : 'dashboard')}
         >
           <img src="/assets/logo.png" alt="" />
@@ -142,15 +118,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Navigation Links */}
-      <div
-        style={{
-          padding: '20px 0',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '4px',
-          flex: 1,
-        }}
-      >
+      <div className="tc-sidebar-nav-container">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentView === item.id;
@@ -158,76 +126,25 @@ export const Sidebar: React.FC<SidebarProps> = ({
           return (
             <div
               key={item.id}
-              style={{
-                position: 'relative',
-                padding: '0 16px',
-              }}
+              className="tc-sidebar-nav-wrapper"
             >
               {/* Figma Active Left Indicator Bar (Rectangle 256) */}
               {isActive && (
-                <div
-                  style={{
-                    position: 'absolute',
-                    left: 0,
-                    top: '6px',
-                    bottom: '6px',
-                    width: '4px',
-                    backgroundColor: '#dfae32',
-                    borderRadius: '0 4px 4px 0',
-                  }}
-                />
+                <div className="tc-sidebar-active-indicator" />
               )}
 
               <button
                 type="button"
                 onClick={() => onNavigate(item.id)}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '14px',
-                  padding: '10px 14px',
-                  borderRadius: '12px',
-                  backgroundColor: isActive ? 'var(--tc-icon-bg-active)' : 'transparent',
-                  color: isActive ? '#FFFFFF' : '#9CA3AF',
-                  fontWeight: isActive ? 600 : 500,
-                  fontSize: '14px',
-                  width: '100%',
-                  border: 'none',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                  transition: 'all 0.15s ease',
-                }}
-                onMouseEnter={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
-                    e.currentTarget.style.color = '#FFFFFF';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (!isActive) {
-                    e.currentTarget.style.backgroundColor = 'transparent';
-                    e.currentTarget.style.color = '#9CA3AF';
-                  }
-                }}
+                className={`tc-sidebar-nav-btn ${isActive ? 'tc-sidebar-nav-btn--active' : ''}`}
               >
                 {/* Squircle Icon Container */}
                 <div
-                  style={{
-                    width: '36px',
-                    height: '36px',
-                    borderRadius: '10px',
-                    backgroundColor: isActive ? 'var(--tc-figma-gold)' : 'var(--tc-icon-bg)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    color: isActive ? '#0b0b0c' : '#9CA3AF',
-                    flexShrink: 0,
-                    transition: 'all 0.15s ease',
-                  }}
+                  className={`tc-sidebar-icon-box ${isActive ? 'tc-sidebar-icon-box--active' : ''}`}
                 >
                   <Icon size={18} strokeWidth={isActive ? 2.5 : 1.8} />
                 </div>
-                <span style={{ flex: 1, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                <span className="tc-sidebar-nav-label">
                   {item.label}
                 </span>
               </button>
@@ -237,75 +154,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </div>
 
       {/* Bottom Nav: Settings & Log out (Figma 606:394 & 606:403) */}
-      <div
-        style={{
-          padding: '16px 16px 24px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '4px',
-          borderTop: '1px solid rgba(255, 255, 255, 0.06)',
-          flexShrink: 0,
-        }}
-      >
+      <div className="tc-sidebar-bottom-nav">
         {/* Settings button */}
-        <div style={{ position: 'relative' }}>
+        <div className="tc-relative">
           {isSettingsActive && (
-            <div
-              style={{
-                position: 'absolute',
-                left: '-16px',
-                top: '6px',
-                bottom: '6px',
-                width: '4px',
-                backgroundColor: '#dfae32',
-                borderRadius: '0 4px 4px 0',
-              }}
-            />
+            <div className="tc-sidebar-active-indicator tc-sidebar-active-indicator--settings" />
           )}
           <button
             type="button"
             onClick={() => onNavigate('profile_settings')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
-              padding: '10px 14px',
-              borderRadius: '12px',
-              backgroundColor: isSettingsActive ? 'var(--tc-icon-bg-active)' : 'transparent',
-              color: isSettingsActive ? '#FFFFFF' : '#9CA3AF',
-              fontWeight: isSettingsActive ? 600 : 500,
-              fontSize: '14px',
-              width: '100%',
-              border: 'none',
-              cursor: 'pointer',
-              textAlign: 'left',
-              transition: 'all 0.15s ease',
-            }}
-            onMouseEnter={(e) => {
-              if (!isSettingsActive) {
-                e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.04)';
-                e.currentTarget.style.color = '#FFFFFF';
-              }
-            }}
-            onMouseLeave={(e) => {
-              if (!isSettingsActive) {
-                e.currentTarget.style.backgroundColor = 'transparent';
-                e.currentTarget.style.color = '#9CA3AF';
-              }
-            }}
+            className={`tc-sidebar-nav-btn ${isSettingsActive ? 'tc-sidebar-nav-btn--active' : ''}`}
           >
             <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '10px',
-                backgroundColor: isSettingsActive ? 'var(--tc-figma-gold)' : 'var(--tc-icon-bg)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: isSettingsActive ? '#0b0b0c' : '#9CA3AF',
-                flexShrink: 0,
-              }}
+              className={`tc-sidebar-icon-box ${isSettingsActive ? 'tc-sidebar-icon-box--active' : ''}`}
             >
               <Settings size={18} strokeWidth={isSettingsActive ? 2.5 : 1.8} />
             </div>
@@ -317,44 +178,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <button
           type="button"
           onClick={onLogout}
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '14px',
-            padding: '10px 14px',
-            borderRadius: '12px',
-            backgroundColor: 'transparent',
-            color: '#9CA3AF',
-            fontSize: '14px',
-            fontWeight: 500,
-            width: '100%',
-            border: 'none',
-            cursor: 'pointer',
-            textAlign: 'left',
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(239, 68, 68, 0.1)';
-            e.currentTarget.style.color = '#EF4444';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'transparent';
-            e.currentTarget.style.color = '#9CA3AF';
-          }}
+          className="tc-sidebar-logout-btn"
         >
-          <div
-            style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
-              backgroundColor: 'var(--tc-icon-bg)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              color: '#9CA3AF',
-              flexShrink: 0,
-            }}
-          >
+          <div className="tc-sidebar-icon-box">
             <LogOut size={18} />
           </div>
           <span>Log out</span>

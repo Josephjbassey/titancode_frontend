@@ -22,29 +22,51 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [availableManagers, setAvailableManagers] = useState<{ id: number | string; name: string }[]>([]);
 
   // New Department form
   const [newName, setNewName] = useState('');
   const [newDesc, setNewDesc] = useState('');
   const [newCategory, setNewCategory] = useState<DepartmentInfo['category']>('Engineering');
-  const [newManager, setNewManager] = useState('Joseph John');
+  const [newManager, setNewManager] = useState('');
 
   useEffect(() => {
     let mounted = true;
     setIsLoading(true);
-    api.getDepartments()
-      .then((data) => {
+
+    const activeUser = api.getActiveUser();
+    if (activeUser?.name) {
+      setNewManager(activeUser.name);
+    }
+
+    Promise.all([
+      api.getDepartments(),
+      api.getUsers({ limit: 100 }),
+    ])
+      .then(([deptData, userData]) => {
         if (!mounted) return;
-        setDepartments(data);
+        setDepartments(deptData || []);
+
+        if (userData?.items && userData.items.length > 0) {
+          const list = userData.items.map((u: any) => ({
+            id: u.id,
+            name: u.full_name || u.name || `User #${u.id}`,
+          }));
+          setAvailableManagers(list);
+          if (!activeUser?.name && list.length > 0) {
+            setNewManager(list[0].name);
+          }
+        }
       })
       .catch((err) => {
-        console.error('Failed to load departments:', err);
+        console.error('Failed to load departments data:', err);
         if (!mounted) return;
         setDepartments([]);
       })
       .finally(() => {
         if (mounted) setIsLoading(false);
       });
+
     return () => {
       mounted = false;
     };
@@ -85,55 +107,23 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
   });
 
   return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+    <div className="tc-fade-in tc-dept-view-container">
       {/* 1. HEADER */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '28px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      <div className="tc-page-header-row">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '4px 10px',
-                borderRadius: '9999px',
-                backgroundColor: 'rgba(223, 174, 50, 0.15)',
-                color: '#dfae32',
-                fontSize: '12px',
-                fontWeight: 700,
-                letterSpacing: '0.05em',
-                textTransform: 'uppercase',
-              }}
-            >
+          <div className="tc-live-indicator">
+            <span className="tc-badge-gold-pill">
               <Building2 size={13} />
               Organizational Matrix
             </span>
-            <span
-              style={{
-                padding: '4px 10px',
-                borderRadius: '9999px',
-                backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                color: '#9CA3AF',
-                fontSize: '12px',
-                fontWeight: 600,
-              }}
-            >
+            <span className="tc-badge-muted-pill">
               {departments.length} Active Startup Departments
             </span>
           </div>
-          <h1 style={{ fontSize: '28px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+          <h1 className="tc-page-title">
             TitanCode Tech Firm Departments
           </h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
+          <p className="tc-page-subtitle">
             Functional business units, appointed department heads, 70/30 profit distributions, and project allocations.
           </p>
         </div>
@@ -141,16 +131,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
         <button
           type="button"
           onClick={() => setShowCreateModal(true)}
-          className="tc-btn tc-btn-primary"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            padding: '11px 22px',
-            borderRadius: '10px',
-            fontWeight: 700,
-            fontSize: '14px',
-          }}
+          className="tc-gold-btn"
         >
           <Plus size={18} strokeWidth={2.5} />
           <span>New Department</span>
@@ -158,34 +139,15 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
       </div>
 
       {/* 2. FILTER TABS & SEARCH BAR */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '24px',
-          flexWrap: 'wrap',
-          gap: '12px',
-        }}
-      >
+      <div className="tc-filter-bar">
         {/* Category Pills */}
-        <div style={{ display: 'flex', gap: '6px', background: 'rgba(255, 255, 255, 0.04)', padding: '4px', borderRadius: '10px' }}>
+        <div className="tc-tab-pill-group">
           {categories.map((cat) => (
             <button
               key={cat}
               type="button"
               onClick={() => setSelectedCategory(cat)}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '8px',
-                border: 'none',
-                backgroundColor: selectedCategory === cat ? '#dfae32' : 'transparent',
-                color: selectedCategory === cat ? '#000000' : '#9CA3AF',
-                fontSize: '12px',
-                fontWeight: selectedCategory === cat ? 700 : 500,
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
+              className={`tc-tab-pill-btn ${selectedCategory === cat ? 'tc-tab-pill-btn--active' : ''}`}
             >
               {cat}
             </button>
@@ -193,242 +155,135 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
         </div>
 
         {/* Search Input */}
-        <div style={{ position: 'relative', width: '280px' }}>
-          <Search
-            size={16}
-            style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF' }}
-          />
+        <div className="tc-search-wrapper">
+          <Search size={16} className="tc-search-icon-pos" />
           <input
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search departments or leads..."
-            style={{
-              width: '100%',
-              padding: '9px 12px 9px 36px',
-              borderRadius: '10px',
-              backgroundColor: '#161618',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              color: '#FFFFFF',
-              fontSize: '13px',
-              outline: 'none',
-            }}
+            className="tc-search-input-field"
           />
         </div>
       </div>
 
       {/* 3. DEPARTMENTS GRID */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: isLoading || filtered.length === 0 ? '1fr' : 'repeat(auto-fit, minmax(340px, 1fr))',
-          gap: '20px',
-          marginBottom: '32px',
-        }}
-      >
+      <div className={`tc-dept-grid ${isLoading || filtered.length === 0 ? 'tc-dept-grid--empty' : ''}`}>
         {isLoading ? (
-          <div
-            style={{
-              padding: '60px 20px',
-              textAlign: 'center',
-              backgroundColor: '#FFFFFF1A',
-              borderRadius: '16px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              color: '#9CA3AF',
-            }}
-          >
-            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
-              <Loader2 size={20} className="tc-spin" color="#dfae32" />
+          <div className="tc-dept-empty-box">
+            <div className="tc-flex-center-gap tc-justify-center">
+              <Loader2 size={20} className="tc-spin tc-text-gold" />
               <span>Loading organizational departments...</span>
             </div>
           </div>
         ) : filtered.length === 0 ? (
-          <div
-            style={{
-              padding: '60px 20px',
-              textAlign: 'center',
-              backgroundColor: '#FFFFFF1A',
-              borderRadius: '16px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              color: '#9CA3AF',
-            }}
-          >
+          <div className="tc-dept-empty-box">
             No departments found matching the filter.
           </div>
         ) : (
           filtered.map((dept) => (
-            <div
-            key={dept.id}
-            style={{
-              backgroundColor: '#FFFFFF1A',
-              borderRadius: '16px',
-              padding: '24px',
-              border: '1px solid #FFFFFF26',
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
-              transition: 'transform 0.15s ease, border-color 0.15s ease',
-            }}
-            onMouseOver={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(223, 174, 50, 0.4)';
-              e.currentTarget.style.transform = 'translateY(-2px)';
-            }}
-            onMouseOut={(e) => {
-              e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.08)';
-              e.currentTarget.style.transform = 'translateY(0)';
-            }}
-          >
-            <div>
-              {/* Top Meta Line */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-                <span style={{ color: '#dfae32', fontSize: '11px', fontWeight: 800, letterSpacing: '0.05em' }}>
-                  {dept.id} • {dept.code.toUpperCase()}
-                </span>
-                <span
-                  style={{
-                    backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                    padding: '3px 8px',
-                    borderRadius: '6px',
-                    fontSize: '11px',
-                    color: '#D1D5DB',
-                    fontWeight: 600,
-                  }}
-                >
-                  {dept.category}
-                </span>
-              </div>
-
-              {/* Department Title */}
-              <h3 style={{ fontSize: '18px', fontWeight: 800, color: '#FFFFFF', margin: '0 0 8px' }}>
-                {dept.name}
-              </h3>
-
-              <p style={{ color: '#9CA3AF', fontSize: '13px', lineHeight: 1.5, margin: '0 0 18px' }}>
-                {dept.description}
-              </p>
-
-              {/* Department Head & Staff Meta */}
-              <div
-                style={{
-                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                  border: '1px solid rgba(255, 255, 255, 0.04)',
-                  borderRadius: '10px',
-                  padding: '12px',
-                  marginBottom: '16px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                  <img
-                    src={dept.manager_avatar}
-                    alt={dept.manager_name}
-                    style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }}
-                  />
-                  <div>
-                    <div style={{ fontSize: '10px', color: '#dfae32', fontWeight: 700, textTransform: 'uppercase' }}>
-                      Lead
-                    </div>
-                    <div style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
-                      {dept.manager_name}
-                    </div>
-                  </div>
-                </div>
-
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF' }}>
-                    {dept.member_count} Staff
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#9CA3AF' }}>
-                    {dept.active_projects_count} Active Projects
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Bottom Row: Profit Share & Open Dashboard Button */}
-            <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                paddingTop: '14px',
-                borderTop: '1px solid rgba(255, 255, 255, 0.04)',
-              }}
-            >
+            <div key={dept.id} className="tc-dept-card">
               <div>
-                <span style={{ fontSize: '11px', color: '#9CA3AF' }}>Profit Pool Share: </span>
-                <span style={{ fontSize: '13px', fontWeight: 800, color: '#10B981' }}>
-                  {dept.profit_pool_share_percent}%
-                </span>
+                {/* Top Meta Line */}
+                <div className="tc-dept-meta-row">
+                  <span className="tc-dept-code-tag">
+                    {dept.id} • {dept.code.toUpperCase()}
+                  </span>
+                  <span className="tc-dept-cat-badge">
+                    {dept.category}
+                  </span>
+                </div>
+
+                {/* Department Title */}
+                <h3 className="tc-dept-card-title">
+                  {dept.name}
+                </h3>
+
+                <p className="tc-dept-card-desc">
+                  {dept.description}
+                </p>
+
+                {/* Department Head & Staff Meta */}
+                <div className="tc-dept-head-box">
+                  <div className="tc-flex-center-gap">
+                    {dept.manager_avatar ? (
+                      <img
+                        src={dept.manager_avatar}
+                        alt={dept.manager_name}
+                        className="tc-dept-avatar-img"
+                      />
+                    ) : (
+                      <div className="tc-dept-avatar-fallback">
+                        {dept.manager_name
+                          ?.split(' ')
+                          .map((n) => n[0])
+                          .join('')
+                          .slice(0, 2)}
+                      </div>
+                    )}
+                    <div>
+                      <div className="tc-dept-lead-label">
+                        Lead
+                      </div>
+                      <div className="tc-dept-lead-name">
+                        {dept.manager_name}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="tc-text-right">
+                    <div className="tc-dept-staff-count">
+                      {dept.member_count} Staff
+                    </div>
+                    <div className="tc-dept-projects-count">
+                      {dept.active_projects_count} Active Projects
+                    </div>
+                  </div>
+                </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => onNavigate && onNavigate('manager_dashboard')}
-                style={{
-                  padding: '6px 12px',
-                  borderRadius: '6px',
-                  backgroundColor: 'rgba(223, 174, 50, 0.15)',
-                  color: '#dfae32',
-                  border: '1px solid rgba(223, 174, 50, 0.3)',
-                  fontSize: '11px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
-              >
-                Dept Dashboard <ArrowRight size={12} />
-              </button>
+              {/* Bottom Row: Profit Share & Open Dashboard Button */}
+              <div className="tc-dept-footer-row">
+                <div>
+                  <span className="tc-dept-profit-label">Profit Pool Share: </span>
+                  <span className="tc-dept-profit-val">
+                    {dept.profit_pool_share_percent}%
+                  </span>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => onNavigate && onNavigate('manager_dashboard')}
+                  className="tc-dept-dashboard-btn"
+                >
+                  Dept Dashboard <ArrowRight size={12} />
+                </button>
+              </div>
             </div>
-          </div>
-        )))}
+          ))
+        )}
       </div>
 
       {/* 4. MODAL: CREATE DEPARTMENT */}
       {showCreateModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.8)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 100,
-            padding: '20px',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: '#1C1C1E',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
-              borderRadius: '16px',
-              padding: '28px',
-              maxWidth: '480px',
-              width: '100%',
-            }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
+        <div className="tc-modal-backdrop">
+          <div className="tc-dept-modal-box">
+            <div className="tc-card-header-row tc-mb-4">
+              <h3 className="tc-card-title">
                 Create New Department
               </h3>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
+                className="tc-modal-close-btn"
               >
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleCreate}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Department Name *
                 </label>
                 <input
@@ -437,36 +292,18 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
                   placeholder="e.g. Developer Experience (DX)"
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: '#121214',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input"
                 />
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Category
                 </label>
                 <select
                   value={newCategory}
                   onChange={(e) => setNewCategory(e.target.value as DepartmentInfo['category'])}
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: '#121214',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#FFFFFF',
-                    fontSize: '13px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-select"
                 >
                   <option value="Engineering">Engineering</option>
                   <option value="Product">Product</option>
@@ -476,38 +313,34 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
                 </select>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Appoint Department Head
                 </label>
                 <select
                   value={newManager}
                   onChange={(e) => setNewManager(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: '#121214',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#FFFFFF',
-                    fontSize: '13px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-select"
                 >
-                  <option value="Joseph John">Joseph John</option>
-                  <option value="Benedicta Atagamen">Benedicta Atagamen</option>
-                  <option value="Alex Morgan">Alex Morgan</option>
-                  <option value="Munis Samuel">Munis Samuel</option>
-                  <option value="Dr. Chinedu Eze">Dr. Chinedu Eze</option>
-                  <option value="Emeka Nwosu">Emeka Nwosu</option>
-                  <option value="Zainab Bello">Zainab Bello</option>
-                  <option value="Barr. Ngozi Okeke">Barr. Ngozi Okeke</option>
-                  <option value="Blessing Adewale">Blessing Adewale</option>
+                  {availableManagers.length > 0 ? (
+                    availableManagers.map((m) => (
+                      <option key={m.id} value={m.name}>
+                        {m.name}
+                      </option>
+                    ))
+                  ) : (
+                    <>
+                      <option value="Joseph John">Joseph John</option>
+                      <option value="Benedicta Atagamen">Benedicta Atagamen</option>
+                      <option value="Alex Morgan">Alex Morgan</option>
+                      <option value="Munis Samuel">Munis Samuel</option>
+                    </>
+                  )}
                 </select>
               </div>
 
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Mandate & Description
                 </label>
                 <textarea
@@ -515,48 +348,24 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
                   value={newDesc}
                   onChange={(e) => setNewDesc(e.target.value)}
                   placeholder="Describe functional objectives, tools and key metrics..."
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: '#121214',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#FFFFFF',
-                    fontSize: '13px',
-                    outline: 'none',
-                    resize: 'none',
-                  }}
+                  className="tc-form-textarea"
                 />
               </div>
 
-              <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
+              <div className="tc-actions-end">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  style={{
-                    padding: '10px 18px',
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                    color: '#FFFFFF',
-                    border: 'none',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
+                  className="tc-modal-cancel-btn"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="tc-btn tc-btn-primary"
-                  style={{
-                    padding: '10px 22px',
-                    borderRadius: '8px',
-                    fontSize: '13px',
-                    fontWeight: 700,
-                  }}
+                  disabled={isSubmitting}
+                  className="tc-gold-btn"
                 >
-                  Create Department
+                  {isSubmitting ? 'Creating...' : 'Create Department'}
                 </button>
               </div>
             </form>

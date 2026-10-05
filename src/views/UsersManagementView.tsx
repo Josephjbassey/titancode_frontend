@@ -60,7 +60,7 @@ const mapApiUser = (u: any): PlatformUser => {
     bankAccount: u.bank_account_number || '•••• •••• ••••',
     bankName: u.bank_name || 'Bank on file',
     totalEarnings: u.total_earnings || 0,
-    avatar: u.avatar || '/assets/dashprofile.jpg',
+    avatar: u.avatar || null,
     joinedDate: u.created_at ? u.created_at.split('T')[0] : '2026-01-01',
   };
 };
@@ -142,127 +142,73 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
   };
 
   return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+    <div className="tc-fade-in tc-products-container">
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '28px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      <div className="tc-card-header-row tc-mb-4">
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+          <h1 className="tc-page-title">
             User & Staff Management
           </h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
+          <p className="tc-page-subtitle">
             System-wide member registry, role authorizations, KYC bank settlement records, and accounts.
           </p>
         </div>
 
-        <div
-          style={{
-            backgroundColor: 'rgba(223, 174, 50, 0.1)',
-            border: '1px solid rgba(223, 174, 50, 0.3)',
-            padding: '8px 16px',
-            borderRadius: '8px',
-            fontSize: '13px',
-            color: '#dfae32',
-            fontWeight: 700,
-          }}
-        >
+        <div className="tc-badge-gold-pill">
           {users.length} Active System Accounts
         </div>
       </div>
 
       {/* Filter Tabs & Search */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-          marginBottom: '24px',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
+      <div className="tc-table-filter-bar">
+        <div className="tc-flex-center-gap tc-flex-wrap">
           {(['All', 'CEO', 'Admin', 'Manager', 'Member', 'Client'] as const).map((r) => (
             <button
               key={r}
               type="button"
               onClick={() => setRoleFilter(r)}
-              style={{
-                padding: '7px 14px',
-                borderRadius: '6px',
-                border: '1px solid',
-                borderColor: roleFilter === r ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
-                backgroundColor: roleFilter === r ? 'rgba(223, 174, 50, 0.15)' : '#11151F',
-                color: roleFilter === r ? '#dfae32' : '#9CA3AF',
-                fontSize: '12px',
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
+              className={`tc-filter-pill-btn ${roleFilter === r ? 'tc-filter-pill-btn--active' : ''}`}
             >
               {r}
             </button>
           ))}
         </div>
 
-        <div style={{ position: 'relative', width: '300px' }}>
+        <div className="tc-users-search-box">
           <Search
             size={16}
             color="#9CA3AF"
-            style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}
+            className="tc-search-icon-pos"
           />
           <input
             type="text"
             placeholder="Search users by name, email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              width: '100%',
-              backgroundColor: '#FFFFFF1A',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              padding: '8px 12px 8px 36px',
-              color: '#FFFFFF',
-              fontSize: '13px',
-              outline: 'none',
-            }}
+            className="tc-form-input tc-search-input-padded"
           />
         </div>
       </div>
 
       {/* Users Table */}
-      <div
-        style={{
-          backgroundColor: '#232324',
-          borderRadius: '12px',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          overflow: 'hidden',
-        }}
-      >
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+      <div className="tc-tx-table-card">
+        <table className="tc-tx-table">
           <thead>
-            <tr style={{ backgroundColor: '#0E121B', color: '#9CA3AF', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <th style={{ padding: '14px 18px' }}>Member / User</th>
-              <th style={{ padding: '14px 18px' }}>Role</th>
-              <th style={{ padding: '14px 18px' }}>Department</th>
-              <th style={{ padding: '14px 18px' }}>Status</th>
-              <th style={{ padding: '14px 18px' }}>Country</th>
-              <th style={{ padding: '14px 18px' }}>Earnings</th>
-              <th style={{ padding: '14px 18px', textAlign: 'right' }}>Actions</th>
+            <tr className="tc-tx-table-tr">
+              <th className="tc-tx-table-th">Member / User</th>
+              <th className="tc-tx-table-th">Role</th>
+              <th className="tc-tx-table-th">Department</th>
+              <th className="tc-tx-table-th">Status</th>
+              <th className="tc-tx-table-th">Country</th>
+              <th className="tc-tx-table-th">Earnings</th>
+              <th className="tc-tx-table-th tc-tx-table-th--right">Actions</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <td colSpan={7} className="tc-tx-table-td tc-text-center tc-text-muted">
+                  <div className="tc-flex-center-all">
                     <Loader2 size={18} className="tc-spin" color="#dfae32" />
                     <span>Loading system accounts...</span>
                   </div>
@@ -270,153 +216,120 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
               </tr>
             ) : filteredUsers.length === 0 ? (
               <tr>
-                <td colSpan={7} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
+                <td colSpan={7} className="tc-tx-table-td tc-text-center tc-text-muted">
                   No accounts found matching the current criteria.
                 </td>
               </tr>
             ) : (
               filteredUsers.map((user) => (
-              <tr
-                key={user.id}
-                onClick={() => setSelectedUser(user)}
-                style={{
-                  borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.15s',
-                }}
-                onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)')}
-                onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-              >
-                <td style={{ padding: '14px 18px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                    <img
-                      src={user.avatar}
-                      alt={user.name}
-                      style={{ width: '36px', height: '36px', borderRadius: '50%', objectFit: 'cover' }}
-                    />
-                    <div>
-                      <div style={{ fontWeight: 700, color: '#FFFFFF' }}>{user.name}</div>
-                      <div style={{ color: '#9CA3AF', fontSize: '12px' }}>{user.email}</div>
+                <tr
+                  key={user.id}
+                  onClick={() => setSelectedUser(user)}
+                  className="tc-tx-table-tr tc-cursor-pointer"
+                >
+                  <td className="tc-tx-table-td">
+                    <div className="tc-flex-center-gap">
+                      {user.avatar ? (
+                        <img
+                          src={user.avatar}
+                          alt={user.name}
+                          className="tc-user-avatar-circle"
+                        />
+                      ) : (
+                        <div className="tc-user-avatar-circle">
+                          {user.name
+                            ?.split(' ')
+                            .map((n) => n[0])
+                            .join('')
+                            .slice(0, 2)}
+                        </div>
+                      )}
+                      <div>
+                        <div className="tc-font-bold tc-text-white">{user.name}</div>
+                        <div className="tc-text-muted tc-text-xs">{user.email}</div>
+                      </div>
                     </div>
-                  </div>
-                </td>
-                <td style={{ padding: '14px 18px' }}>
-                  <span
-                    style={{
-                      padding: '3px 10px',
-                      borderRadius: '6px',
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      backgroundColor:
+                  </td>
+                  <td className="tc-tx-table-td">
+                    <span
+                      className={
                         user.role === 'CEO'
-                          ? 'rgba(223, 174, 50, 0.2)'
+                          ? 'tc-badge-role-ceo'
                           : user.role === 'Admin'
-                          ? 'rgba(168, 85, 247, 0.2)'
+                          ? 'tc-badge-role-admin'
                           : user.role === 'Manager'
-                          ? 'rgba(59, 130, 246, 0.2)'
-                          : 'rgba(255, 255, 255, 0.08)',
-                      color:
-                        user.role === 'CEO'
-                          ? '#dfae32'
-                          : user.role === 'Admin'
-                          ? '#C084FC'
-                          : user.role === 'Manager'
-                          ? '#60A5FA'
-                          : '#FFFFFF',
-                    }}
-                  >
-                    {user.role}
-                  </span>
-                </td>
-                <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{user.department}</td>
-                <td style={{ padding: '14px 18px' }}>
-                  <span
-                    style={{
-                      padding: '3px 8px',
-                      borderRadius: '999px',
-                      fontSize: '11px',
-                      fontWeight: 600,
-                      backgroundColor:
-                        user.status === 'Approved' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                      color: user.status === 'Approved' ? '#10B981' : '#EF4444',
-                    }}
-                  >
-                    ● {user.status}
-                  </span>
-                </td>
-                <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{user.country}</td>
-                <td style={{ padding: '14px 18px', fontWeight: 700, color: '#dfae32' }}>
-                  ${user.totalEarnings.toLocaleString()}
-                </td>
-                <td style={{ padding: '14px 18px', textAlign: 'right' }}>
-                  <button
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setSelectedUser(user);
-                    }}
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      borderRadius: '6px',
-                      padding: '6px 12px',
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    Profile
-                  </button>
-                </td>
-              </tr>
-            )))}
+                          ? 'tc-badge-role-manager'
+                          : 'tc-badge-role-default'
+                      }
+                    >
+                      {user.role}
+                    </span>
+                  </td>
+                  <td className="tc-tx-table-td tc-text-muted">{user.department}</td>
+                  <td className="tc-tx-table-td">
+                    <span
+                      className={
+                        user.status === 'Approved'
+                          ? 'tc-badge-status-approved'
+                          : 'tc-badge-status-declined'
+                      }
+                    >
+                      ● {user.status}
+                    </span>
+                  </td>
+                  <td className="tc-tx-table-td tc-text-muted">{user.country}</td>
+                  <td className="tc-tx-table-td tc-font-bold tc-text-gold">
+                    ${user.totalEarnings.toLocaleString()}
+                  </td>
+                  <td className="tc-tx-table-td tc-tx-table-th--right">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedUser(user);
+                      }}
+                      className="tc-filter-pill-btn tc-text-xs"
+                    >
+                      Profile
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>
 
       {/* USER DETAIL MODAL */}
       {selectedUser && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px',
-          }}
-          onClick={() => setSelectedUser(null)}
-        >
-          <div
-            style={{
-              backgroundColor: '#1C1C1E',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              maxWidth: '600px',
-              width: '100%',
-              padding: '32px',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
+        <div className="tc-modal-overlay" onClick={() => setSelectedUser(null)}>
+          <div className="tc-modal-card tc-modal-md" onClick={(e) => e.stopPropagation()}>
             {/* Header */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '24px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <img
-                  src={selectedUser.avatar}
-                  alt={selectedUser.name}
-                  style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover', border: '2px solid #dfae32' }}
-                />
+            <div className="tc-modal-header">
+              <div className="tc-flex-center-gap">
+                {selectedUser.avatar ? (
+                  <img
+                    src={selectedUser.avatar}
+                    alt={selectedUser.name}
+                    className="tc-user-avatar-circle tc-user-avatar-circle--lg"
+                  />
+                ) : (
+                  <div className="tc-user-avatar-circle tc-user-avatar-circle--lg">
+                    {selectedUser.name
+                      ?.split(' ')
+                      .map((n) => n[0])
+                      .join('')
+                      .slice(0, 2)}
+                  </div>
+                )}
                 <div>
-                  <h3 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+                  <h3 className="tc-modal-title">
                     {selectedUser.name}
                   </h3>
-                  <div style={{ color: '#dfae32', fontSize: '13px', fontWeight: 600 }}>
+                  <div className="tc-text-gold tc-text-sm tc-font-semibold">
                     {selectedUser.role} ● {selectedUser.department}
                   </div>
-                  <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '2px' }}>
+                  <div className="tc-text-muted tc-text-xs tc-mt-1">
                     Member since {selectedUser.joinedDate}
                   </div>
                 </div>
@@ -424,61 +337,54 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
               <button
                 type="button"
                 onClick={() => setSelectedUser(null)}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
+                className="tc-modal-close-btn"
               >
                 <X size={20} />
               </button>
             </div>
 
             {/* Profile Info Cards */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '20px' }}>
-              <div style={{ backgroundColor: '#161617', padding: '14px', borderRadius: '8px' }}>
-                <div style={{ color: '#9CA3AF', fontSize: '11px' }}>Contact Email</div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF', marginTop: '4px' }}>
+            <div className="tc-grid-2col tc-mb-4">
+              <div className="tc-user-detail-box">
+                <div className="tc-user-detail-box-label">Contact Email</div>
+                <div className="tc-user-detail-box-val">
                   {selectedUser.email}
                 </div>
               </div>
-              <div style={{ backgroundColor: '#161617', padding: '14px', borderRadius: '8px' }}>
-                <div style={{ color: '#9CA3AF', fontSize: '11px' }}>Phone / Location</div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF', marginTop: '4px' }}>
+              <div className="tc-user-detail-box">
+                <div className="tc-user-detail-box-label">Phone / Location</div>
+                <div className="tc-user-detail-box-val">
                   {selectedUser.phone} ({selectedUser.country})
                 </div>
               </div>
             </div>
 
             {/* Bank KYC Details */}
-            <div style={{ backgroundColor: '#161617', padding: '16px', borderRadius: '10px', marginBottom: '20px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#dfae32', fontSize: '13px', fontWeight: 700, marginBottom: '8px' }}>
+            <div className="tc-user-detail-box tc-mb-4">
+              <div className="tc-flex-center-gap tc-text-gold tc-text-sm tc-font-bold tc-mb-2">
                 <CreditCard size={16} />
                 <span>Settlement Bank Details (KYC Verified)</span>
               </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', fontSize: '13px' }}>
+              <div className="tc-grid-2col tc-text-sm">
                 <div>
-                  <span style={{ color: '#9CA3AF' }}>Bank: </span>
-                  <span style={{ color: '#FFFFFF', fontWeight: 600 }}>{selectedUser.bankName}</span>
+                  <span className="tc-text-muted">Bank: </span>
+                  <span className="tc-text-white tc-font-semibold">{selectedUser.bankName}</span>
                 </div>
                 <div>
-                  <span style={{ color: '#9CA3AF' }}>Account / IBAN: </span>
-                  <span style={{ color: '#FFFFFF', fontWeight: 600 }}>{selectedUser.bankAccount}</span>
+                  <span className="tc-text-muted">Account / IBAN: </span>
+                  <span className="tc-text-white tc-font-semibold">{selectedUser.bankAccount}</span>
                 </div>
               </div>
             </div>
 
             {/* Portfolio links */}
             {selectedUser.githubUrl && (
-              <div style={{ display: 'flex', gap: '14px', marginBottom: '24px' }}>
+              <div className="tc-flex-center-gap tc-mb-4">
                 <a
                   href={selectedUser.githubUrl}
                   target="_blank"
                   rel="noreferrer"
-                  style={{
-                    color: '#dfae32',
-                    fontSize: '13px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    textDecoration: 'none',
-                  }}
+                  className="tc-filter-pill-btn tc-flex-center-gap tc-text-xs"
                 >
                   <Globe size={14} />
                   <span>GitHub Profile</span>
@@ -488,20 +394,11 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
             )}
 
             {/* Actions */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="tc-flex-between tc-mt-4">
               <button
                 type="button"
                 onClick={() => toggleUserStatus(selectedUser.id)}
-                style={{
-                  backgroundColor: selectedUser.status === 'Approved' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(16, 185, 129, 0.15)',
-                  color: selectedUser.status === 'Approved' ? '#EF4444' : '#10B981',
-                  border: 'none',
-                  borderRadius: '8px',
-                  padding: '10px 16px',
-                  fontSize: '13px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                }}
+                className={selectedUser.status === 'Approved' ? 'tc-btn-danger' : 'tc-btn-success'}
               >
                 {selectedUser.status === 'Approved' ? 'Suspend Account' : 'Reactivate Account'}
               </button>
@@ -509,15 +406,7 @@ export const UsersManagementView: React.FC<UsersManagementViewProps> = ({ onNavi
               <button
                 type="button"
                 onClick={() => setSelectedUser(null)}
-                style={{
-                  backgroundColor: '#dfae32',
-                  color: '#0A0D14',
-                  fontWeight: 700,
-                  padding: '10px 22px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
+                className="tc-action-btn-gold"
               >
                 Close
               </button>

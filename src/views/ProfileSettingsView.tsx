@@ -51,64 +51,42 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
   };
 
   return (
-    <div style={{
-      backgroundColor: '#232324',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
-      borderRadius: '16px',
-      padding: '28px',
-    }}
-    className="tc-fade-in"
-    >
-      <h2 style={{
-        fontSize: '18px',
-        fontWeight: '700',
-        color: '#FFFFFF',
-        marginBottom: '24px',
-      }}>
+    <div className="tc-settings-panel tc-fade-in">
+      <h2 className="tc-card-title tc-mb-4">
         Profile Settings
       </h2>
 
-      <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
-        {/* Benedicta Avatar with Yellow Edit Pencil Badge (Figma) */}
-        <div style={{ position: 'relative', width: '76px', height: '76px' }}>
-          <img
-            src={user.avatar_url || '/assets/benedicta.png'}
-            alt="Profile Avatar"
-            style={{
-              width: '76px',
-              height: '76px',
-              borderRadius: '50%',
-              objectFit: 'cover',
-            }}
-          />
+      <form onSubmit={handleSubmit} className="tc-flex-col-gap">
+        {/* Profile Avatar with Yellow Edit Pencil Badge (Figma) */}
+        <div className="tc-avatar-upload-box">
+          {user.avatar_url ? (
+            <img
+              src={user.avatar_url}
+              alt="Profile Avatar"
+              className="tc-avatar-upload-img"
+            />
+          ) : (
+            <div className="tc-avatar-upload-placeholder">
+              {user.full_name
+                ?.split(' ')
+                .map((n) => n[0])
+                .join('')
+                .slice(0, 2)}
+            </div>
+          )}
           <button
             type="button"
             title="Change Avatar"
-            style={{
-              position: 'absolute',
-              bottom: '0px',
-              right: '0px',
-              width: '24px',
-              height: '24px',
-              borderRadius: '50%',
-              backgroundColor: '#dfae32',
-              color: '#000000',
-              border: '2px solid #232324',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: 'pointer',
-              padding: 0,
-            }}
+            className="tc-avatar-upload-btn"
           >
             <Pencil size={12} strokeWidth={2.5} />
           </button>
         </div>
 
         {/* Row 1: First Name * & Last Name * */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }} className="tc-form-row">
+        <div className="tc-form-row">
           <div>
-            <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '8px' }}>
+            <label className="tc-form-label">
               First Name *
             </label>
             <input
@@ -117,22 +95,12 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
               onChange={(e) => setFirstName(e.target.value)}
               placeholder="First name"
               required
-              style={{
-                width: '100%',
-                height: '44px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#FFFFFF',
-                padding: '0 16px',
-                fontSize: '14px',
-                outline: 'none',
-              }}
+              className="tc-form-input"
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '8px' }}>
+            <label className="tc-form-label">
               Last Name *
             </label>
             <input
@@ -141,25 +109,15 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
               onChange={(e) => setLastName(e.target.value)}
               placeholder="Last name"
               required
-              style={{
-                width: '100%',
-                height: '44px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#FFFFFF',
-                padding: '0 16px',
-                fontSize: '14px',
-                outline: 'none',
-              }}
+              className="tc-form-input"
             />
           </div>
         </div>
 
         {/* Row 2: Email * & Mobile Number * */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }} className="tc-form-row">
+        <div className="tc-form-row">
           <div>
-            <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '8px' }}>
+            <label className="tc-form-label">
               Email *
             </label>
             <input
@@ -168,44 +126,18 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
               onChange={(e) => setEmail(e.target.value)}
               placeholder="examples@gmail.com"
               required
-              style={{
-                width: '100%',
-                height: '44px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#FFFFFF',
-                padding: '0 16px',
-                fontSize: '14px',
-                outline: 'none',
-              }}
+              className="tc-form-input"
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '8px' }}>
+            <label className="tc-form-label">
               Mobile Number *
             </label>
-            <div style={{
-              display: 'flex',
-              height: '44px',
-              borderRadius: '8px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.12)',
-              overflow: 'hidden',
-            }}>
+            <div className="tc-phone-input-wrapper">
               {/* Nigeria Flag prefix */}
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '0 12px',
-                borderRight: '1px solid rgba(255, 255, 255, 0.1)',
-                color: '#FFFFFF',
-                fontSize: '13px',
-                cursor: 'pointer',
-              }}>
-                <span style={{ fontSize: '16px' }}>🇳🇬</span>
+              <div className="tc-phone-prefix">
+                <span>🇳🇬</span>
                 <ChevronDown size={14} color="#9CA3AF" />
               </div>
               <input
@@ -213,44 +145,36 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="800 000 0000"
-                style={{
-                  flex: 1,
-                  background: 'none',
-                  border: 'none',
-                  color: '#FFFFFF',
-                  padding: '0 14px',
-                  fontSize: '14px',
-                  outline: 'none',
-                }}
+                className="tc-phone-input"
               />
             </div>
           </div>
         </div>
 
         {/* Row 3: Gender & ID (Figma Sumsub Trigger) */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }} className="tc-form-row">
+        <div className="tc-form-row">
           <div>
-            <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '8px' }}>
+            <label className="tc-form-label">
               Gender
             </label>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '24px', height: '44px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#FFFFFF' }}>
+            <div className="tc-radio-group">
+              <label className="tc-radio-label">
                 <input
                   type="radio"
                   name="gender"
                   checked={gender === 'Male'}
                   onChange={() => setGender('Male')}
-                  style={{ accentColor: '#dfae32', cursor: 'pointer' }}
+                  className="tc-cursor-pointer"
                 />
                 Male
               </label>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', fontSize: '14px', color: '#FFFFFF' }}>
+              <label className="tc-radio-label">
                 <input
                   type="radio"
                   name="gender"
                   checked={gender === 'Female'}
                   onChange={() => setGender('Female')}
-                  style={{ accentColor: '#dfae32', cursor: 'pointer' }}
+                  className="tc-cursor-pointer"
                 />
                 Female
               </label>
@@ -258,22 +182,14 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
           </div>
 
           <div>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-              <label style={{ fontSize: '13px', color: '#D1D5DB' }}>
+            <div className="tc-flex-between tc-mb-1">
+              <label className="tc-form-label tc-mb-0">
                 ID
               </label>
               <button
                 type="button"
                 onClick={() => setShowKycModal(true)}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#dfae32',
-                  fontSize: '11px',
-                  cursor: 'pointer',
-                  padding: 0,
-                  textDecoration: 'underline',
-                }}
+                className="tc-kyc-verify-btn"
               >
                 Sumsub KYC Verified
               </button>
@@ -282,25 +198,15 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
               type="text"
               value={idNumber}
               readOnly
-              style={{
-                width: '100%',
-                height: '44px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#FFFFFF',
-                padding: '0 16px',
-                fontSize: '14px',
-                outline: 'none',
-              }}
+              className="tc-input-readonly"
             />
           </div>
         </div>
 
         {/* Row 4: Address * & Date of Birth * */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }} className="tc-form-row">
+        <div className="tc-form-row">
           <div>
-            <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '8px' }}>
+            <label className="tc-form-label">
               Address *
             </label>
             <input
@@ -309,52 +215,24 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
               onChange={(e) => setAddress(e.target.value)}
               placeholder="Enter address"
               required
-              style={{
-                width: '100%',
-                height: '44px',
-                borderRadius: '8px',
-                backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                border: '1px solid rgba(255, 255, 255, 0.12)',
-                color: '#FFFFFF',
-                padding: '0 16px',
-                fontSize: '14px',
-                outline: 'none',
-              }}
+              className="tc-form-input"
             />
           </div>
 
           <div>
-            <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '8px' }}>
+            <label className="tc-form-label">
               Date of Birth *
             </label>
-            <div style={{ position: 'relative' }}>
+            <div className="tc-relative">
               <input
                 type="text"
                 value={dob}
                 onChange={(e) => setDob(e.target.value)}
                 placeholder="YYYY-MM-DD"
                 required
-                style={{
-                  width: '100%',
-                  height: '44px',
-                  borderRadius: '8px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  color: '#FFFFFF',
-                  padding: '0 40px 0 16px',
-                  fontSize: '14px',
-                  outline: 'none',
-                }}
+                className="tc-form-input tc-input-with-icon"
               />
-              <span style={{
-                position: 'absolute',
-                right: '14px',
-                top: '50%',
-                transform: 'translateY(-50%)',
-                color: '#9CA3AF',
-                pointerEvents: 'none',
-                display: 'flex',
-              }}>
+              <span className="tc-calendar-icon-pos">
                 <Calendar size={18} />
               </span>
             </div>
@@ -362,20 +240,10 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
         </div>
 
         {/* Buttons: Cancel (outline pill) & Save Changes (solid gold pill) */}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '14px', marginTop: '16px' }}>
+        <div className="tc-form-actions">
           <button
             type="button"
-            style={{
-              height: '44px',
-              padding: '0 24px',
-              borderRadius: '9999px',
-              backgroundColor: 'transparent',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
-              color: '#FFFFFF',
-              fontSize: '14px',
-              fontWeight: '500',
-              cursor: 'pointer',
-            }}
+            className="tc-btn-pill-cancel"
           >
             Cancel
           </button>
@@ -383,18 +251,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
           <button
             type="submit"
             disabled={isSaving}
-            style={{
-              height: '44px',
-              padding: '0 28px',
-              borderRadius: '9999px',
-              backgroundColor: '#dfae32',
-              color: '#000000',
-              fontSize: '14px',
-              fontWeight: '700',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
-            }}
+            className="tc-action-btn-gold"
           >
             {isSaving ? 'Saving...' : 'Save Changes'}
           </button>
@@ -420,14 +277,6 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
         message="Your personal profile settings have been updated successfully."
         actionText="Done"
       />
-
-      <style>{`
-        @media (max-width: 640px) {
-          .tc-form-row {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

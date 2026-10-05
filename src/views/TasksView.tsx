@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import type { ScreenId } from '../App';
 import { api } from '../services/api';
+import type { Project } from '../types';
 
 interface Task {
   id: string;
@@ -55,6 +56,8 @@ interface TasksViewProps {
 
 export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate }) => {
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [availableUsers, setAvailableUsers] = useState<{ id: number; name: string }[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
   const [searchQuery, setSearchQuery] = useState('');
@@ -64,7 +67,8 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
 
   // New task form state
   const [newTitle, setNewTitle] = useState('');
-  const [newProject, setNewProject] = useState('Aurelia FinTech Mobile App');
+  const [newProjectId, setNewProjectId] = useState<number | string>(1);
+  const [newAssignedUser, setNewAssignedUser] = useState<number | string>(1);
   const [newPriority, setNewPriority] = useState<'Urgent' | 'High' | 'Medium'>('High');
   const [newDeadline, setNewDeadline] = useState('');
   const [newDescription, setNewDescription] = useState('');
@@ -72,10 +76,30 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
   useEffect(() => {
     let mounted = true;
     setIsLoading(true);
-    api.getTasks()
-      .then((items) => {
+
+    Promise.all([
+      api.getTasks(),
+      api.getProjects(),
+      api.getUsers({ limit: 50 }),
+    ])
+      .then(([items, projs, usersData]) => {
         if (!mounted) return;
-        setTasks(items.map(mapApiTask));
+        setTasks((items || []).map(mapApiTask));
+        setProjects(projs || []);
+        if (projs && projs.length > 0) {
+          setNewProjectId(projs[0].id);
+        }
+
+        if (usersData?.items && usersData.items.length > 0) {
+          const uList = usersData.items.map((u: any) => ({
+            id: u.id,
+            name: u.full_name || u.name || `User #${u.id}`,
+          }));
+          setAvailableUsers(uList);
+          if (uList.length > 0) {
+            setNewAssignedUser(uList[0].id);
+          }
+        }
       })
       .catch(() => {
         if (!mounted) return;
@@ -84,6 +108,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
       .finally(() => {
         if (mounted) setIsLoading(false);
       });
+
     return () => { mounted = false; };
   }, []);
 
@@ -100,10 +125,13 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
     e.preventDefault();
     if (!newTitle.trim()) return;
 
+    const selectedProj = projects.find((p) => String(p.id) === String(newProjectId));
+    const selectedUsr = availableUsers.find((u) => String(u.id) === String(newAssignedUser));
+
     try {
       const created = await api.createTask({
-        project_id: 1,
-        assigned_user: 1,
+        project_id: typeof newProjectId === 'number' ? newProjectId : parseInt(String(newProjectId), 10) || 1,
+        assigned_user: typeof newAssignedUser === 'number' ? newAssignedUser : parseInt(String(newAssignedUser), 10) || 1,
         task_title: newTitle,
         description: newDescription,
         priority: newPriority,
@@ -114,8 +142,8 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
       const newTask: Task = {
         id: `TSK-${Math.floor(200 + Math.random() * 800)}`,
         title: newTitle,
-        project: newProject,
-        assignee: { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
+        project: selectedProj?.name || 'Active Sprint Project',
+        assignee: { name: selectedUsr?.name || 'Assigned Member', avatar: '/assets/joseph.jpg' },
         priority: newPriority,
         status: 'Open',
         deadline: newDeadline || '2026-10-10',
@@ -151,54 +179,25 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
   };
 
   return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+    <div className="tc-fade-in tc-dept-view-container">
       {/* Top Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '28px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      <div className="tc-page-header-row">
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+          <h1 className="tc-page-title">
             Task Management
           </h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
+          <p className="tc-page-subtitle">
             Coordinate project sprints, manage member workloads, and update sprint deliverables.
           </p>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div className="tc-flex-center-gap">
           {/* View Mode Toggle */}
-          <div
-            style={{
-              display: 'flex',
-              backgroundColor: 'rgba(255, 255, 255, 0.04)',
-              borderRadius: '8px',
-              padding: '3px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-            }}
-          >
+          <div className="tc-view-mode-toggle">
             <button
               type="button"
               onClick={() => setViewMode('kanban')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                border: 'none',
-                backgroundColor: viewMode === 'kanban' ? '#dfae32' : 'transparent',
-                color: viewMode === 'kanban' ? '#0A0D14' : '#9CA3AF',
-                fontWeight: 600,
-                fontSize: '13px',
-                cursor: 'pointer',
-              }}
+              className={`tc-view-mode-btn ${viewMode === 'kanban' ? 'tc-view-mode-btn--active' : ''}`}
             >
               <LayoutGrid size={15} />
               <span>Board</span>
@@ -206,19 +205,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
             <button
               type="button"
               onClick={() => setViewMode('list')}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '6px',
-                padding: '6px 12px',
-                borderRadius: '6px',
-                border: 'none',
-                backgroundColor: viewMode === 'list' ? '#dfae32' : 'transparent',
-                color: viewMode === 'list' ? '#0A0D14' : '#9CA3AF',
-                fontWeight: 600,
-                fontSize: '13px',
-                cursor: 'pointer',
-              }}
+              className={`tc-view-mode-btn ${viewMode === 'list' ? 'tc-view-mode-btn--active' : ''}`}
             >
               <ListIcon size={15} />
               <span>List</span>
@@ -228,8 +215,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
           <button
             type="button"
             onClick={() => setShowCreateModal(true)}
-            className="tc-action-btn-gold"
-            style={{ fontSize: '14px', padding: '10px 20px', height: 'auto' }}
+            className="tc-gold-btn"
           >
             <Plus size={18} strokeWidth={2.5} />
             <span>Create Task</span>
@@ -238,205 +224,111 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
       </div>
 
       {/* Filter and Search Bar */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-          marginBottom: '24px',
-          flexWrap: 'wrap',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          <span style={{ fontSize: '13px', color: '#9CA3AF' }}>Priority Filter:</span>
+      <div className="tc-filter-bar">
+        <div className="tc-flex-center-gap">
+          <span className="tc-text-muted-xs">Priority Filter:</span>
           {(['All', 'Urgent', 'High', 'Medium'] as const).map((priority) => (
             <button
               key={priority}
               type="button"
               onClick={() => setFilterPriority(priority)}
-              style={{
-                padding: '6px 14px',
-                borderRadius: '6px',
-                border: '1px solid',
-                borderColor: filterPriority === priority ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
-                backgroundColor: filterPriority === priority ? 'rgba(223, 174, 50, 0.15)' : '#11151F',
-                color: filterPriority === priority ? '#dfae32' : '#9CA3AF',
-                fontSize: '12px',
-                fontWeight: 600,
-                cursor: 'pointer',
-              }}
+              className={`tc-filter-pill-btn ${filterPriority === priority ? 'tc-filter-pill-btn--active' : ''}`}
             >
               {priority}
             </button>
           ))}
         </div>
 
-        <div style={{ position: 'relative', width: '300px' }}>
-          <Search
-            size={16}
-            color="#9CA3AF"
-            style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)' }}
-          />
+        <div className="tc-search-wrapper">
+          <Search size={16} className="tc-search-icon-pos" />
           <input
             type="text"
             placeholder="Search tasks..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{
-              width: '100%',
-              backgroundColor: '#FFFFFF1A',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              borderRadius: '8px',
-              padding: '8px 12px 8px 36px',
-              color: '#FFFFFF',
-              fontSize: '13px',
-              outline: 'none',
-            }}
+            className="tc-search-input-field"
           />
         </div>
       </div>
 
       {isLoading ? (
-        <div style={{ padding: '64px', textAlign: 'center', color: '#9CA3AF' }}>
-          <Loader2 size={36} className="tc-spin" style={{ margin: '0 auto 12px auto', color: '#dfae32', animation: 'spin 1s linear infinite' }} />
+        <div className="tc-dept-empty-box">
+          <Loader2 size={36} className="tc-spin tc-text-gold tc-mx-auto tc-mb-2" />
           <p>Loading sprint tasks...</p>
         </div>
       ) : viewMode === 'kanban' ? (
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '20px',
-            alignItems: 'start',
-          }}
-        >
+        <div className="tc-kanban-board">
           {(['Open', 'In Progress', 'Completed'] as const).map((colStatus) => {
             const colTasks = filteredTasks.filter((t) => t.status === colStatus);
-            const statusTheme = {
-              Open: { border: '#9CA3AF', title: 'To Do / Backlog' },
-              'In Progress': { border: '#dfae32', title: 'In Active Sprint' },
-              Completed: { border: '#10B981', title: 'QA Approved & Done' },
+            const headerClass = {
+              Open: 'tc-kanban-header tc-kanban-header--open',
+              'In Progress': 'tc-kanban-header tc-kanban-header--in_progress',
+              Completed: 'tc-kanban-header tc-kanban-header--completed',
+            }[colStatus];
+
+            const colTitle = {
+              Open: 'To Do / Backlog',
+              'In Progress': 'In Active Sprint',
+              Completed: 'QA Approved & Done',
             }[colStatus];
 
             return (
-              <div
-                key={colStatus}
-                style={{
-                  backgroundColor: '#0E121B',
-                  borderRadius: '14px',
-                  padding: '18px',
-                  border: '1px solid rgba(255, 255, 255, 0.06)',
-                  minHeight: '520px',
-                }}
-              >
+              <div key={colStatus} className="tc-kanban-column">
                 {/* Column Header */}
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    marginBottom: '16px',
-                    paddingBottom: '12px',
-                    borderBottom: `2px solid ${statusTheme.border}`,
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontWeight: 700, fontSize: '15px', color: '#FFFFFF' }}>
-                      {statusTheme.title}
+                <div className={headerClass}>
+                  <div className="tc-flex-center-gap">
+                    <span className="tc-kanban-title">
+                      {colTitle}
                     </span>
-                    <span
-                      style={{
-                        backgroundColor: 'rgba(255, 255, 255, 0.08)',
-                        padding: '2px 8px',
-                        borderRadius: '999px',
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        color: '#9CA3AF',
-                      }}
-                    >
+                    <span className="tc-kanban-counter">
                       {colTasks.length}
                     </span>
                   </div>
                 </div>
 
                 {/* Tasks List */}
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div className="tc-kanban-cards-stack">
                   {colTasks.map((task) => {
-                    const priorityColor = {
-                      Urgent: { bg: 'rgba(239, 68, 68, 0.15)', text: '#EF4444' },
-                      High: { bg: 'rgba(223, 174, 50, 0.15)', text: '#dfae32' },
-                      Medium: { bg: 'rgba(59, 130, 246, 0.15)', text: '#3B82F6' },
+                    const badgeClass = {
+                      Urgent: 'tc-badge-priority-urgent',
+                      High: 'tc-badge-priority-high',
+                      Medium: 'tc-badge-priority-medium',
                     }[task.priority];
 
                     return (
                       <div
                         key={task.id}
                         onClick={() => setSelectedTask(task)}
-                        style={{
-                          backgroundColor: '#FFFFFF1A',
-                          borderRadius: '10px',
-                          padding: '16px',
-                          border: '1px solid rgba(255, 255, 255, 0.06)',
-                          cursor: 'pointer',
-                          transition: 'all 0.15s ease',
-                        }}
-                        onMouseOver={(e) => {
-                          e.currentTarget.style.borderColor = 'rgba(223, 174, 50, 0.4)';
-                          e.currentTarget.style.transform = 'translateY(-2px)';
-                        }}
-                        onMouseOut={(e) => {
-                          e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.06)';
-                          e.currentTarget.style.transform = 'translateY(0)';
-                        }}
+                        className="tc-kanban-card"
                       >
                         {/* Tags */}
-                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                          <span style={{ fontSize: '11px', color: '#9CA3AF' }}>{task.id}</span>
-                          <span
-                            style={{
-                              fontSize: '11px',
-                              fontWeight: 700,
-                              padding: '2px 8px',
-                              borderRadius: '4px',
-                              backgroundColor: priorityColor.bg,
-                              color: priorityColor.text,
-                            }}
-                          >
+                        <div className="tc-dept-meta-row">
+                          <span className="tc-text-muted-xs">{task.id}</span>
+                          <span className={badgeClass}>
                             {task.priority}
                           </span>
                         </div>
 
                         {/* Title */}
-                        <h4 style={{ fontSize: '14px', fontWeight: 600, color: '#FFFFFF', margin: '0 0 8px', lineHeight: 1.4 }}>
+                        <h4 className="tc-kanban-card-title">
                           {task.title}
                         </h4>
 
-                        <div style={{ fontSize: '12px', color: '#dfae32', marginBottom: '14px' }}>
+                        <div className="tc-kanban-card-project">
                           {task.project}
                         </div>
 
                         {/* Footer info */}
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            borderTop: '1px solid rgba(255, 255, 255, 0.05)',
-                            paddingTop: '10px',
-                            fontSize: '11px',
-                            color: '#9CA3AF',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                        <div className="tc-kanban-card-footer">
+                          <div className="tc-flex-center-gap">
                             <img
                               src={task.assignee.avatar}
                               alt={task.assignee.name}
-                              style={{ width: '22px', height: '22px', borderRadius: '50%', objectFit: 'cover' }}
+                              className="tc-avatar-xs"
                             />
                             <span>{task.assignee.name.split(' ')[0]}</span>
                           </div>
-                          <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          <div className="tc-flex-center-gap">
                             <Clock size={12} />
                             <span>{task.deadline}</span>
                           </div>
@@ -451,94 +343,63 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
         </div>
       ) : (
         /* TABLE LIST VIEW */
-        <div
-          style={{
-            backgroundColor: '#FFFFFF1A',
-            borderRadius: '12px',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            overflow: 'hidden',
-          }}
-        >
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+        <div className="tc-table-container-card">
+          <table className="tc-table">
             <thead>
-              <tr style={{ backgroundColor: '#0E121B', color: '#9CA3AF', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
-                <th style={{ padding: '14px 18px' }}>Task ID & Title</th>
-                <th style={{ padding: '14px 18px' }}>Project</th>
-                <th style={{ padding: '14px 18px' }}>Assignee</th>
-                <th style={{ padding: '14px 18px' }}>Priority</th>
-                <th style={{ padding: '14px 18px' }}>Status</th>
-                <th style={{ padding: '14px 18px' }}>Due Date</th>
+              <tr className="tc-table-header-dark">
+                <th>Task ID & Title</th>
+                <th>Project</th>
+                <th>Assignee</th>
+                <th>Priority</th>
+                <th>Status</th>
+                <th>Due Date</th>
               </tr>
             </thead>
             <tbody>
-              {filteredTasks.map((t) => (
-                <tr
-                  key={t.id}
-                  onClick={() => setSelectedTask(t)}
-                  style={{
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.15s',
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)')}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                >
-                  <td style={{ padding: '14px 18px' }}>
-                    <div style={{ fontWeight: 600, color: '#FFFFFF' }}>{t.title}</div>
-                    <div style={{ color: '#9CA3AF', fontSize: '11px' }}>{t.id}</div>
-                  </td>
-                  <td style={{ padding: '14px 18px', color: '#dfae32' }}>{t.project}</td>
-                  <td style={{ padding: '14px 18px' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <img
-                        src={t.assignee.avatar}
-                        alt={t.assignee.name}
-                        style={{ width: '24px', height: '24px', borderRadius: '50%', objectFit: 'cover' }}
-                      />
-                      <span>{t.assignee.name}</span>
-                    </div>
-                  </td>
-                  <td style={{ padding: '14px 18px' }}>
-                    <span
-                      style={{
-                        padding: '3px 8px',
-                        borderRadius: '4px',
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        backgroundColor: t.priority === 'Urgent' ? 'rgba(239, 68, 68, 0.15)' : 'rgba(223, 174, 50, 0.15)',
-                        color: t.priority === 'Urgent' ? '#EF4444' : '#dfae32',
-                      }}
-                    >
-                      {t.priority}
-                    </span>
-                  </td>
-                  <td style={{ padding: '14px 18px' }}>
-                    <span
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: '999px',
-                        fontSize: '11px',
-                        fontWeight: 600,
-                        backgroundColor:
-                          t.status === 'Completed'
-                            ? 'rgba(16, 185, 129, 0.15)'
-                            : t.status === 'In Progress'
-                            ? 'rgba(223, 174, 50, 0.15)'
-                            : 'rgba(156, 163, 175, 0.15)',
-                        color:
-                          t.status === 'Completed'
-                            ? '#10B981'
-                            : t.status === 'In Progress'
-                            ? '#dfae32'
-                            : '#9CA3AF',
-                      }}
-                    >
-                      {t.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{t.deadline}</td>
-                </tr>
-              ))}
+              {filteredTasks.map((t) => {
+                const badgeClass = t.priority === 'Urgent' ? 'tc-badge-priority-urgent' : 'tc-badge-priority-high';
+                const statusBadgeClass =
+                  t.status === 'Completed'
+                    ? 'tc-badge-status tc-badge-status--approved'
+                    : t.status === 'In Progress'
+                    ? 'tc-badge-gold-pill'
+                    : 'tc-badge-muted-pill';
+
+                return (
+                  <tr
+                    key={t.id}
+                    onClick={() => setSelectedTask(t)}
+                    className="tc-table-row-hover"
+                  >
+                    <td>
+                      <div className="tc-font-semibold">{t.title}</div>
+                      <div className="tc-text-muted-xs">{t.id}</div>
+                    </td>
+                    <td className="tc-text-gold">{t.project}</td>
+                    <td>
+                      <div className="tc-flex-center-gap">
+                        <img
+                          src={t.assignee.avatar}
+                          alt={t.assignee.name}
+                          className="tc-avatar-xs"
+                        />
+                        <span>{t.assignee.name}</span>
+                      </div>
+                    </td>
+                    <td>
+                      <span className={badgeClass}>
+                        {t.priority}
+                      </span>
+                    </td>
+                    <td>
+                      <span className={statusBadgeClass}>
+                        {t.status}
+                      </span>
+                    </td>
+                    <td className="tc-text-muted">{t.deadline}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>
@@ -547,95 +408,68 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
       {/* TASK DETAIL MODAL */}
       {selectedTask && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px',
-          }}
+          className="tc-modal-backdrop"
           onClick={() => setSelectedTask(null)}
         >
           <div
-            style={{
-              backgroundColor: '#1C1C1E',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              maxWidth: '560px',
-              width: '100%',
-              padding: '28px',
-            }}
+            className="tc-task-modal-box"
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '18px' }}>
+            <div className="tc-card-header-row tc-mb-4">
               <div>
-                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>
+                <span className="tc-dept-code-tag">
                   {selectedTask.id} ● {selectedTask.project}
                 </span>
-                <h3 style={{ fontSize: '20px', fontWeight: 800, margin: '6px 0 0', color: '#FFFFFF' }}>
+                <h3 className="tc-page-title tc-mt-1">
                   {selectedTask.title}
                 </h3>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedTask(null)}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
+                className="tc-modal-close-btn"
               >
                 <X size={20} />
               </button>
             </div>
 
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>Task Instructions</div>
-              <p style={{ backgroundColor: '#161617', padding: '14px', borderRadius: '8px', color: '#D1D5DB', fontSize: '14px', lineHeight: 1.6 }}>
+            <div className="tc-mb-4">
+              <div className="tc-form-label">Task Instructions</div>
+              <p className="tc-task-desc-box">
                 {selectedTask.description}
               </p>
             </div>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '24px' }}>
-              <div style={{ backgroundColor: '#161617', padding: '12px 14px', borderRadius: '8px' }}>
-                <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Assignee</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px' }}>
+            <div className="tc-grid-2col tc-mb-4">
+              <div className="tc-task-meta-cell">
+                <div className="tc-text-muted-xs">Assignee</div>
+                <div className="tc-flex-center-gap tc-mt-1">
                   <img
                     src={selectedTask.assignee.avatar}
                     alt={selectedTask.assignee.name}
-                    style={{ width: '26px', height: '26px', borderRadius: '50%', objectFit: 'cover' }}
+                    className="tc-avatar-sm"
                   />
-                  <span style={{ fontSize: '13px', fontWeight: 600 }}>{selectedTask.assignee.name}</span>
+                  <span className="tc-font-semibold tc-text-sm">{selectedTask.assignee.name}</span>
                 </div>
               </div>
-              <div style={{ backgroundColor: '#161617', padding: '12px 14px', borderRadius: '8px' }}>
-                <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Sprint Deadline</div>
-                <div style={{ fontSize: '14px', fontWeight: 700, color: '#dfae32', marginTop: '6px' }}>
+              <div className="tc-task-meta-cell">
+                <div className="tc-text-muted-xs">Sprint Deadline</div>
+                <div className="tc-font-bold tc-text-gold tc-mt-1">
                   {selectedTask.deadline}
                 </div>
               </div>
             </div>
 
             {/* Quick Status Updater */}
-            <div style={{ marginBottom: '24px' }}>
-              <div style={{ fontSize: '13px', color: '#9CA3AF', marginBottom: '8px' }}>Update Task Lifecycle:</div>
-              <div style={{ display: 'flex', gap: '10px' }}>
+            <div className="tc-mb-4">
+              <div className="tc-form-label">Update Task Lifecycle:</div>
+              <div className="tc-flex-center-gap">
                 {(['Open', 'In Progress', 'Completed'] as const).map((st) => (
                   <button
                     key={st}
                     type="button"
                     onClick={() => updateTaskStatus(selectedTask.id, st)}
-                    style={{
-                      flex: 1,
-                      padding: '10px',
-                      borderRadius: '8px',
-                      border: selectedTask.status === st ? '1px solid #dfae32' : '1px solid rgba(255, 255, 255, 0.08)',
-                      backgroundColor: selectedTask.status === st ? 'rgba(223, 174, 50, 0.15)' : '#161617',
-                      color: selectedTask.status === st ? '#dfae32' : '#9CA3AF',
-                      fontWeight: 600,
-                      fontSize: '12px',
-                      cursor: 'pointer',
-                    }}
+                    className={`tc-task-status-btn ${selectedTask.status === st ? 'tc-task-status-btn--active' : ''}`}
                   >
                     {st}
                   </button>
@@ -643,20 +477,11 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
               </div>
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div className="tc-actions-end">
               <button
                 type="button"
                 onClick={() => setSelectedTask(null)}
-                style={{
-                  backgroundColor: '#dfae32',
-                  color: '#0A0D14',
-                  fontWeight: 700,
-                  fontSize: '14px',
-                  padding: '10px 22px',
-                  borderRadius: '8px',
-                  border: 'none',
-                  cursor: 'pointer',
-                }}
+                className="tc-gold-btn"
               >
                 Done
               </button>
@@ -668,46 +493,29 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
       {/* CREATE TASK MODAL */}
       {showCreateModal && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px',
-          }}
+          className="tc-modal-backdrop"
           onClick={() => setShowCreateModal(false)}
         >
           <div
-            style={{
-              backgroundColor: '#1C1C1E',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              maxWidth: '520px',
-              width: '100%',
-              padding: '28px',
-            }}
+            className="tc-task-modal-box"
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+            <div className="tc-card-header-row tc-mb-4">
+              <h3 className="tc-card-title">
                 Create Sprint Task
               </h3>
               <button
                 type="button"
                 onClick={() => setShowCreateModal(false)}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
+                className="tc-modal-close-btn"
               >
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleCreateTask}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Task Title
                 </label>
                 <input
@@ -716,93 +524,90 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                   placeholder="e.g. Implement WebRTC signaling protocol"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px 14px',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input"
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+              <div className="tc-grid-2col tc-mb-3">
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+                  <label className="tc-form-label">
                     Project
                   </label>
                   <select
-                    value={newProject}
-                    onChange={(e) => setNewProject(e.target.value)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#161617',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      padding: '10px 14px',
-                      color: '#FFFFFF',
-                      fontSize: '13px',
-                      outline: 'none',
-                    }}
+                    value={newProjectId}
+                    onChange={(e) => setNewProjectId(e.target.value)}
+                    className="tc-form-select"
                   >
-                    <option value="Aurelia FinTech Mobile App">Aurelia FinTech Mobile App</option>
-                    <option value="TitanCore SaaS Cloud Engine">TitanCore SaaS Cloud Engine</option>
-                    <option value="OmniTrade Crypto Arbitrage Bot">OmniTrade Crypto Arbitrage Bot</option>
-                    <option value="PulseHealth Telemedicine Portal">PulseHealth Telemedicine Portal</option>
+                    {projects.length > 0 ? (
+                      projects.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.name || p.project_name || `Project #${p.id}`}
+                        </option>
+                      ))
+                    ) : (
+                      <>
+                        <option value="1">Aurelia FinTech Mobile App</option>
+                        <option value="2">TitanCore SaaS Cloud Engine</option>
+                        <option value="3">OmniTrade Crypto Arbitrage Bot</option>
+                        <option value="4">PulseHealth Telemedicine Portal</option>
+                      </>
+                    )}
                   </select>
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+                  <label className="tc-form-label">
+                    Assignee
+                  </label>
+                  <select
+                    value={newAssignedUser}
+                    onChange={(e) => setNewAssignedUser(e.target.value)}
+                    className="tc-form-select"
+                  >
+                    {availableUsers.length > 0 ? (
+                      availableUsers.map((u) => (
+                        <option key={u.id} value={u.id}>
+                          {u.name}
+                        </option>
+                      ))
+                    ) : (
+                      <option value="1">Assigned Member</option>
+                    )}
+                  </select>
+                </div>
+              </div>
+
+              <div className="tc-grid-2col tc-mb-3">
+                <div>
+                  <label className="tc-form-label">
                     Priority
                   </label>
                   <select
                     value={newPriority}
                     onChange={(e) => setNewPriority(e.target.value as any)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#161617',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      padding: '10px 14px',
-                      color: '#FFFFFF',
-                      fontSize: '13px',
-                      outline: 'none',
-                    }}
+                    className="tc-form-select"
                   >
                     <option value="Urgent">Urgent</option>
                     <option value="High">High</option>
                     <option value="Medium">Medium</option>
                   </select>
                 </div>
+
+                <div>
+                  <label className="tc-form-label">
+                    Deadline
+                  </label>
+                  <input
+                    type="date"
+                    value={newDeadline}
+                    onChange={(e) => setNewDeadline(e.target.value)}
+                    className="tc-form-input"
+                  />
+                </div>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
-                  Deadline
-                </label>
-                <input
-                  type="date"
-                  value={newDeadline}
-                  onChange={(e) => setNewDeadline(e.target.value)}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px 14px',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
-                />
-              </div>
-
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Task Scope / Acceptance Criteria
                 </label>
                 <textarea
@@ -810,46 +615,21 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                   placeholder="Outline expected deliverables and edge cases..."
                   value={newDescription}
                   onChange={(e) => setNewDescription(e.target.value)}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px 14px',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                    resize: 'none',
-                  }}
+                  className="tc-form-textarea"
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <div className="tc-actions-end">
                 <button
                   type="button"
                   onClick={() => setShowCreateModal(false)}
-                  style={{
-                    backgroundColor: 'transparent',
-                    color: '#9CA3AF',
-                    padding: '10px 16px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="tc-modal-cancel-btn"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    backgroundColor: '#dfae32',
-                    color: '#0A0D14',
-                    fontWeight: 700,
-                    padding: '10px 22px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="tc-gold-btn"
                 >
                   Create Task
                 </button>

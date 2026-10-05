@@ -44,26 +44,7 @@ export const Modal: React.FC<ModalProps> = ({
         {showCloseButton && (
           <button
             onClick={onClose}
-            style={{
-              position: 'absolute',
-              top: '20px',
-              right: '20px',
-              color: 'var(--tc-text-muted)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '6px',
-              borderRadius: 'var(--tc-radius-sm)',
-              transition: 'all 0.15s ease',
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.color = 'var(--tc-text-primary)';
-              e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.color = 'var(--tc-text-muted)';
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
+            className="tc-modal-close-btn"
             aria-label="Close modal"
           >
             <X size={20} />
@@ -71,13 +52,8 @@ export const Modal: React.FC<ModalProps> = ({
         )}
 
         {title && (
-          <div style={{ marginBottom: '20px' }}>
-            <h2 style={{
-              fontSize: '20px',
-              fontWeight: '700',
-              color: 'var(--tc-text-primary)',
-              letterSpacing: '-0.3px',
-            }}>
+          <div className="tc-modal-title-wrap">
+            <h2 className="tc-modal-title-heading">
               {title}
             </h2>
           </div>

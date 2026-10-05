@@ -21,7 +21,7 @@ interface Meeting {
   time: string;
   duration: string;
   roomUrl: string;
-  participants: { name: string; avatar: string }[];
+  participants: { name: string; avatar: string | null }[];
 }
 
 const mapApiMeeting = (m: any): Meeting => ({
@@ -33,9 +33,12 @@ const mapApiMeeting = (m: any): Meeting => ({
   time: m.time || '10:00 AM',
   duration: `${m.duration_minutes || 45} mins`,
   roomUrl: m.meet_url || `room_${m.id}`,
-  participants: m.attendees?.length > 0 ? m.attendees : [
-    { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-    { name: 'Benedicta Atagamen', avatar: '/assets/benedicta.png' },
+  participants: m.attendees?.length > 0 ? m.attendees.map((a: any) => ({
+    name: a.name || a.full_name || `Attendee #${a.id}`,
+    avatar: a.avatar_url || a.avatar || null,
+  })) : [
+    { name: 'Joseph John', avatar: null },
+    { name: 'Benedicta Atagamen', avatar: null },
   ],
 });
 
@@ -62,7 +65,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
     api.getMeetings()
       .then((items) => {
         if (!mounted) return;
-        setMeetings(items.map(mapApiMeeting));
+        setMeetings((items || []).map(mapApiMeeting));
       })
       .catch(() => {
         if (!mounted) return;
@@ -117,23 +120,14 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
   };
 
   return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+    <div className="tc-fade-in tc-dept-view-container">
       {/* Top Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '28px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      <div className="tc-page-header-row">
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+          <h1 className="tc-page-title">
             Meetings & WebRTC Rooms
           </h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
+          <p className="tc-page-subtitle">
             Instant peer-to-peer encrypted audio and video huddles with client stakeholders and team leads.
           </p>
         </div>
@@ -141,8 +135,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
         <button
           type="button"
           onClick={() => setShowScheduleModal(true)}
-          className="tc-action-btn-gold"
-          style={{ fontSize: '14px', padding: '11px 22px', height: 'auto' }}
+          className="tc-gold-btn"
         >
           <Plus size={18} strokeWidth={2.5} />
           <span>Schedule Meeting</span>
@@ -150,23 +143,13 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
       </div>
 
       {/* Filter Tabs */}
-      <div style={{ display: 'flex', gap: '10px', marginBottom: '24px' }}>
+      <div className="tc-tab-pill-group tc-mb-4">
         {(['All', 'Video', 'Audio'] as const).map((t) => (
           <button
             key={t}
             type="button"
             onClick={() => setTypeFilter(t)}
-            style={{
-              padding: '8px 18px',
-              borderRadius: '8px',
-              border: '1px solid',
-              borderColor: typeFilter === t ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
-              backgroundColor: typeFilter === t ? 'rgba(223, 174, 50, 0.15)' : 'rgba(255, 255, 255, 0.04)',
-              color: typeFilter === t ? '#dfae32' : '#9CA3AF',
-              fontWeight: 600,
-              fontSize: '13px',
-              cursor: 'pointer',
-            }}
+            className={`tc-tab-pill-btn ${typeFilter === t ? 'tc-tab-pill-btn--active' : ''}`}
           >
             {t} Calls
           </button>
@@ -174,327 +157,216 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
       </div>
 
       {/* Meetings Grid */}
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+      <div className="tc-flex-col-gap">
         {isLoading ? (
-          <div style={{ padding: '64px', textAlign: 'center', color: '#9CA3AF' }}>
-            <Loader2 size={36} className="tc-spin" style={{ margin: '0 auto 12px auto', color: '#dfae32', animation: 'spin 1s linear infinite' }} />
+          <div className="tc-dept-empty-box">
+            <Loader2 size={36} className="tc-spin tc-text-gold tc-mx-auto tc-mb-2" />
             <p>Loading scheduled meetings...</p>
           </div>
         ) : filteredMeetings.length === 0 ? (
-          <div style={{ padding: '64px', textAlign: 'center', color: '#9CA3AF' }}>
-            <p style={{ fontSize: '16px', color: '#E5E7EB', marginBottom: '8px', fontWeight: 600 }}>No meetings scheduled</p>
-            <p style={{ fontSize: '13px' }}>Schedule a new sync or client briefing above to generate an encrypted room.</p>
+          <div className="tc-dept-empty-box">
+            <p className="tc-font-bold tc-mb-1 tc-text-white">No meetings scheduled</p>
+            <p className="tc-text-muted-sm">Schedule a new sync or client briefing above to generate an encrypted room.</p>
           </div>
         ) : (
           filteredMeetings.map((meeting) => {
-          const isLive = meeting.status === 'Live Now';
+            const isLive = meeting.status === 'Live Now';
 
-          return (
-            <div
-              key={meeting.id}
-              style={{
-                backgroundColor: '#FFFFFF1A',
-                borderRadius: '14px',
-                padding: '24px',
-                border: isLive ? '1px solid #dfae32' : '1px solid #FFFFFF26',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                flexWrap: 'wrap',
-                gap: '20px',
-              }}
-            >
-              {/* Left Details */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '20px', minWidth: '300px' }}>
-                <div
-                  style={{
-                    width: '54px',
-                    height: '54px',
-                    borderRadius: '12px',
-                    backgroundColor: isLive
-                      ? '#dfae32'
-                      : meeting.type === 'Video'
-                      ? 'rgba(59, 130, 246, 0.15)'
-                      : 'rgba(16, 185, 129, 0.15)',
-                    color: isLive ? '#0A0D14' : meeting.type === 'Video' ? '#3B82F6' : '#10B981',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
-                >
-                  {meeting.type === 'Video' ? <Video size={24} /> : <Mic size={24} />}
-                </div>
+            const iconBoxClass = isLive
+              ? 'tc-meeting-icon-box tc-meeting-icon-box--live'
+              : meeting.type === 'Video'
+              ? 'tc-meeting-icon-box tc-meeting-icon-box--video'
+              : 'tc-meeting-icon-box tc-meeting-icon-box--audio';
 
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '6px' }}>
-                    <span style={{ fontSize: '12px', color: '#9CA3AF' }}>{meeting.id}</span>
-                    {isLive && (
-                      <span
-                        style={{
-                          backgroundColor: '#EF4444',
-                          color: '#FFFFFF',
-                          fontSize: '10px',
-                          fontWeight: 800,
-                          padding: '2px 8px',
-                          borderRadius: '999px',
-                          letterSpacing: '0.05em',
-                          animation: 'pulse 2s infinite',
-                        }}
-                      >
-                        ● LIVE NOW
+            return (
+              <div
+                key={meeting.id}
+                className={`tc-meeting-card ${isLive ? 'tc-meeting-card--live' : ''}`}
+              >
+                {/* Left Details */}
+                <div className="tc-flex-center-gap">
+                  <div className={iconBoxClass}>
+                    {meeting.type === 'Video' ? <Video size={24} /> : <Mic size={24} />}
+                  </div>
+
+                  <div>
+                    <div className="tc-flex-center-gap tc-mb-1">
+                      <span className="tc-text-muted-xs">{meeting.id}</span>
+                      {isLive && (
+                        <span className="tc-badge-live">
+                          ● LIVE NOW
+                        </span>
+                      )}
+                      <span className="tc-badge-muted-pill">
+                        {meeting.type}
                       </span>
-                    )}
-                    <span
-                      style={{
-                        fontSize: '11px',
-                        color: '#9CA3AF',
-                        backgroundColor: 'rgba(255, 255, 255, 0.06)',
-                        padding: '2px 8px',
-                        borderRadius: '4px',
+                    </div>
+
+                    <h3 className="tc-dept-card-title">
+                      {meeting.title}
+                    </h3>
+
+                    <div className="tc-flex-center-gap tc-text-muted-sm">
+                      <div className="tc-flex-center-gap">
+                        <Calendar size={14} className="tc-text-gold" />
+                        <span>{meeting.date}</span>
+                      </div>
+                      <div className="tc-flex-center-gap">
+                        <Clock size={14} className="tc-text-gold" />
+                        <span>{meeting.time}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Participants & Action */}
+                <div className="tc-flex-center-gap">
+                  {/* Avatars */}
+                  <div className="tc-flex-center-gap">
+                    {meeting.participants.map((p, i) => (
+                      p.avatar ? (
+                        <img
+                          key={i}
+                          src={p.avatar}
+                          alt={p.name}
+                          title={p.name}
+                          className="tc-avatar-sm"
+                        />
+                      ) : (
+                        <div
+                          key={i}
+                          className="tc-avatar-fallback"
+                          title={p.name}
+                        >
+                          {p.name
+                            ?.split(' ')
+                            .map((n) => n[0])
+                            .join('')
+                            .slice(0, 2)}
+                        </div>
+                      )
+                    ))}
+                  </div>
+
+                  {/* Join CTA */}
+                  {meeting.status !== 'Ended' ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (onJoinRoom) {
+                          onJoinRoom(meeting.roomUrl);
+                        } else if (onNavigate) {
+                          onNavigate('meeting_room' as any);
+                        }
                       }}
+                      className={`tc-btn-join-meeting ${isLive ? 'tc-btn-join-meeting--live' : ''}`}
                     >
-                      {meeting.type}
+                      <span>{isLive ? 'Join Room Now' : 'Enter Waiting Room'}</span>
+                      <ArrowRight size={16} />
+                    </button>
+                  ) : (
+                    <span className="tc-text-muted-xs">
+                      Meeting concluded
                     </span>
-                  </div>
-
-                  <h3 style={{ fontSize: '17px', fontWeight: 700, color: '#FFFFFF', margin: '0 0 6px' }}>
-                    {meeting.title}
-                  </h3>
-
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px', color: '#9CA3AF' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Calendar size={14} color="#dfae32" />
-                      <span>{meeting.date}</span>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                      <Clock size={14} color="#dfae32" />
-                      <span>{meeting.time}</span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               </div>
-
-              {/* Right: Participants & Action */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
-                {/* Avatars */}
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  {meeting.participants.map((p, i) => (
-                    <img
-                      key={i}
-                      src={p.avatar}
-                      alt={p.name}
-                      title={p.name}
-                      style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        border: '2px solid #11151F',
-                        marginLeft: i > 0 ? '-8px' : '0',
-                        objectFit: 'cover',
-                      }}
-                    />
-                  ))}
-                </div>
-
-                {/* Join CTA */}
-                {meeting.status !== 'Ended' ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      if (onJoinRoom) {
-                        onJoinRoom(meeting.roomUrl);
-                      } else if (onNavigate) {
-                        onNavigate('meeting_room' as any);
-                      }
-                    }}
-                    style={{
-                      backgroundColor: isLive ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
-                      color: isLive ? '#0A0D14' : '#FFFFFF',
-                      fontWeight: 700,
-                      fontSize: '14px',
-                      padding: '11px 22px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      boxShadow: isLive ? '0 4px 14px rgba(223, 174, 50, 0.3)' : 'none',
-                    }}
-                  >
-                    <span>{isLive ? 'Join Room Now' : 'Enter Waiting Room'}</span>
-                    <ArrowRight size={16} />
-                  </button>
-                ) : (
-                  <span style={{ fontSize: '13px', color: '#9CA3AF', fontStyle: 'italic' }}>
-                    Meeting concluded
-                  </span>
-                )}
-              </div>
-            </div>
-          );
-        }))}
+            );
+          })
+        )}
       </div>
 
       {/* SCHEDULE MEETING MODAL */}
       {showScheduleModal && (
         <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px',
-          }}
+          className="tc-modal-backdrop"
           onClick={() => setShowScheduleModal(false)}
         >
           <div
-            style={{
-              backgroundColor: '#1C1C1E',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
-              borderRadius: '16px',
-              maxWidth: '520px',
-              width: '100%',
-              padding: '28px',
-            }}
+            className="tc-task-modal-box"
             onClick={(e) => e.stopPropagation()}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
-                Schedule WebRTC Session
+            <div className="tc-card-header-row tc-mb-4">
+              <h3 className="tc-card-title">
+                Schedule WebRTC Huddle
               </h3>
               <button
                 type="button"
                 onClick={() => setShowScheduleModal(false)}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
+                className="tc-modal-close-btn"
               >
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleScheduleMeeting}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
-                  Meeting Subject
+              <div className="tc-form-group">
+                <label className="tc-form-label">
+                  Meeting Topic / Title
                 </label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Aurelia FinTech Design Review"
+                  placeholder="e.g. Sprint Review & Architecture Q&A"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px 14px',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input"
                 />
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', marginBottom: '16px' }}>
+              <div className="tc-grid-2col tc-mb-3">
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
-                    Type
+                  <label className="tc-form-label">
+                    Format
                   </label>
                   <select
                     value={newType}
                     onChange={(e) => setNewType(e.target.value as any)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#161617',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      padding: '10px 14px',
-                      color: '#FFFFFF',
-                      fontSize: '13px',
-                      outline: 'none',
-                    }}
+                    className="tc-form-select"
                   >
-                    <option value="Video">Video Call (WebRTC)</option>
-                    <option value="Audio">Audio Huddle (Voice Only)</option>
+                    <option value="Video">Video & Screen Sharing</option>
+                    <option value="Audio">Audio Huddle</option>
                   </select>
                 </div>
+
                 <div>
-                  <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+                  <label className="tc-form-label">
                     Date
                   </label>
                   <input
                     type="date"
                     value={newDate}
                     onChange={(e) => setNewDate(e.target.value)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#161617',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      padding: '10px 14px',
-                      color: '#FFFFFF',
-                      fontSize: '13px',
-                      outline: 'none',
-                    }}
+                    className="tc-form-input"
                   />
                 </div>
               </div>
 
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
-                  Time Window
+              <div className="tc-form-group">
+                <label className="tc-form-label">
+                  Time
                 </label>
                 <input
-                  type="text"
-                  placeholder="e.g. 2:00 PM - 2:45 PM"
+                  type="time"
                   value={newTime}
                   onChange={(e) => setNewTime(e.target.value)}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px 14px',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input"
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <div className="tc-actions-end">
                 <button
                   type="button"
                   onClick={() => setShowScheduleModal(false)}
-                  style={{
-                    backgroundColor: 'transparent',
-                    color: '#9CA3AF',
-                    padding: '10px 16px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="tc-modal-cancel-btn"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    backgroundColor: '#dfae32',
-                    color: '#0A0D14',
-                    fontWeight: 700,
-                    padding: '10px 22px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="tc-gold-btn"
                 >
-                  Schedule Session
+                  Create Meeting
                 </button>
               </div>
             </form>

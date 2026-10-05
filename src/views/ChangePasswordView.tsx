@@ -82,90 +82,44 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
   return (
     <div className="tc-fade-in">
       {/* Split Cards: Change Password on Left, Where You're Logged In on Right (Figma) */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: 'minmax(0, 1.3fr) minmax(320px, 1fr)',
-        gap: '24px',
-        alignItems: 'start',
-      }}
-      className="tc-pw-split"
-      >
+      <div className="tc-pw-split">
         {/* Left Card: Change Password Form */}
-        <div style={{
-          backgroundColor: '#232324',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '28px',
-        }}>
-          <h2 style={{
-            fontSize: '18px',
-            fontWeight: '700',
-            color: '#FFFFFF',
-            marginBottom: '4px',
-          }}>
+        <div className="tc-settings-panel">
+          <h2 className="tc-card-title tc-mb-1">
             Password Settings
           </h2>
 
-          <div style={{
-            fontSize: '15px',
-            fontWeight: '700',
-            color: '#FFFFFF',
-            marginBottom: '6px',
-            marginTop: '16px',
-          }}>
+          <div className="tc-settings-panel-subheading">
             Change Password
           </div>
 
-          <p style={{
-            fontSize: '13px',
-            color: '#9CA3AF',
-            lineHeight: '1.6',
-            margin: '0 0 24px',
-          }}>
+          <p className="tc-settings-panel-desc">
             Your password must be at least 6 characters and should include combination of numbers, letters and special characters.
           </p>
 
           {validationError && (
-            <div style={{
-              padding: '10px 14px',
-              borderRadius: '8px',
-              backgroundColor: 'rgba(239, 68, 68, 0.1)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#EF4444',
-              fontSize: '13px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '8px',
-              marginBottom: '16px',
-            }}>
+            <div className="tc-form-error-banner">
               <AlertCircle size={16} />
               <span>{validationError}</span>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <form onSubmit={handleSubmit} className="tc-flex-col-gap">
             {/* Current Password Field */}
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <label style={{ fontSize: '13px', color: '#D1D5DB' }}>
+              <div className="tc-flex-between tc-mb-2">
+                <label className="tc-form-label tc-mb-0">
                   Current password
                 </label>
                 {/* Figma Screen 13: Red error message next to label */}
                 {hasCurrentPasswordError && (
-                  <span style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '4px',
-                    fontSize: '12px',
-                    color: '#EF4444',
-                    fontWeight: '500',
-                  }}>
+                  <span className="tc-field-error-inline">
                     <AlertCircle size={13} />
                     Incorrect password
                   </span>
                 )}
               </div>
-              <div style={{ position: 'relative' }}>
+              <div className="tc-relative">
                 <input
                   type={showCurrent ? 'text' : 'password'}
                   value={currentPassword}
@@ -175,33 +129,12 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
                   }}
                   placeholder="••••••••"
                   required
-                  style={{
-                    width: '100%',
-                    height: '44px',
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: `1px solid ${hasCurrentPasswordError ? '#EF4444' : 'rgba(255, 255, 255, 0.12)'}`,
-                    color: '#FFFFFF',
-                    padding: '0 44px 0 16px',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className={`tc-form-input tc-input-with-icon ${hasCurrentPasswordError ? 'tc-form-input--error' : ''}`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrent(!showCurrent)}
-                  style={{
-                    position: 'absolute',
-                    right: '14px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: 'rgba(255, 255, 255, 0.4)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    padding: 0,
-                  }}
+                  className="tc-password-toggle-btn"
                 >
                   {showCurrent ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -210,43 +143,22 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
 
             {/* New Password Field */}
             <div>
-              <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '8px' }}>
+              <label className="tc-form-label">
                 New password
               </label>
-              <div style={{ position: 'relative' }}>
+              <div className="tc-relative">
                 <input
                   type={showNew ? 'text' : 'password'}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  style={{
-                    width: '100%',
-                    height: '44px',
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#FFFFFF',
-                    padding: '0 44px 0 16px',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input tc-input-with-icon"
                 />
                 <button
                   type="button"
                   onClick={() => setShowNew(!showNew)}
-                  style={{
-                    position: 'absolute',
-                    right: '14px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: 'rgba(255, 255, 255, 0.4)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    padding: 0,
-                  }}
+                  className="tc-password-toggle-btn"
                 >
                   {showNew ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -255,43 +167,22 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
 
             {/* Confirm New Password Field */}
             <div>
-              <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '8px' }}>
+              <label className="tc-form-label">
                 Confirm new password
               </label>
-              <div style={{ position: 'relative' }}>
+              <div className="tc-relative">
                 <input
                   type={showConfirm ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="••••••••"
                   required
-                  style={{
-                    width: '100%',
-                    height: '44px',
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    border: '1px solid rgba(255, 255, 255, 0.12)',
-                    color: '#FFFFFF',
-                    padding: '0 44px 0 16px',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input tc-input-with-icon"
                 />
                 <button
                   type="button"
                   onClick={() => setShowConfirm(!showConfirm)}
-                  style={{
-                    position: 'absolute',
-                    right: '14px',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    background: 'none',
-                    border: 'none',
-                    color: 'rgba(255, 255, 255, 0.4)',
-                    cursor: 'pointer',
-                    display: 'flex',
-                    padding: 0,
-                  }}
+                  className="tc-password-toggle-btn"
                 >
                   {showConfirm ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
@@ -302,54 +193,25 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
             <div>
               <button
                 type="button"
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  color: '#dfae32',
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  padding: 0,
-                }}
+                className="tc-text-btn-gold"
               >
                 Forgot Password?
               </button>
             </div>
 
             {/* Buttons: Cancel (outline pill) & Update Password (solid gold pill) */}
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '14px', marginTop: '12px' }}>
+            <div className="tc-form-actions">
               <button
                 type="button"
                 onClick={onBackToSettings}
-                style={{
-                  height: '44px',
-                  padding: '0 24px',
-                  borderRadius: '9999px',
-                  backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#FFFFFF',
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                }}
+                className="tc-btn-pill-cancel"
               >
                 Cancel
               </button>
 
               <button
                 type="submit"
-                style={{
-                  height: '44px',
-                  padding: '0 28px',
-                  borderRadius: '9999px',
-                  backgroundColor: '#dfae32',
-                  color: '#000000',
-                  fontSize: '14px',
-                  fontWeight: '700',
-                  border: 'none',
-                  cursor: 'pointer',
-                  boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
-                }}
+                className="tc-action-btn-gold"
               >
                 Update Password
               </button>
@@ -359,47 +221,27 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
         </div>
 
         {/* Right Card: Where you're logged in (Figma) */}
-        <div style={{
-          backgroundColor: '#232324',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '28px',
-        }}>
-          <h3 style={{
-            fontSize: '16px',
-            fontWeight: '700',
-            color: '#FFFFFF',
-            marginBottom: '20px',
-          }}>
+        <div className="tc-settings-panel">
+          <h3 className="tc-card-title tc-mb-4">
             Where you're logged in
           </h3>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div className="tc-flex-col-gap">
             {/* Session 1: Current Session with Green Dot */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '12px',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <div style={{ color: '#9CA3AF', marginTop: '2px' }}>
+            <div className="tc-session-item">
+              <div className="tc-session-info">
+                <div className="tc-session-icon">
                   <Laptop size={20} />
                 </div>
                 <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF' }}>
+                  <div className="tc-session-title-row">
+                    <span className="tc-session-title">
                       2018 Macbook Pro 15-inch
                     </span>
                     {/* Green active dot */}
-                    <span style={{
-                      width: '8px',
-                      height: '8px',
-                      borderRadius: '50%',
-                      backgroundColor: '#10B981',
-                    }} />
+                    <span className="tc-session-dot-active" />
                   </div>
-                  <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>
+                  <div className="tc-session-meta">
                     Melbourne, Australia • 22 Jan at 10:40am
                   </div>
                 </div>
@@ -407,42 +249,26 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
 
               <button
                 type="button"
-                style={{
-                  height: '32px',
-                  padding: '0 16px',
-                  borderRadius: '9999px',
-                  backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#FFFFFF',
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                }}
+                className="tc-btn-pill-sm"
               >
                 Log Out
               </button>
             </div>
 
             {/* Divider */}
-            <div style={{ height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.06)' }} />
+            <div className="tc-separator-line" />
 
             {/* Session 2 */}
-            <div style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '12px',
-            }}>
-              <div style={{ display: 'flex', alignItems: 'flex-start', gap: '12px' }}>
-                <div style={{ color: '#9CA3AF', marginTop: '2px' }}>
+            <div className="tc-session-item">
+              <div className="tc-session-info">
+                <div className="tc-session-icon">
                   <Laptop size={20} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF' }}>
+                  <div className="tc-session-title">
                     2018 Macbook Pro 15-inch
                   </div>
-                  <div style={{ fontSize: '12px', color: '#9CA3AF', marginTop: '2px' }}>
+                  <div className="tc-session-meta">
                     Melbourne, Australia • 22 Jan at 12:15pm
                   </div>
                 </div>
@@ -450,18 +276,7 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
 
               <button
                 type="button"
-                style={{
-                  height: '32px',
-                  padding: '0 16px',
-                  borderRadius: '9999px',
-                  backgroundColor: 'transparent',
-                  border: '1px solid rgba(255, 255, 255, 0.2)',
-                  color: '#FFFFFF',
-                  fontSize: '12px',
-                  fontWeight: '500',
-                  cursor: 'pointer',
-                  flexShrink: 0,
-                }}
+                className="tc-btn-pill-sm"
               >
                 Log Out
               </button>
@@ -476,22 +291,12 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
         onClose={() => setIsConfirmModalOpen(false)}
         maxWidth="440px"
       >
-        <div style={{ textAlign: 'center', padding: '10px 0' }}>
-          <h3 style={{
-            fontSize: '20px',
-            fontWeight: '700',
-            color: '#FFFFFF',
-            marginBottom: '8px',
-          }}>
+        <div className="tc-modal-center-body">
+          <h3 className="tc-modal-title tc-mb-2">
             Confirm Password
           </h3>
 
-          <p style={{
-            fontSize: '13px',
-            color: '#9CA3AF',
-            lineHeight: '1.5',
-            margin: '0 0 20px',
-          }}>
+          <p className="tc-settings-panel-desc tc-mb-4">
             A 5-digit confirmation code has been sent to your email. Enter code to confirm your password.
           </p>
 
@@ -501,23 +306,12 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
             onChange={setOtpCode}
           />
 
-          <div style={{
-            fontSize: '13px',
-            color: '#9CA3AF',
-            margin: '16px 0 24px',
-          }}>
+          <div className="tc-resend-prompt">
             Didn't get code?{' '}
             <button
               type="button"
               onClick={() => alert('Code resent')}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: '#dfae32',
-                fontWeight: '600',
-                cursor: 'pointer',
-                padding: 0,
-              }}
+              className="tc-text-btn-gold"
             >
               Resend code
             </button>
@@ -527,18 +321,7 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
             type="button"
             onClick={handleConfirmOtp}
             disabled={otpCode.length < 5}
-            style={{
-              width: '100%',
-              height: '46px',
-              borderRadius: '9999px',
-              backgroundColor: '#dfae32',
-              color: '#000000',
-              fontSize: '15px',
-              fontWeight: '700',
-              border: 'none',
-              cursor: 'pointer',
-              boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
-            }}
+            className="tc-btn-submit-gold-full"
           >
             Confirm
           </button>
@@ -572,14 +355,6 @@ export const ChangePasswordView: React.FC<ChangePasswordViewProps> = ({
         message="Your password has been changed successfully"
         actionText="Back to Settings"
       />
-
-      <style>{`
-        @media (max-width: 900px) {
-          .tc-pw-split {
-            grid-template-columns: 1fr !important;
-          }
-        }
-      `}</style>
     </div>
   );
 };

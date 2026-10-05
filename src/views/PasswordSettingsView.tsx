@@ -8,60 +8,26 @@ export const PasswordSettingsView: React.FC<PasswordSettingsViewProps> = ({
   onNavigateChangePassword,
 }) => {
   return (
-    <div style={{
-      backgroundColor: '#232324',
-      border: '1px solid rgba(255, 255, 255, 0.08)',
-      borderRadius: '16px',
-      padding: '28px',
-      maxWidth: '680px',
-    }}
-    className="tc-fade-in"
-    >
-      <h2 style={{
-        fontSize: '18px',
-        fontWeight: '700',
-        color: '#FFFFFF',
-        marginBottom: '20px',
-      }}>
+    <div className="tc-fade-in tc-settings-panel">
+      <h2 className="tc-card-title tc-text-lg tc-mb-4">
         Password Settings
       </h2>
 
-      <div style={{
-        fontSize: '15px',
-        fontWeight: '700',
-        color: '#FFFFFF',
-        marginBottom: '6px',
-      }}>
+      <div className="tc-font-bold tc-text-white tc-text-base tc-mb-1">
         Change Password
       </div>
 
-      <p style={{
-        fontSize: '13px',
-        color: '#9CA3AF',
-        lineHeight: '1.6',
-        margin: '0 0 24px',
-      }}>
+      <p className="tc-text-muted tc-text-sm tc-line-relaxed tc-mb-4">
         Your password must be at least 6 characters and should include combination of numbers, letters and special characters.
       </p>
 
       {/* Current password status input */}
-      <div style={{ marginBottom: '24px' }}>
+      <div className="tc-form-group tc-mb-4">
         <input
           type="text"
           readOnly
           value="Current password (updated on 13/08/2026)"
-          style={{
-            width: '100%',
-            height: '46px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            border: '1px solid rgba(255, 255, 255, 0.1)',
-            color: '#9CA3AF',
-            padding: '0 16px',
-            fontSize: '14px',
-            outline: 'none',
-            cursor: 'default',
-          }}
+          className="tc-input-readonly"
         />
       </div>
 
@@ -69,18 +35,7 @@ export const PasswordSettingsView: React.FC<PasswordSettingsViewProps> = ({
       <button
         type="button"
         onClick={onNavigateChangePassword}
-        style={{
-          height: '44px',
-          padding: '0 28px',
-          borderRadius: '9999px',
-          backgroundColor: '#dfae32',
-          color: '#000000',
-          fontSize: '14px',
-          fontWeight: '700',
-          border: 'none',
-          cursor: 'pointer',
-          boxShadow: '0 4px 14px rgba(223, 174, 50, 0.3)',
-        }}
+        className="tc-action-btn-gold"
       >
         Change Password
       </button>

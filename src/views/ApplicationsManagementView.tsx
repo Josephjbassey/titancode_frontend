@@ -122,53 +122,35 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
   };
 
   return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+    <div className="tc-fade-in tc-products-container">
       {/* Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '28px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      <div className="tc-card-header-row tc-mb-4">
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+          <h1 className="tc-page-title">
             Member Applications
           </h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
+          <p className="tc-page-subtitle">
             Review candidate qualifications, inspect code repositories, and approve incoming engineers.
           </p>
         </div>
 
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
-          <div style={{ position: 'relative', width: '240px' }}>
+        <div className="tc-table-filter-bar">
+          <div className="tc-users-search-box">
             <Search
               size={15}
               color="#9CA3AF"
-              style={{ position: 'absolute', left: '10px', top: '50%', transform: 'translateY(-50%)' }}
+              className="tc-search-icon-pos"
             />
             <input
               type="text"
               placeholder="Search applicants..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              style={{
-                width: '100%',
-                backgroundColor: 'rgba(255, 255, 255, 0.04)',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                borderRadius: '8px',
-                padding: '7px 12px 7px 32px',
-                color: '#FFFFFF',
-                fontSize: '12px',
-                outline: 'none',
-              }}
+              className="tc-form-input tc-search-input-padded"
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '6px' }}>
+          <div className="tc-flex-center-gap">
             {(['Pending', 'Approved', 'Rejected', 'All'] as const).map((t) => {
               const count = applications.filter((a) => (t === 'All' ? true : a.status === t)).length;
               return (
@@ -176,30 +158,10 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                   key={t}
                   type="button"
                   onClick={() => setTab(t)}
-                  style={{
-                    padding: '8px 14px',
-                    borderRadius: '8px',
-                    border: '1px solid',
-                    borderColor: tab === t ? '#dfae32' : 'rgba(255, 255, 255, 0.08)',
-                    backgroundColor: tab === t ? 'rgba(223, 174, 50, 0.15)' : '#11151F',
-                    color: tab === t ? '#dfae32' : '#9CA3AF',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
+                  className={`tc-filter-pill-btn tc-flex-center-gap ${tab === t ? 'tc-filter-pill-btn--active' : ''}`}
                 >
                   <span>{t}</span>
-                  <span
-                    style={{
-                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                      padding: '2px 6px',
-                      borderRadius: '999px',
-                      fontSize: '10px',
-                    }}
-                  >
+                  <span className="tc-tier-badge">
                     {count}
                   </span>
                 </button>
@@ -209,32 +171,24 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
         </div>
       </div>
 
-
       {/* Applications Table */}
-      <div
-        style={{
-          backgroundColor: '#232324',
-          borderRadius: '12px',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          overflow: 'hidden',
-        }}
-      >
-        <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+      <div className="tc-tx-table-card">
+        <table className="tc-tx-table">
           <thead>
-            <tr style={{ backgroundColor: '#0E121B', color: '#9CA3AF', borderBottom: '1px solid rgba(255, 255, 255, 0.08)' }}>
-              <th style={{ padding: '14px 18px' }}>Applicant</th>
-              <th style={{ padding: '14px 18px' }}>Department</th>
-              <th style={{ padding: '14px 18px' }}>Experience</th>
-              <th style={{ padding: '14px 18px' }}>Applied Date</th>
-              <th style={{ padding: '14px 18px' }}>Status</th>
-              <th style={{ padding: '14px 18px', textAlign: 'right' }}>Review Action</th>
+            <tr className="tc-tx-table-tr">
+              <th className="tc-tx-table-th">Applicant</th>
+              <th className="tc-tx-table-th">Department</th>
+              <th className="tc-tx-table-th">Experience</th>
+              <th className="tc-tx-table-th">Applied Date</th>
+              <th className="tc-tx-table-th">Status</th>
+              <th className="tc-tx-table-th tc-tx-table-th--right">Review Action</th>
             </tr>
           </thead>
           <tbody>
             {isLoading ? (
               <tr>
-                <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
-                  <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <td colSpan={6} className="tc-tx-table-td tc-text-center tc-text-muted">
+                  <div className="tc-flex-center-all">
                     <Loader2 size={18} className="tc-spin" color="#dfae32" />
                     <span>Loading applicant records...</span>
                   </div>
@@ -242,7 +196,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
               </tr>
             ) : filteredApps.length === 0 ? (
               <tr>
-                <td colSpan={6} style={{ padding: '40px', textAlign: 'center', color: '#9CA3AF' }}>
+                <td colSpan={6} className="tc-tx-table-td tc-text-center tc-text-muted">
                   No applicant records found matching the current criteria.
                 </td>
               </tr>
@@ -251,62 +205,36 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                 <tr
                   key={app.id}
                   onClick={() => setSelectedApp(app)}
-                  style={{
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                    cursor: 'pointer',
-                    transition: 'background-color 0.15s',
-                  }}
-                  onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.03)')}
-                  onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                  className="tc-tx-table-tr tc-cursor-pointer"
                 >
-                  <td style={{ padding: '14px 18px' }}>
-                    <div style={{ fontWeight: 700, color: '#FFFFFF' }}>{app.applicantName}</div>
-                    <div style={{ color: '#9CA3AF', fontSize: '12px' }}>{app.email}</div>
+                  <td className="tc-tx-table-td">
+                    <div className="tc-font-bold tc-text-white">{app.applicantName}</div>
+                    <div className="tc-text-muted tc-text-xs">{app.email}</div>
                   </td>
-                  <td style={{ padding: '14px 18px', color: '#dfae32', fontWeight: 600 }}>{app.department}</td>
-                  <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{app.experienceYears} Years</td>
-                  <td style={{ padding: '14px 18px', color: '#9CA3AF' }}>{app.appliedDate}</td>
-                  <td style={{ padding: '14px 18px' }}>
+                  <td className="tc-tx-table-td tc-text-gold tc-font-semibold">{app.department}</td>
+                  <td className="tc-tx-table-td tc-text-muted">{app.experienceYears} Years</td>
+                  <td className="tc-tx-table-td tc-text-muted">{app.appliedDate}</td>
+                  <td className="tc-tx-table-td">
                     <span
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: '999px',
-                        fontSize: '11px',
-                        fontWeight: 700,
-                        backgroundColor:
-                          app.status === 'Approved'
-                            ? 'rgba(16, 185, 129, 0.15)'
-                            : app.status === 'Rejected'
-                            ? 'rgba(239, 68, 68, 0.15)'
-                            : 'rgba(223, 174, 50, 0.15)',
-                        color:
-                          app.status === 'Approved'
-                            ? '#10B981'
-                            : app.status === 'Rejected'
-                            ? '#EF4444'
-                            : '#dfae32',
-                      }}
+                      className={
+                        app.status === 'Approved'
+                          ? 'tc-badge-status-approved'
+                          : app.status === 'Rejected'
+                          ? 'tc-badge-status-declined'
+                          : 'tc-badge-role-ceo'
+                      }
                     >
                       ● {app.status}
                     </span>
                   </td>
-                  <td style={{ padding: '14px 18px', textAlign: 'right' }}>
+                  <td className="tc-tx-table-td tc-tx-table-th--right">
                     <button
                       type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         setSelectedApp(app);
                       }}
-                      style={{
-                        backgroundColor: '#dfae32',
-                        color: '#0A0D14',
-                        fontWeight: 700,
-                        border: 'none',
-                        borderRadius: '6px',
-                        padding: '6px 14px',
-                        fontSize: '12px',
-                        cursor: 'pointer',
-                      }}
+                      className="tc-action-btn-gold tc-py-1 tc-px-3 tc-text-xs"
                     >
                       Review
                     </button>
@@ -320,84 +248,49 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
 
       {/* DETAIL MODAL */}
       {selectedApp && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px',
-          }}
-          onClick={() => setSelectedApp(null)}
-        >
-          <div
-            style={{
-              backgroundColor: '#1C1C1E',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              maxWidth: '600px',
-              width: '100%',
-              padding: '32px',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+        <div className="tc-modal-overlay" onClick={() => setSelectedApp(null)}>
+          <div className="tc-modal-card tc-modal-md" onClick={(e) => e.stopPropagation()}>
+            <div className="tc-modal-header">
               <div>
-                <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>
+                <span className="tc-text-gold tc-text-xs tc-font-bold">
                   {selectedApp.id} ● {selectedApp.department}
                 </span>
-                <h3 style={{ fontSize: '22px', fontWeight: 800, margin: '4px 0 0', color: '#FFFFFF' }}>
+                <h3 className="tc-modal-title tc-mt-1">
                   {selectedApp.applicantName}
                 </h3>
-                <div style={{ color: '#9CA3AF', fontSize: '13px', marginTop: '2px' }}>
+                <div className="tc-text-muted tc-text-xs tc-mt-1">
                   Applied on {selectedApp.appliedDate}
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setSelectedApp(null)}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
+                className="tc-modal-close-btn"
               >
                 <X size={20} />
               </button>
             </div>
 
             {/* Candidate details */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '18px' }}>
-              <div style={{ backgroundColor: '#161617', padding: '12px', borderRadius: '8px', fontSize: '13px' }}>
-                <div style={{ color: '#9CA3AF', fontSize: '11px' }}>Email Address</div>
-                <div style={{ fontWeight: 600, color: '#FFFFFF', marginTop: '2px' }}>{selectedApp.email}</div>
+            <div className="tc-grid-2col tc-mb-4">
+              <div className="tc-user-detail-box">
+                <div className="tc-user-detail-box-label">Email Address</div>
+                <div className="tc-user-detail-box-val">{selectedApp.email}</div>
               </div>
-              <div style={{ backgroundColor: '#161617', padding: '12px', borderRadius: '8px', fontSize: '13px' }}>
-                <div style={{ color: '#9CA3AF', fontSize: '11px' }}>Phone Number</div>
-                <div style={{ fontWeight: 600, color: '#FFFFFF', marginTop: '2px' }}>{selectedApp.phone}</div>
+              <div className="tc-user-detail-box">
+                <div className="tc-user-detail-box-label">Phone Number</div>
+                <div className="tc-user-detail-box-val">{selectedApp.phone}</div>
               </div>
             </div>
 
             {/* Links */}
-            <div style={{ display: 'flex', gap: '14px', marginBottom: '18px' }}>
+            <div className="tc-flex-center-gap tc-mb-4">
               {selectedApp.githubUrl && (
                 <a
                   href={selectedApp.githubUrl}
                   target="_blank"
                   rel="noreferrer"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#dfae32',
-                    padding: '8px 14px',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    textDecoration: 'none',
-                    fontWeight: 600,
-                  }}
+                  className="tc-filter-pill-btn tc-flex-center-gap tc-text-xs"
                 >
                   <Code2 size={14} />
                   <span>GitHub Repository</span>
@@ -409,19 +302,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                   href={selectedApp.portfolioUrl}
                   target="_blank"
                   rel="noreferrer"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#dfae32',
-                    padding: '8px 14px',
-                    borderRadius: '6px',
-                    fontSize: '12px',
-                    textDecoration: 'none',
-                    fontWeight: 600,
-                  }}
+                  className="tc-filter-pill-btn tc-flex-center-gap tc-text-xs"
                 >
                   <Globe size={14} />
                   <span>Live Portfolio</span>
@@ -431,17 +312,17 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
             </div>
 
             {/* Statement */}
-            <div style={{ marginBottom: '20px' }}>
-              <div style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '6px' }}>Applicant Statement:</div>
-              <p style={{ backgroundColor: '#161617', padding: '14px', borderRadius: '8px', color: '#D1D5DB', fontSize: '13px', lineHeight: 1.6 }}>
+            <div className="tc-mb-4">
+              <div className="tc-text-muted tc-text-xs tc-mb-1">Applicant Statement:</div>
+              <p className="tc-user-detail-box tc-text-muted tc-text-sm tc-line-relaxed">
                 {selectedApp.coverNote}
               </p>
             </div>
 
             {/* Review Notes Input */}
             {selectedApp.status === 'Pending' && (
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '12px', color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group tc-mb-4">
+                <label className="tc-form-label">
                   Review Evaluation Note
                 </label>
                 <input
@@ -449,37 +330,19 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                   placeholder="e.g. Cleared technical interview with Joseph; recommended for frontend."
                   value={reviewNoteInput}
                   onChange={(e) => setReviewNoteInput(e.target.value)}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px 14px',
-                    color: '#FFFFFF',
-                    fontSize: '13px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input"
                 />
               </div>
             )}
 
             {/* Actions */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div className="tc-flex-between tc-mt-4">
               {selectedApp.status === 'Pending' ? (
                 <>
                   <button
                     type="button"
                     onClick={() => handleReject(selectedApp.id)}
-                    style={{
-                      backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                      color: '#EF4444',
-                      border: '1px solid rgba(239, 68, 68, 0.3)',
-                      borderRadius: '8px',
-                      padding: '10px 20px',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                    }}
+                    className="tc-btn-danger"
                   >
                     Reject Application
                   </button>
@@ -487,38 +350,18 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                   <button
                     type="button"
                     onClick={() => handleApprove(selectedApp.id)}
-                    style={{
-                      backgroundColor: '#10B981',
-                      color: '#FFFFFF',
-                      border: 'none',
-                      borderRadius: '8px',
-                      padding: '10px 24px',
-                      fontSize: '13px',
-                      fontWeight: 700,
-                      cursor: 'pointer',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '6px',
-                    }}
+                    className="tc-btn-success tc-flex-center-gap"
                   >
                     <CheckCircle2 size={16} />
                     <span>Approve & Onboard</span>
                   </button>
                 </>
               ) : (
-                <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
+                <div className="tc-flex-end-gap tc-w-full">
                   <button
                     type="button"
                     onClick={() => setSelectedApp(null)}
-                    style={{
-                      backgroundColor: '#dfae32',
-                      color: '#0A0D14',
-                      fontWeight: 700,
-                      padding: '10px 24px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: 'pointer',
-                    }}
+                    className="tc-action-btn-gold"
                   >
                     Close
                   </button>

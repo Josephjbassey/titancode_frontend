@@ -59,60 +59,31 @@ export const OtpInput: React.FC<OtpInputProps> = ({
     inputsRef.current[nextFocusIdx]?.focus();
   };
 
-  const boxWidth = length > 4 ? '46px' : '54px';
-  const boxHeight = length > 4 ? '52px' : '56px';
-  const boxGap = length > 4 ? '8px' : '12px';
-  const fontSize = length > 4 ? '20px' : '22px';
+  const isWide = length <= 4;
 
   return (
-    <div style={{
-      display: 'flex',
-      gap: boxGap,
-      justifyContent: 'center',
-      margin: '24px 0',
-      flexWrap: 'nowrap',
-    }}>
-      {digits.map((digit, index) => (
-        <input
-          key={index}
-          ref={(el) => {
-            inputsRef.current[index] = el;
-          }}
-          type="text"
-          inputMode="numeric"
-          maxLength={1}
-          value={digit}
-          onChange={(e) => handleChange(index, e)}
-          onKeyDown={(e) => handleKeyDown(index, e)}
-          onPaste={handlePaste}
-          style={{
-            width: boxWidth,
-            height: boxHeight,
-            fontSize: fontSize,
-            fontWeight: '700',
-            textAlign: 'center',
-            backgroundColor: digit ? '#54461B' : 'rgba(255, 255, 255, 0.05)',
-            color: '#FFFFFF',
-            border: `1.5px solid ${hasError ? '#EF4444' : digit ? '#dfae32' : 'rgba(255, 255, 255, 0.15)'}`,
-            borderRadius: '12px',
-            outline: 'none',
-            transition: 'all 0.2s ease',
-            boxShadow: hasError ? '0 0 0 2px rgba(239, 68, 68, 0.2)' : 'none',
-          }}
-          onFocus={(e) => {
-            if (!hasError) {
-              e.target.style.borderColor = '#dfae32';
-              e.target.style.backgroundColor = '#54461B';
-            }
-          }}
-          onBlur={(e) => {
-            if (!hasError) {
-              e.target.style.borderColor = digit ? '#dfae32' : 'rgba(255, 255, 255, 0.15)';
-              e.target.style.backgroundColor = digit ? '#54461B' : 'rgba(255, 255, 255, 0.05)';
-            }
-          }}
-        />
-      ))}
+    <div className={`tc-otp-container ${isWide ? 'tc-otp-container--wide' : ''}`}>
+      {digits.map((digit, index) => {
+        const isFilled = Boolean(digit);
+        return (
+          <input
+            key={index}
+            ref={(el) => {
+              inputsRef.current[index] = el;
+            }}
+            type="text"
+            inputMode="numeric"
+            maxLength={1}
+            value={digit}
+            onChange={(e) => handleChange(index, e)}
+            onKeyDown={(e) => handleKeyDown(index, e)}
+            onPaste={handlePaste}
+            className={`tc-otp-digit-box ${isWide ? 'tc-otp-digit-box--large' : ''} ${
+              hasError ? 'tc-otp-digit-box--error' : isFilled ? 'tc-otp-digit-box--filled' : ''
+            }`}
+          />
+        );
+      })}
     </div>
   );
 };

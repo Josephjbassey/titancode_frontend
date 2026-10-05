@@ -20,6 +20,14 @@ interface TeamDashboardViewProps {
   onNavigate?: (view: ScreenId) => void;
 }
 
+interface ActivityItem {
+  id: number;
+  text: string;
+  timestamp: string;
+  author: string;
+  avatar: string | null;
+}
+
 export const TeamDashboardView: React.FC<TeamDashboardViewProps> = ({ onNavigate }) => {
   const [user, setUser] = useState<User | null>(api.getActiveUser());
   const [taskRows, setTaskRows] = useState<any[]>([]);
@@ -28,6 +36,7 @@ export const TeamDashboardView: React.FC<TeamDashboardViewProps> = ({ onNavigate
   const [walletBalance, setWalletBalance] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [activeDropdownId, setActiveDropdownId] = useState<number | null>(null);
+  const [recentActivities, setRecentActivities] = useState<ActivityItem[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -39,7 +48,8 @@ export const TeamDashboardView: React.FC<TeamDashboardViewProps> = ({ onNavigate
       api.getProjects().catch(() => []),
       api.getMeetings().catch(() => []),
       api.getWallet().catch(() => ({ balance: 0 })),
-    ]).then(([currentUser, fetchedTasks, fetchedProjects, fetchedMeetings, fetchedWallet]) => {
+      api.getActivityFeed(10).catch(() => []),
+    ]).then(([currentUser, fetchedTasks, fetchedProjects, fetchedMeetings, fetchedWallet, fetchedActivities]) => {
       if (!mounted) return;
       if (currentUser) setUser(currentUser);
       setTaskRows(
@@ -55,6 +65,7 @@ export const TeamDashboardView: React.FC<TeamDashboardViewProps> = ({ onNavigate
       setProjects(fetchedProjects || []);
       setMeetings(fetchedMeetings || []);
       setWalletBalance(fetchedWallet?.balance || 0);
+      setRecentActivities(fetchedActivities || []);
       setIsLoading(false);
     });
 
@@ -86,272 +97,94 @@ export const TeamDashboardView: React.FC<TeamDashboardViewProps> = ({ onNavigate
     { label: 'Pending', value: pendingCount, color: '#dfae32' },
   ];
 
-  const recentActivities = [
-    {
-      id: 1,
-      text: 'Pushed commit: auth split-card responsive overhaul',
-      timestamp: '15 mins ago',
-      author: 'Alex Morgan',
-      avatar: '/assets/dashprofile.jpg',
-    },
-    {
-      id: 2,
-      text: 'Pull Request #42 merged: Escrow payout calculation hook',
-      timestamp: '1 hour ago',
-      author: 'Joseph John',
-      avatar: '/assets/joseph.jpg',
-    },
-    {
-      id: 3,
-      text: 'Uploaded design specifications for Client Request Form',
-      timestamp: '3 hours ago',
-      author: 'Benedicta Atagamen',
-      avatar: '/assets/benedicta.png',
-    },
-    {
-      id: 4,
-      text: 'Sumsub KYC employee status verified automatically',
-      timestamp: 'Yesterday',
-      author: 'Security Bot',
-      avatar: '/assets/blessing.jpg',
-    },
-  ];
-
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '28px',
-        paddingBottom: '40px',
-        width: '100%',
-      }}
-      className="tc-fade-in"
-    >
+    <div className="tc-view-wrapper tc-fade-in">
       {/* Top Greeting Header (Figma Frame 609:107) */}
-      <div>
-        <h1
-          style={{
-            fontSize: '26px',
-            fontWeight: '700',
-            color: '#FFFFFF',
-            letterSpacing: '-0.4px',
-            marginBottom: '4px',
-          }}
-        >
-          Welcome back, {user?.first_name || (user?.full_name ? user.full_name.split(' ')[0] : 'Member')}! 👋
-        </h1>
-        <p
-          style={{
-            fontSize: '14px',
-            color: '#9CA3AF',
-            margin: 0,
-          }}
-        >
-          Here's what's happening with your work today.
-        </p>
+      <div className="tc-page-header">
+        <div>
+          <h1 className="tc-page-title">
+            Welcome back, {user?.first_name || (user?.full_name ? user.full_name.split(' ')[0] : 'Member')}! 👋
+          </h1>
+          <p className="tc-page-subtitle">
+            Here's what's happening with your work today.
+          </p>
+        </div>
       </div>
 
       {/* 4 Metric Cards in a row (Figma Frame 613:253 - 613:291) */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '20px',
-        }}
-      >
+      <div className="tc-metrics-grid-4">
         {/* Card 1: My Projects */}
-        <div
-          className="figma-card"
-          style={{
-            borderRadius: '16px',
-            padding: '22px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: '160px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>My Projects</span>
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '10px',
-                backgroundColor: '#DFAE324D',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#DFAE32',
-              }}
-            >
+        <div className="tc-workspace-card tc-metric-card">
+          <div className="tc-metric-header">
+            <span className="tc-metric-label">My Projects</span>
+            <div className="tc-metric-icon-box tc-metric-icon-box--gold">
               <FolderGit2 size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: '700', color: '#FFFFFF', lineHeight: 1 }}>
+          <div className="tc-metric-value">
             {String(projects.length).padStart(2, '0')}
           </div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '12px', color: '#10B981' }}>
+          <div className="tc-metric-subtext">
             <TrendingUp size={14} />
-            <span>+ 1 since last month</span>
+            <span>Active team projects</span>
           </div>
         </div>
 
         {/* Card 2: My Tasks */}
-        <div
-          className="figma-card"
-          style={{
-            borderRadius: '16px',
-            padding: '22px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: '160px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>My Tasks</span>
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '10px',
-                backgroundColor: '#DFAE324D',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#DFAE32',
-              }}
-            >
+        <div className="tc-workspace-card tc-metric-card">
+          <div className="tc-metric-header">
+            <span className="tc-metric-label">My Tasks</span>
+            <div className="tc-metric-icon-box tc-metric-icon-box--gold">
               <CheckSquare size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: '700', color: '#FFFFFF', lineHeight: 1 }}>
+          <div className="tc-metric-value">
             {String(taskRows.length).padStart(2, '0')}
           </div>
           <button
             type="button"
             onClick={() => onNavigate?.('tasks')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '12px',
-              color: '#DFAE32',
-              fontWeight: '600',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
+            className="tc-card-link-btn"
           >
             View all tasks →
           </button>
         </div>
 
         {/* Card 3: Upcoming Meetings */}
-        <div
-          className="figma-card"
-          style={{
-            borderRadius: '16px',
-            padding: '22px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: '160px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>Upcoming Meetings</span>
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '10px',
-                backgroundColor: '#DFAE324D',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#DFAE32',
-              }}
-            >
+        <div className="tc-workspace-card tc-metric-card">
+          <div className="tc-metric-header">
+            <span className="tc-metric-label">Upcoming Meetings</span>
+            <div className="tc-metric-icon-box tc-metric-icon-box--gold">
               <Video size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: '700', color: '#FFFFFF', lineHeight: 1 }}>
+          <div className="tc-metric-value">
             {String(meetings.length).padStart(2, '0')}
           </div>
           <button
             type="button"
             onClick={() => onNavigate?.('meetings')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '12px',
-              color: '#DFAE32',
-              fontWeight: '600',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
+            className="tc-card-link-btn"
           >
             View all meetings →
           </button>
         </div>
 
         {/* Card 4: Wallet Balance */}
-        <div
-          className="figma-card"
-          style={{
-            borderRadius: '16px',
-            padding: '22px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: '160px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '14px', color: '#9CA3AF', fontWeight: '500' }}>Wallet Balance</span>
-            <div
-              style={{
-                width: '36px',
-                height: '36px',
-                borderRadius: '10px',
-                backgroundColor: '#DFAE324D',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#DFAE32',
-              }}
-            >
+        <div className="tc-workspace-card tc-metric-card">
+          <div className="tc-metric-header">
+            <span className="tc-metric-label">Wallet Balance</span>
+            <div className="tc-metric-icon-box tc-metric-icon-box--gold">
               <Wallet size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '30px', fontWeight: '700', color: '#FFFFFF', lineHeight: 1 }}>
-            ₦{walletBalance.toLocaleString()}
+          <div className="tc-metric-value">
+            ${walletBalance.toLocaleString()}
           </div>
           <button
             type="button"
             onClick={() => onNavigate?.('financials')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '4px',
-              fontSize: '12px',
-              color: '#DFAE32',
-              fontWeight: '600',
-              background: 'none',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-              textAlign: 'left',
-            }}
+            className="tc-card-link-btn"
           >
             View all payments →
           </button>
@@ -359,64 +192,41 @@ export const TeamDashboardView: React.FC<TeamDashboardViewProps> = ({ onNavigate
       </div>
 
       {/* FULL-WIDTH CARD: My Tasks Table (Figma Rectangle 284 - 1100px wide) */}
-      <div
-        style={{
-          backgroundColor: '#232324',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '24px',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.25)',
-        }}
-      >
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            marginBottom: '20px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: '#dfae32' }} />
-            <h2 style={{ fontSize: '18px', fontWeight: '700', color: '#FFFFFF', margin: 0 }}>
+      <div className="tc-workspace-card tc-card-section">
+        <div className="tc-card-header-row">
+          <div className="tc-metric-header">
+            <span className="tc-live-dot" />
+            <h2 className="tc-card-title">
               My Tasks
             </h2>
           </div>
           <button
             type="button"
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#9CA3AF',
-              fontSize: '13px',
-              fontWeight: 500,
-              cursor: 'pointer',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.color = '#FFFFFF')}
-            onMouseLeave={(e) => (e.currentTarget.style.color = '#9CA3AF')}
+            onClick={() => onNavigate?.('tasks')}
+            className="tc-card-link-btn"
           >
             View All
           </button>
         </div>
 
         {/* Table */}
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+        <div className="tc-table-container">
+          <table className="tc-data-table">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', color: '#9CA3AF' }}>
-                <th style={{ padding: '12px 14px', fontWeight: '500' }}>Task Name</th>
-                <th style={{ padding: '12px 14px', fontWeight: '500' }}>Project</th>
-                <th style={{ padding: '12px 14px', fontWeight: '500' }}>Due Date</th>
-                <th style={{ padding: '12px 14px', fontWeight: '500' }}>Priority</th>
-                <th style={{ padding: '12px 14px', fontWeight: '500' }}>Status</th>
-                <th style={{ padding: '12px 14px', fontWeight: '500', textAlign: 'right' }}>Action</th>
+              <tr className="tc-table-head-row">
+                <th className="tc-table-th">Task Name</th>
+                <th className="tc-table-th">Project</th>
+                <th className="tc-table-th">Due Date</th>
+                <th className="tc-table-th">Priority</th>
+                <th className="tc-table-th">Status</th>
+                <th className="tc-table-th tc-table-th--right">Action</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <td colSpan={6} className="tc-table-empty">
+                    <div className="tc-table-loading">
                       <Loader2 size={16} className="tc-spin" color="#dfae32" />
                       <span>Loading your assigned sprint tasks...</span>
                     </div>
@@ -424,459 +234,336 @@ export const TeamDashboardView: React.FC<TeamDashboardViewProps> = ({ onNavigate
                 </tr>
               ) : taskRows.length === 0 ? (
                 <tr>
-                  <td colSpan={6} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF', fontSize: '13px' }}>
+                  <td colSpan={6} className="tc-table-empty">
                     No assigned tasks found. Your workload is currently clear.
                   </td>
                 </tr>
               ) : (
-                taskRows.map((row) => (
-                <tr
-                  key={row.id}
-                  style={{
-                    borderBottom: '1px solid rgba(255, 255, 255, 0.04)',
-                    transition: 'background-color 0.15s ease',
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.02)')}
-                  onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                >
-                  <td style={{ padding: '16px 14px', color: '#FFFFFF', fontWeight: '500' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span
-                        style={{
-                          width: '6px',
-                          height: '6px',
-                          borderRadius: '50%',
-                          backgroundColor: row.status === 'Completed' ? '#10B981' : '#dfae32',
-                        }}
-                      />
-                      {row.name}
-                    </div>
-                  </td>
-                  <td style={{ padding: '16px 14px', color: '#D1D5DB' }}>
-                    {row.project}
-                  </td>
-                  <td style={{ padding: '16px 14px', color: '#9CA3AF' }}>
-                    {row.due}
-                  </td>
-                  <td style={{ padding: '16px 14px' }}>
-                    <span
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: '9999px',
-                        backgroundColor:
-                          row.priority === 'Urgent'
-                            ? '#EF4444'
-                            : row.priority === 'High'
-                            ? 'rgba(239, 68, 68, 0.8)'
-                            : '#6B7280',
-                        color: '#FFFFFF',
-                        fontSize: '11px',
-                        fontWeight: '600',
-                      }}
-                    >
-                      {row.priority}
-                    </span>
-                  </td>
-                  <td style={{ padding: '16px 14px' }}>
-                    <span
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: '9999px',
-                        backgroundColor:
-                          row.status === 'Completed'
-                            ? 'rgba(16, 185, 129, 0.15)'
-                            : 'rgba(223, 174, 50, 0.15)',
-                        color: row.status === 'Completed' ? '#10B981' : '#dfae32',
-                        fontSize: '11px',
-                        fontWeight: '600',
-                      }}
-                    >
-                      {row.status}
-                    </span>
-                  </td>
-                  <td style={{ padding: '16px 14px', textAlign: 'right', position: 'relative' }}>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setActiveDropdownId(activeDropdownId === row.id ? null : row.id)
-                      }
-                      style={{
-                        padding: '4px 10px',
-                        borderRadius: '9999px',
-                        backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                        border: '1px solid rgba(255, 255, 255, 0.15)',
-                        color: '#FFFFFF',
-                        fontSize: '11px',
-                        fontWeight: '500',
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: '4px',
-                        cursor: 'pointer',
-                      }}
-                    >
-                      Update <ChevronDown size={12} />
-                    </button>
+                taskRows.map((row) => {
+                  const priorityClass =
+                    row.priority === 'Urgent'
+                      ? 'tc-priority-badge--high'
+                      : row.priority === 'High'
+                      ? 'tc-priority-badge--high'
+                      : row.priority === 'Medium'
+                      ? 'tc-priority-badge--medium'
+                      : 'tc-priority-badge--low';
 
-                    {/* Status Dropdown Modal */}
-                    {activeDropdownId === row.id && (
-                      <div
-                        style={{
-                          position: 'absolute',
-                          right: '14px',
-                          top: '48px',
-                          backgroundColor: '#1E1E1F',
-                          border: '1px solid rgba(255, 255, 255, 0.12)',
-                          borderRadius: '8px',
-                          boxShadow: '0 8px 24px rgba(0, 0, 0, 0.5)',
-                          zIndex: 20,
-                          minWidth: '130px',
-                          padding: '4px 0',
-                          textAlign: 'left',
-                        }}
-                      >
-                        {['Open', 'In Progress', 'Completed'].map((s) => (
-                          <button
-                            key={s}
-                            type="button"
-                            onClick={() => handleStatusChange(row.id, s)}
-                            style={{
-                              display: 'block',
-                              width: '100%',
-                              padding: '8px 12px',
-                              background: 'none',
-                              border: 'none',
-                              color: row.status === s ? '#dfae32' : '#FFFFFF',
-                              fontSize: '12px',
-                              cursor: 'pointer',
-                              textAlign: 'left',
-                            }}
-                            onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.05)')}
-                            onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                          >
-                            {s}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-                  </td>
-                </tr>
-              )))}
+                  const statusClass =
+                    row.status === 'Completed'
+                      ? 'tc-status-badge--completed'
+                      : row.status === 'In Progress'
+                      ? 'tc-status-badge--in-progress'
+                      : 'tc-status-badge--pending';
+
+                  return (
+                    <tr key={row.id} className="tc-table-row">
+                      <td className="tc-table-td tc-table-td--title">
+                        <div className="tc-table-user-cell">
+                          <span
+                            className={`tc-live-dot ${
+                              row.status === 'Completed' ? 'tc-live-dot--green' : 'tc-live-dot--gold'
+                            }`}
+                          />
+                          {row.name}
+                        </div>
+                      </td>
+                      <td className="tc-table-td">
+                        {row.project}
+                      </td>
+                      <td className="tc-table-td">
+                        {row.due}
+                      </td>
+                      <td className="tc-table-td">
+                        <span className={`tc-priority-badge ${priorityClass}`}>
+                          {row.priority}
+                        </span>
+                      </td>
+                      <td className="tc-table-td">
+                        <span className={`tc-status-badge ${statusClass}`}>
+                          {row.status}
+                        </span>
+                      </td>
+                      <td className="tc-table-td tc-table-td--right">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setActiveDropdownId(activeDropdownId === row.id ? null : row.id)
+                          }
+                          className="tc-action-btn-pill"
+                        >
+                          Update <ChevronDown size={12} />
+                        </button>
+
+                        {/* Status Dropdown Modal */}
+                        {activeDropdownId === row.id && (
+                          <div className="tc-status-dropdown-menu">
+                            {['Open', 'In Progress', 'Completed'].map((s) => (
+                              <button
+                                key={s}
+                                type="button"
+                                onClick={() => handleStatusChange(row.id, s)}
+                                className={`tc-status-dropdown-item ${row.status === s ? 'tc-status-dropdown-item--active' : ''}`}
+                              >
+                                {s}
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
       {/* BALANCED 2x2 GRID BELOW "MY TASKS" (Figma 538px / 538px) */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(480px, 1fr))',
-          gap: '24px',
-        }}
-      >
+      <div className="tc-dashboard-grid-2x2">
         {/* ROW 1 LEFT: My Project Progress Card (Figma 613:368) */}
-        <div
-          style={{
-            backgroundColor: '#232324',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '16px',
-            padding: '24px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#FFFFFF', margin: 0 }}>
+        <div className="tc-grid-card">
+          <div className="tc-card-header-row">
+            <h3 className="tc-card-title">
               My Project Progress
             </h3>
             <button
               type="button"
-              style={{ background: 'none', border: 'none', color: '#9CA3AF', fontSize: '13px', cursor: 'pointer' }}
+              onClick={() => onNavigate?.('projects')}
+              className="tc-card-link-btn"
             >
               View All
             </button>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
-            {/* Project 1 */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <div>
-                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF' }}>
-                    TitanCode Web Platform
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#9CA3AF' }}>Frontend Architecture</div>
-                </div>
-                <span
-                  style={{
-                    padding: '3px 8px',
-                    borderRadius: '9999px',
-                    backgroundColor: '#DFAE324D',
-                    color: '#dfae32',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                  }}
-                >
-                  85%
-                </span>
-              </div>
-              <div style={{ height: '8px', borderRadius: '4px', backgroundColor: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
-                <div style={{ width: '85%', height: '100%', backgroundColor: '#dfae32', borderRadius: '4px' }} />
-              </div>
-              <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '6px' }}>
-                Deadline: Aug 30, 2024
-              </div>
+          {projects.length === 0 ? (
+            <div className="tc-table-empty">
+              No assigned projects yet. When you are assigned to a project sprint, it will appear here.
             </div>
+          ) : (
+            <div className="tc-progress-list">
+              {projects.slice(0, 3).map((proj, idx) => {
+                const pct =
+                  proj.progress_percentage ??
+                  (proj.status === 'completed'
+                    ? 100
+                    : proj.status === 'in_progress'
+                    ? 65
+                    : 25);
+                const badgeStyle = pct >= 80 ? 'gold' : pct >= 50 ? 'blue' : 'gold';
+                const deadlineStr = proj.deadline
+                  ? new Date(proj.deadline).toLocaleDateString('en-US', {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })
+                  : 'Flexible';
 
-            <div style={{ height: '1px', backgroundColor: 'rgba(255, 255, 255, 0.06)' }} />
-
-            {/* Project 2 */}
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                <div>
-                  <div style={{ fontSize: '14px', fontWeight: '600', color: '#FFFFFF' }}>
-                    Aurelia FinTech Mobile App
+                return (
+                  <div key={proj.id} className="tc-progress-item">
+                    <div className="tc-progress-header">
+                      <div>
+                        <div className="tc-progress-title">{proj.project_name || proj.name || 'Project'}</div>
+                        <div className="tc-progress-subtitle">
+                          {proj.description ? proj.description.slice(0, 48) + '...' : 'Sprint Deliverable'}
+                        </div>
+                      </div>
+                      <span className={`tc-progress-badge tc-progress-badge--${badgeStyle}`}>
+                        {pct}%
+                      </span>
+                    </div>
+                    <div className="tc-progress-bar-bg">
+                      <div
+                        className={`tc-progress-bar-fill tc-progress-bar-fill--${badgeStyle}`}
+                        style={{ width: `${pct}%` }}
+                      />
+                    </div>
+                    <div className="tc-progress-date">
+                      Deadline: {deadlineStr}
+                    </div>
+                    {idx < Math.min(projects.length, 3) - 1 && <div className="tc-progress-divider" />}
                   </div>
-                  <div style={{ fontSize: '12px', color: '#9CA3AF' }}>React Native & WebRTC</div>
-                </div>
-                <span
-                  style={{
-                    padding: '3px 8px',
-                    borderRadius: '9999px',
-                    backgroundColor: 'rgba(59, 130, 246, 0.15)',
-                    color: '#3B82F6',
-                    fontSize: '11px',
-                    fontWeight: '600',
-                  }}
-                >
-                  60%
-                </span>
-              </div>
-              <div style={{ height: '8px', borderRadius: '4px', backgroundColor: 'rgba(255, 255, 255, 0.08)', overflow: 'hidden' }}>
-                <div style={{ width: '60%', height: '100%', backgroundColor: '#3B82F6', borderRadius: '4px' }} />
-              </div>
-              <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '6px' }}>
-                Deadline: Sep 15, 2024
-              </div>
+                );
+              })}
             </div>
-          </div>
+          )}
         </div>
 
         {/* ROW 1 RIGHT: Upcoming Meetings (Figma Rectangle 286) */}
-        <div
-          style={{
-            backgroundColor: '#232324',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '16px',
-            padding: '24px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#FFFFFF', margin: 0 }}>
+        <div className="tc-grid-card">
+          <div className="tc-card-header-row">
+            <h3 className="tc-card-title">
               Upcoming Meetings
             </h3>
             <button
               type="button"
-              style={{ background: 'none', border: 'none', color: '#9CA3AF', fontSize: '13px', cursor: 'pointer' }}
+              onClick={() => onNavigate?.('meetings')}
+              className="tc-card-link-btn"
             >
               View All
             </button>
           </div>
 
-          <div
-            style={{
-              padding: '18px',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(255, 255, 255, 0.03)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-            }}
-          >
-            <div style={{ fontSize: '16px', fontWeight: '700', color: '#FFFFFF', marginBottom: '8px' }}>
-              TitanCode Weekly Sync & Sprint Review
-            </div>
-
-            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', fontSize: '13px', color: '#9CA3AF', marginBottom: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Calendar size={14} color="#dfae32" />
-                <span>Today</span>
+          {meetings.length === 0 ? (
+            <div className="tc-meeting-inner-box tc-meeting-inner-box--empty">
+              <div className="tc-meeting-empty-title">
+                No upcoming meetings scheduled
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <Clock size={14} color="#dfae32" />
-                <span>05:30 PM - 06:15 PM WAT</span>
-              </div>
+              <p className="tc-meeting-empty-desc">
+                You have no calendar sessions booked for today.
+              </p>
+              <button
+                type="button"
+                onClick={() => onNavigate?.('meetings')}
+                className="tc-gold-btn tc-gold-btn--full"
+              >
+                <Calendar size={16} />
+                <span>Open Calendar</span>
+              </button>
             </div>
+          ) : (
+            (() => {
+              const nextMeeting = meetings[0];
+              const meetingDate =
+                nextMeeting.date || (nextMeeting as any).scheduled_at
+                  ? new Date((nextMeeting as any).scheduled_at || nextMeeting.date).toLocaleDateString('en-US', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                    })
+                  : 'Today';
+              const meetingTime = nextMeeting.time || 'Upcoming';
+              const meetUrl =
+                (nextMeeting as any).meeting_url ||
+                (nextMeeting as any).link ||
+                'https://meet.google.com/titancode-sync';
 
-            {/* Attendees Stack (Figma 613:494) */}
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
-              <div style={{ display: 'flex', alignItems: 'center' }}>
-                {['/assets/joseph.jpg', '/assets/benedicta.png', '/assets/munis.jpg', '/assets/blessing.jpg'].map(
-                  (avatar, idx) => (
-                    <div
-                      key={idx}
-                      style={{
-                        width: '32px',
-                        height: '32px',
-                        borderRadius: '50%',
-                        overflow: 'hidden',
-                        border: '2px solid #232324',
-                        marginLeft: idx === 0 ? 0 : '-8px',
-                      }}
-                    >
-                      <img src={avatar} alt="Attendee" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              return (
+                <div className="tc-meeting-inner-box">
+                  <div className="tc-meeting-title">{nextMeeting.title}</div>
+
+                  <div className="tc-meeting-meta">
+                    <div className="tc-meeting-meta-item">
+                      <Calendar size={14} color="#dfae32" />
+                      <span>{meetingDate}</span>
                     </div>
-                  )
-                )}
-                <div
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    backgroundColor: 'rgba(223, 174, 50, 0.2)',
-                    border: '2px solid #232324',
-                    marginLeft: '-8px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '11px',
-                    fontWeight: '700',
-                    color: '#dfae32',
-                  }}
-                >
-                  +3
-                </div>
-              </div>
-              <span style={{ fontSize: '12px', color: '#9CA3AF' }}>Google Meet</span>
-            </div>
+                    <div className="tc-meeting-meta-item">
+                      <Clock size={14} color="#dfae32" />
+                      <span>{meetingTime}</span>
+                    </div>
+                  </div>
 
-            {/* FULL-WIDTH "Join Meeting" Button (Figma Frame 613:506: 478px wide) */}
-            <a
-              href="https://meet.google.com/titancode-sync"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                gap: '8px',
-                width: '100%',
-                height: '44px',
-                borderRadius: '10px',
-                backgroundColor: '#dfae32',
-                color: '#0b0b0c',
-                fontWeight: '700',
-                fontSize: '14px',
-                textDecoration: 'none',
-                transition: 'background-color 0.15s ease',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#ECC046')}
-              onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#dfae32')}
-            >
-              <Video size={17} />
-              <span>Join Meeting</span>
-              <ExternalLink size={14} />
-            </a>
-          </div>
+                  {/* Attendees */}
+                  <div className="tc-attendee-group">
+                    <div className="tc-attendee-list">
+                      {((nextMeeting as any).attendee_names || ['Lead Dev', 'Architecture', 'Client PM']).map(
+                        (name: string, idx: number) => (
+                          <div
+                            key={idx}
+                            className={`tc-attendee-placeholder ${idx > 0 ? 'tc-attendee-overlap' : ''}`}
+                            title={name}
+                          >
+                            {name
+                              .split(' ')
+                              .map((n: string) => n[0])
+                              .join('')
+                              .slice(0, 2)}
+                          </div>
+                        )
+                      )}
+                    </div>
+                    <span className="tc-meeting-platform-label">Google Meet / WebRTC</span>
+                  </div>
+
+                  {/* Full width button */}
+                  <a
+                    href={meetUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tc-gold-btn tc-gold-btn--full"
+                  >
+                    <Video size={17} />
+                    <span>Join Meeting</span>
+                    <ExternalLink size={14} />
+                  </a>
+                </div>
+              );
+            })()
+          )}
         </div>
 
         {/* ROW 2 LEFT: Task Overview Donut (Figma Rectangle 288) */}
-        <div
-          style={{
-            backgroundColor: '#232324',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '16px',
-            padding: '24px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#FFFFFF', margin: 0 }}>
+        <div className="tc-grid-card">
+          <div className="tc-card-header-row">
+            <h3 className="tc-card-title">
               Task Overview
             </h3>
-            <span style={{ fontSize: '12px', color: '#9CA3AF' }}>Total: {taskRows.length} Tasks</span>
+            <span className="tc-donut-legend-label">Total: {taskRows.length} Tasks</span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '10px 0' }}>
+          <div className="tc-donut-wrapper">
             <DonutChart slices={donutSlices} size={150} thickness={24} />
           </div>
 
-          <div style={{ display: 'flex', justifyContent: 'space-around', marginTop: '16px' }}>
+          <div className="tc-donut-legend">
             {donutSlices.map((slice) => (
-              <div key={slice.label} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <span style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: slice.color }} />
-                <span style={{ fontSize: '12px', color: '#9CA3AF' }}>{slice.label}:</span>
-                <span style={{ fontSize: '13px', fontWeight: '700', color: '#FFFFFF' }}>{slice.value}</span>
+              <div key={slice.label} className="tc-donut-legend-item">
+                <span className={`tc-donut-legend-dot tc-donut-legend-dot--${slice.label.toLowerCase().replace(' ', '-')}`} />
+                <span className="tc-donut-legend-label">{slice.label}:</span>
+                <span className="tc-donut-legend-value">{slice.value}</span>
               </div>
             ))}
           </div>
         </div>
 
         {/* ROW 2 RIGHT: Recent Activity Event Feed (Figma Rectangle 287) */}
-        <div
-          style={{
-            backgroundColor: '#232324',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            borderRadius: '16px',
-            padding: '24px',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: '700', color: '#FFFFFF', margin: 0 }}>
+        <div className="tc-grid-card">
+          <div className="tc-card-header-row">
+            <h3 className="tc-card-title">
               Recent Activity
             </h3>
             <button
               type="button"
-              style={{ background: 'none', border: 'none', color: '#9CA3AF', fontSize: '13px', cursor: 'pointer' }}
+              onClick={() => onNavigate?.('tasks')}
+              className="tc-card-link-btn"
             >
               View All
             </button>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            {recentActivities.map((act) => (
-              <div
-                key={act.id}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '12px',
-                  padding: '10px 12px',
-                  borderRadius: '10px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                  border: '1px solid rgba(255, 255, 255, 0.04)',
-                }}
-              >
-                <div
-                  style={{
-                    width: '32px',
-                    height: '32px',
-                    borderRadius: '50%',
-                    overflow: 'hidden',
-                    flexShrink: 0,
-                  }}
-                >
-                  <img src={act.avatar} alt={act.author} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div
-                    style={{
-                      fontSize: '13px',
-                      color: '#FFFFFF',
-                      whiteSpace: 'nowrap',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                    }}
-                  >
-                    {act.text}
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>
-                    {act.author} • {act.timestamp}
-                  </div>
-                </div>
+          <div className="tc-list-stack">
+            {recentActivities.length === 0 ? (
+              <div className="tc-table-empty">
+                No recent workspace activities recorded yet.
               </div>
-            ))}
+            ) : (
+              recentActivities.map((act) => (
+                <div key={act.id} className="tc-approval-item">
+                  <div className="tc-activity-avatar">
+                    {act.avatar ? (
+                      <img src={act.avatar} alt={act.author} />
+                    ) : (
+                      <div className="tc-activity-fallback">
+                        {act.author
+                          ?.split(' ')
+                          .map((n) => n[0])
+                          .join('')
+                          .slice(0, 2)}
+                      </div>
+                    )}
+                  </div>
+                  <div className="tc-activity-content">
+                    <div className="tc-activity-title">
+                      {act.text}
+                    </div>
+                    <div className="tc-activity-meta">
+                      {act.author} • {act.timestamp}
+                    </div>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
         </div>
       </div>

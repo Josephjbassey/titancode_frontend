@@ -64,7 +64,7 @@ export const AuthLayout: React.FC<AuthLayoutProps> = ({ children, title, subtitl
             {subtitle && <p className="tc-auth-subtitle">{subtitle}</p>}
 
             {/* Form Fields & Interactive Actions */}
-            <div style={{ width: '100%' }}>{children}</div>
+            <div className="tc-w-full">{children}</div>
           </div>
         </div>
 

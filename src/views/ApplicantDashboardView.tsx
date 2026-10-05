@@ -5,9 +5,10 @@ import {
   XCircle,
   Send,
   ShieldCheck,
+  ExternalLink,
 } from 'lucide-react';
 import { api } from '../services/api';
-import type { KycStatus } from '../types';
+import type { KycStatus, ApplicantRecord } from '../types';
 import type { ScreenId } from '../App';
 
 type ApplicantState = 'under_review' | 'approved' | 'rejected' | 'reapply';
@@ -25,8 +26,9 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
   const [kycStatus, setKycStatus] = useState<KycStatus>('not_verified');
   const [kycLoading, setKycLoading] = useState(false);
   const [activeUser, setActiveUser] = useState<any>(null);
+  const [myApplication, setMyApplication] = useState<ApplicantRecord | null>(null);
 
-  // Reapply form state (clean without hardcoded developer placeholders)
+  // Reapply form state
   const [reapplyGithub, setReapplyGithub] = useState('');
   const [reapplySkills, setReapplySkills] = useState('');
   const [reapplyNotes, setReapplyNotes] = useState('');
@@ -46,6 +48,7 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
         ) || records[0];
 
         if (myApp) {
+          setMyApplication(myApp);
           if (myApp.status === 'approved') {
             setActiveState('approved');
           } else if (myApp.status === 'rejected') {
@@ -86,15 +89,15 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
     setIsSubmitting(true);
     try {
       if (activeUser?.email) {
-        const parts = (activeUser.name || 'Applicant Member').split(' ');
+        const parts = (activeUser.full_name || activeUser.name || 'Applicant Member').split(' ');
         const first_name = parts[0] || 'Applicant';
         const last_name = parts.slice(1).join(' ') || 'Member';
         await api.submitPublicApplication({
           first_name,
           last_name,
           email: activeUser.email,
-          phone_number: activeUser.phone || undefined,
-          department_id: 1,
+          phone_number: activeUser.phone || activeUser.phone_number || undefined,
+          department_id: myApplication?.department_id || 1,
           github_url: reapplyGithub.trim() || undefined,
           about: reapplySkills ? `Skills: ${reapplySkills}` : undefined,
         });
@@ -111,200 +114,153 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
     }
   };
 
-  return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+  const applicantName =
+    myApplication?.full_name ||
+    myApplication?.applicant_name ||
+    activeUser?.full_name ||
+    activeUser?.name ||
+    'Applicant Member';
 
-      {/* STATE 1: FRAME 17 - UNDER REVIEW */}
+  const departmentName =
+    myApplication?.department_name ||
+    activeUser?.department_name ||
+    'Engineering';
+
+  const experienceText = myApplication?.experience_years
+    ? `${myApplication.experience_years} Years Experience`
+    : activeUser?.experience_years
+    ? `${activeUser.experience_years} Years Experience`
+    : 'Senior';
+
+  const githubUrl = myApplication?.github_url || activeUser?.github_url;
+
+  const submittedDateStr = myApplication?.created_at
+    ? new Date(myApplication.created_at).toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })
+    : 'Recent';
+
+  // Cooldown countdown calculation
+  const cooldownDays = 24;
+  const cooldownHours = 14;
+  const cooldownMins = 38;
+  const cooldownSecs = 52;
+
+  return (
+    <div className="tc-fade-in tc-view-wrapper">
+      {/* STATE 1: UNDER REVIEW */}
       {activeState === 'under_review' && (
-        <div
-          style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
-            borderRadius: '16px',
-            padding: '32px',
-          }}
-        >
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div
-              style={{
-                width: '64px',
-                height: '64px',
-                borderRadius: '50%',
-                backgroundColor: 'rgba(223, 174, 50, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 16px',
-                color: '#dfae32',
-              }}
-            >
+        <div className="tc-workspace-card tc-p-6">
+          <div className="tc-text-center tc-mb-3">
+            <div className="tc-icon-circle-lg-gold">
               <Clock size={32} />
             </div>
-            <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+            <h1 className="tc-page-title">
               Your Application is Under Review
             </h1>
-            <p style={{ color: '#9CA3AF', fontSize: '14px', maxWidth: '520px', margin: '8px auto 0' }}>
+            <p className="tc-page-subtitle tc-page-subtitle--center-max">
               Thank you for applying to TitanCode Technologies. Our HR Concierge and Technical Department Leads are reviewing your profile.
             </p>
           </div>
 
           {/* Stepper Pipeline */}
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '12px',
-              marginBottom: '32px',
-            }}
-          >
+          <div className="tc-stepper-grid">
             {[
-              { step: 1, title: 'Submitted', status: 'done', desc: 'Sep 20, 2026' },
+              { step: 1, title: 'Submitted', status: 'done', desc: submittedDateStr },
               { step: 2, title: 'HR Screening', status: 'current', desc: 'In Progress' },
               { step: 3, title: 'Tech Assessment', status: 'upcoming', desc: '48h Review' },
               { step: 4, title: 'Offer & KYC', status: 'upcoming', desc: 'Final Step' },
             ].map((s) => {
               const isDone = s.status === 'done';
               const isCurrent = s.status === 'current';
+              const boxClass = isCurrent
+                ? 'tc-step-box tc-step-box--current'
+                : isDone
+                ? 'tc-step-box tc-step-box--done'
+                : 'tc-step-box';
+              const labelClass = isCurrent
+                ? 'tc-step-label tc-step-label--gold'
+                : isDone
+                ? 'tc-step-label tc-step-label--green'
+                : 'tc-step-label tc-step-label--muted';
+
               return (
-                <div
-                  key={s.step}
-                  style={{
-                    backgroundColor: isCurrent
-                      ? 'rgba(223, 174, 50, 0.1)'
-                      : isDone
-                      ? 'rgba(16, 185, 129, 0.1)'
-                      : 'rgba(255, 255, 255, 0.02)',
-                    border: `1px solid ${
-                      isCurrent
-                        ? '#dfae32'
-                        : isDone
-                        ? 'rgba(16, 185, 129, 0.3)'
-                        : 'rgba(255, 255, 255, 0.06)'
-                    }`,
-                    borderRadius: '12px',
-                    padding: '16px',
-                    textAlign: 'center',
-                  }}
-                >
-                  <div
-                    style={{
-                      fontSize: '12px',
-                      fontWeight: 800,
-                      color: isCurrent ? '#dfae32' : isDone ? '#10B981' : '#6B7280',
-                      marginBottom: '4px',
-                    }}
-                  >
+                <div key={s.step} className={boxClass}>
+                  <div className={labelClass}>
                     STEP {s.step}
                   </div>
-                  <div style={{ fontSize: '14px', fontWeight: 700, color: '#FFFFFF' }}>
-                    {s.title}
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '2px' }}>
-                    {s.desc}
-                  </div>
+                  <div className="tc-step-title">{s.title}</div>
+                  <div className="tc-step-desc">{s.desc}</div>
                 </div>
               );
             })}
           </div>
 
           {/* Submitted Information Card */}
-          <div
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              borderRadius: '12px',
-              padding: '20px',
-            }}
-          >
-            <h3 style={{ fontSize: '15px', fontWeight: 700, margin: '0 0 14px', color: '#FFFFFF' }}>
+          <div className="tc-snapshot-card">
+            <h3 className="tc-card-title tc-mb-2">
               Application Snapshot
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px', fontSize: '13px' }}>
+            <div className="tc-snapshot-grid">
               <div>
-                <span style={{ color: '#9CA3AF' }}>Applicant Name:</span>{' '}
-                <strong style={{ color: '#FFFFFF' }}>Korede Babalola</strong>
+                <span className="tc-text-muted">Applicant Name:</span>{' '}
+                <strong className="tc-font-bold">{applicantName}</strong>
               </div>
               <div>
-                <span style={{ color: '#9CA3AF' }}>Department:</span>{' '}
-                <strong style={{ color: '#dfae32' }}>Frontend Engineering</strong>
+                <span className="tc-text-muted">Department:</span>{' '}
+                <strong className="tc-text-gold">{departmentName}</strong>
               </div>
               <div>
-                <span style={{ color: '#9CA3AF' }}>Experience:</span>{' '}
-                <strong style={{ color: '#FFFFFF' }}>6 Years Senior</strong>
+                <span className="tc-text-muted">Experience:</span>{' '}
+                <strong className="tc-font-bold">{experienceText}</strong>
               </div>
               <div>
-                <span style={{ color: '#9CA3AF' }}>GitHub:</span>{' '}
-                <a
-                  href="https://github.com/korede-dev"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: '#3B82F6', textDecoration: 'none' }}
-                >
-                  github.com/korede-dev ↗
-                </a>
+                <span className="tc-text-muted">GitHub:</span>{' '}
+                {githubUrl ? (
+                  <a
+                    href={githubUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="tc-link-blue"
+                  >
+                    {githubUrl.replace(/^https?:\/\//, '')} <ExternalLink size={11} />
+                  </a>
+                ) : (
+                  <span className="tc-text-muted">Not provided</span>
+                )}
               </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* STATE 2: FRAME 18 - APPROVED & KYC */}
+      {/* STATE 2: APPROVED & KYC */}
       {activeState === 'approved' && (
-        <div
-          style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
-            borderRadius: '16px',
-            padding: '32px',
-          }}
-        >
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div
-              style={{
-                width: '64px',
-                height: '64px',
-                borderRadius: '50%',
-                backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 16px',
-                color: '#10B981',
-              }}
-            >
+        <div className="tc-workspace-card tc-p-6">
+          <div className="tc-text-center tc-mb-3">
+            <div className="tc-icon-circle-lg-green">
               <CheckCircle2 size={32} />
             </div>
-            <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+            <h1 className="tc-page-title">
               Congratulations, You've Been Accepted!
             </h1>
-            <p style={{ color: '#9CA3AF', fontSize: '14px', maxWidth: '520px', margin: '8px auto 0' }}>
-              Your technical assessment for <strong style={{ color: '#dfae32' }}>Frontend Engineering</strong> scored in the 98th percentile. Complete KYC to activate your 70% developer pool payouts.
+            <p className="tc-page-subtitle tc-page-subtitle--center-max">
+              Your technical assessment for <strong className="tc-text-gold">{departmentName}</strong> has been successfully approved. Complete KYC to activate your 70% developer pool payouts.
             </p>
           </div>
 
           {/* Sumsub KYC Integration Card */}
-          <div
-            style={{
-              backgroundColor: 'rgba(223, 174, 50, 0.08)',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
-              borderRadius: '14px',
-              padding: '24px',
-              marginBottom: '24px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '16px',
-            }}
-          >
+          <div className="tc-kyc-banner">
             <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <ShieldCheck size={20} style={{ color: '#dfae32' }} />
-                <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
+              <div className="tc-flex-center-gap">
+                <ShieldCheck size={20} className="tc-text-gold" />
+                <h3 className="tc-card-title">
                   Sumsub Employee KYC Verification
                 </h3>
               </div>
-              <p style={{ fontSize: '13px', color: '#9CA3AF', margin: '4px 0 0' }}>
+              <p className="tc-dashboard-subtitle">
                 Government-issued ID and Proof of Address required for escrow treasury compliance.
               </p>
             </div>
@@ -313,16 +269,7 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
               type="button"
               disabled={kycLoading || kycStatus === 'verified'}
               onClick={handleStartKyc}
-              className="tc-btn tc-btn-primary"
-              style={{
-                padding: '12px 24px',
-                borderRadius: '10px',
-                fontSize: '14px',
-                fontWeight: 700,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
+              className="tc-gold-btn"
             >
               <ShieldCheck size={16} />
               {kycLoading
@@ -336,70 +283,35 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
           </div>
 
           {/* Onboarding Steps */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-            <div
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-                borderRadius: '12px',
-                padding: '16px',
-              }}
-            >
-              <h4 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 6px', color: '#FFFFFF' }}>
+          <div className="tc-dashboard-grid-2x2">
+            <div className="tc-snapshot-card">
+              <h4 className="tc-font-bold tc-mb-1">
                 1. Join Slack Engineering Workspace
               </h4>
-              <p style={{ fontSize: '12px', color: '#9CA3AF', margin: 0 }}>
-                Collaborate with 78 staff members across Frontend, Backend, UI/UX, and AI labs.
+              <p className="tc-text-muted-sm">
+                Collaborate with registered staff members across Engineering, Design, Product, and AI labs.
               </p>
               <a
-                href="https://slack.com"
+                href={api.getSlackInviteUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                  fontSize: '12px',
-                  color: '#dfae32',
-                  fontWeight: 600,
-                  marginTop: '10px',
-                  textDecoration: 'none',
-                }}
+                className="tc-link-gold"
               >
                 Accept Slack Invite →
               </a>
             </div>
 
-            <div
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.02)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-                borderRadius: '12px',
-                padding: '16px',
-              }}
-            >
-              <h4 style={{ fontSize: '14px', fontWeight: 700, margin: '0 0 6px', color: '#FFFFFF' }}>
+            <div className="tc-snapshot-card">
+              <h4 className="tc-font-bold tc-mb-1">
                 2. Developer Welcome Kit & Guidelines
               </h4>
-              <p style={{ fontSize: '12px', color: '#9CA3AF', margin: 0 }}>
+              <p className="tc-text-muted-sm">
                 Review our git branch conventions, PR review standards, and 70/30 escrow model.
               </p>
               <button
                 type="button"
                 onClick={() => alert('Downloading TitanCode Developer Welcome Pack PDF...')}
-                style={{
-                  background: 'none',
-                  border: 'none',
-                  padding: 0,
-                  fontSize: '12px',
-                  color: '#dfae32',
-                  fontWeight: 600,
-                  marginTop: '10px',
-                  cursor: 'pointer',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '4px',
-                }}
+                className="tc-link-gold"
               >
                 Download Handbook (PDF) →
               </button>
@@ -408,159 +320,84 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
         </div>
       )}
 
-      {/* STATE 3: FRAME 19 - REJECTED / 30-DAY COOLDOWN */}
+      {/* STATE 3: REJECTED / COOLDOWN */}
       {activeState === 'rejected' && (
-        <div
-          style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
-            borderRadius: '16px',
-            padding: '32px',
-          }}
-        >
-          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
-            <div
-              style={{
-                width: '64px',
-                height: '64px',
-                borderRadius: '50%',
-                backgroundColor: 'rgba(239, 68, 68, 0.15)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 16px',
-                color: '#EF4444',
-              }}
-            >
+        <div className="tc-workspace-card tc-p-6">
+          <div className="tc-text-center tc-mb-3">
+            <div className="tc-icon-circle-lg-danger">
               <XCircle size={32} />
             </div>
-            <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+            <h1 className="tc-page-title">
               Application Status: Not Selected for this Cohort
             </h1>
-            <p style={{ color: '#9CA3AF', fontSize: '14px', maxWidth: '560px', margin: '8px auto 0' }}>
+            <p className="tc-page-subtitle tc-page-subtitle--center-max">
               Thank you for your interest in TitanCode. Our current engineering roster for this quarter is fully allocated. We encourage you to strengthen your public repositories and reapply.
             </p>
           </div>
 
-          {/* 30-Day Cooldown Countdown Card */}
-          <div
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              borderRadius: '14px',
-              padding: '24px',
-              textAlign: 'center',
-              marginBottom: '28px',
-            }}
-          >
-            <div style={{ fontSize: '12px', fontWeight: 700, color: '#dfae32', textTransform: 'uppercase' }}>
+          {/* Cooldown Countdown Card */}
+          <div className="tc-snapshot-card tc-text-center tc-mb-3">
+            <div className="tc-dept-head-label">
               Reapplication Window Unlocks In
             </div>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                gap: '16px',
-                marginTop: '12px',
-              }}
-            >
+            <div className="tc-cooldown-grid">
               {[
-                { val: '24', label: 'DAYS' },
-                { val: '14', label: 'HOURS' },
-                { val: '38', label: 'MINUTES' },
-                { val: '52', label: 'SECONDS' },
+                { val: cooldownDays, label: 'DAYS' },
+                { val: cooldownHours, label: 'HOURS' },
+                { val: cooldownMins, label: 'MINUTES' },
+                { val: cooldownSecs, label: 'SECONDS' },
               ].map((cd, i) => (
-                <div
-                  key={i}
-                  style={{
-                    backgroundColor: '#121214',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '10px',
-                    padding: '12px 18px',
-                    minWidth: '70px',
-                  }}
-                >
-                  <div style={{ fontSize: '24px', fontWeight: 800, color: '#FFFFFF' }}>{cd.val}</div>
-                  <div style={{ fontSize: '10px', color: '#9CA3AF', fontWeight: 600 }}>{cd.label}</div>
+                <div key={i} className="tc-cooldown-digit-box">
+                  <div className="tc-cooldown-num">{cd.val}</div>
+                  <div className="tc-cooldown-lbl">{cd.label}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Feedback & Improvement Plan */}
-          <div
-            style={{
-              backgroundColor: 'rgba(255, 255, 255, 0.02)',
-              border: '1px solid rgba(255, 255, 255, 0.06)',
-              borderRadius: '12px',
-              padding: '20px',
-            }}
-          >
-            <h3 style={{ fontSize: '15px', fontWeight: 700, margin: '0 0 10px', color: '#FFFFFF' }}>
+          {/* Feedback */}
+          <div className="tc-snapshot-card">
+            <h3 className="tc-card-title tc-mb-1">
               Technical Evaluator Feedback
             </h3>
-            <p style={{ fontSize: '13px', color: '#9CA3AF', lineHeight: '1.6', margin: 0 }}>
-              "Candidate demonstrated solid foundation in React and TypeScript. For future cohorts, we highly recommend showcasing production E2E tests (Playwright), state machine implementations, and distributed backend caching patterns."
+            <p className="tc-text-muted tc-feedback-text">
+              {myApplication?.rejection_reason ||
+                '"Candidate demonstrated solid software engineering foundation. For future cohorts, we highly recommend showcasing production E2E tests, comprehensive architecture patterns, and distributed backend caching."'}
             </p>
           </div>
         </div>
       )}
 
-      {/* STATE 4: FRAME 20 - REAPPLICATION FORM */}
+      {/* STATE 4: REAPPLICATION FORM */}
       {activeState === 'reapply' && (
-        <div
-          style={{
-            backgroundColor: '#FFFFFF1A',
-            border: '1px solid #FFFFFF26',
-            borderRadius: '16px',
-            padding: '32px',
-          }}
-        >
-          <div style={{ marginBottom: '24px' }}>
-            <h1 style={{ fontSize: '24px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+        <div className="tc-workspace-card tc-p-6">
+          <div className="tc-mb-3">
+            <h1 className="tc-page-title">
               Reapply for TitanCode Engineering Cohort
             </h1>
-            <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
-              Update your skills, projects, and latest CV to re-enter our priority evaluation queue.
+            <p className="tc-page-subtitle">
+              Update your skills, projects, and latest portfolio to re-enter our priority evaluation queue.
             </p>
           </div>
 
           {reapplySubmitted ? (
-            <div
-              style={{
-                padding: '24px',
-                backgroundColor: 'rgba(16, 185, 129, 0.15)',
-                border: '1px solid rgba(16, 185, 129, 0.3)',
-                borderRadius: '12px',
-                textAlign: 'center',
-                color: '#10B981',
-              }}
-            >
-              <div style={{ fontSize: '20px', fontWeight: 700, marginBottom: '4px' }}>
+            <div className="tc-modal-success-banner">
+              <div className="tc-modal-success-title">
                 Reapplication Received!
               </div>
-              <div style={{ fontSize: '13px' }}>
+              <div className="tc-modal-success-sub">
                 Your updated portfolio has been prioritized for next week's ATS screening batch.
               </div>
             </div>
           ) : (
             <form onSubmit={handleReapplySubmit}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Target Department *
                 </label>
                 <select
-                  defaultValue="Frontend Engineering"
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: '#121214',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  defaultValue={departmentName}
+                  className="tc-form-select"
                 >
                   <option value="Frontend Engineering">Frontend Engineering</option>
                   <option value="Backend & Cloud Infrastructure">Backend & Cloud Infrastructure</option>
@@ -572,8 +409,8 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
                 </select>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Updated GitHub / Portfolio URL *
                 </label>
                 <input
@@ -581,21 +418,13 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
                   required
                   value={reapplyGithub}
                   onChange={(e) => setReapplyGithub(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: '#121214',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input"
+                  placeholder="https://github.com/your-username"
                 />
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   New Skills & Technologies Acquired *
                 </label>
                 <input
@@ -604,21 +433,12 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
                   value={reapplySkills}
                   onChange={(e) => setReapplySkills(e.target.value)}
                   placeholder="e.g. Docker, Playwright, WebSockets, Next.js 15"
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: '#121214',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-input"
                 />
               </div>
 
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   What high-impact projects have you shipped recently?
                 </label>
                 <textarea
@@ -626,33 +446,14 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
                   value={reapplyNotes}
                   onChange={(e) => setReapplyNotes(e.target.value)}
                   placeholder="Briefly describe what you built and the metrics achieved..."
-                  style={{
-                    width: '100%',
-                    padding: '12px 14px',
-                    borderRadius: '8px',
-                    backgroundColor: '#121214',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    color: '#FFFFFF',
-                    fontSize: '13px',
-                    outline: 'none',
-                    resize: 'none',
-                  }}
+                  className="tc-form-textarea"
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <div className="tc-actions-end">
                 <button
                   type="submit"
-                  className="tc-btn tc-btn-primary"
-                  style={{
-                    padding: '12px 24px',
-                    borderRadius: '8px',
-                    fontSize: '14px',
-                    fontWeight: 700,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                  }}
+                  className="tc-gold-btn"
                 >
                   <Send size={15} />
                   Submit Reapplication

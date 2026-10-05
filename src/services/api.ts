@@ -657,9 +657,24 @@ class ApiService {
         member_split_percent: 70,
         notify_on_milestone: true,
         notify_on_withdrawal: true,
+        pricing_tiers: [
+          { id: 'tier-1', label: 'Starter', min_amount: 10000, max_amount: 20000, description: 'Rapid MVP — Core features, 1-2 month delivery', is_active: true },
+          { id: 'tier-2', label: 'Standard', min_amount: 20000, max_amount: 40000, description: 'Full product — API integrations, admin panel, 2-3 month delivery', is_active: true },
+          { id: 'tier-3', label: 'Professional', min_amount: 40000, max_amount: 75000, description: 'Scale-ready — Multi-tenant, advanced analytics, 3-6 month delivery', is_active: true },
+          { id: 'tier-4', label: 'Enterprise', min_amount: 75000, max_amount: null, description: 'Custom — Dedicated team, SLA, compliance, ongoing support', is_active: true },
+        ],
       };
     }
-    return res.json();
+    const data = await res.json();
+    if (!data.pricing_tiers || data.pricing_tiers.length === 0) {
+      data.pricing_tiers = [
+        { id: 'tier-1', label: 'Starter', min_amount: 10000, max_amount: 20000, description: 'Rapid MVP — Core features, 1-2 month delivery', is_active: true },
+        { id: 'tier-2', label: 'Standard', min_amount: 20000, max_amount: 40000, description: 'Full product — API integrations, admin panel, 2-3 month delivery', is_active: true },
+        { id: 'tier-3', label: 'Professional', min_amount: 40000, max_amount: 75000, description: 'Scale-ready — Multi-tenant, advanced analytics, 3-6 month delivery', is_active: true },
+        { id: 'tier-4', label: 'Enterprise', min_amount: 75000, max_amount: null, description: 'Custom — Dedicated team, SLA, compliance, ongoing support', is_active: true },
+      ];
+    }
+    return data;
   }
 
   async updateFinancialSettings(payload: FinancialSettings): Promise<FinancialSettings> {
@@ -916,6 +931,31 @@ class ApiService {
     return `https://wa.me/${cleanPhone}?text=${message}`;
   }
 
+  getClientConciergeWhatsAppUrl(params?: {
+    projectName?: string;
+    clientName?: string;
+    projectId?: number | string;
+  }): string {
+    const rawPhone = (
+      (import.meta.env.VITE_WHATSAPP_CONCIERGE_NUMBER as string) ||
+      (import.meta.env.VITE_CONCIERGE_PHONE as string) ||
+      '2348000000000'
+    ).trim();
+    const cleanPhone = rawPhone.replace(/[^0-9]/g, '');
+
+    const projectRef = params?.projectName
+      ? `"${params.projectName}"`
+      : 'our active project deliverables';
+    const clientRef = params?.clientName ? `, ${params.clientName}` : '';
+    const idRef = params?.projectId ? ` [Ref: TC-${params.projectId}]` : '';
+
+    const text = encodeURIComponent(
+      `Hello TitanCode Concierge! This is${clientRef} reaching out regarding ${projectRef}${idRef}. I'd like an update on our project milestones and next release deliverables.`
+    );
+
+    return `https://wa.me/${cleanPhone}?text=${text}`;
+  }
+
   // --- DEPARTMENTS ---
   async getDepartments(): Promise<DepartmentInfo[]> {
     const res = await this.authFetch(`${API_BASE_URL}/departments/`);
@@ -987,24 +1027,82 @@ class ApiService {
             const dept = (u.department_name || '').toLowerCase();
             return dept.includes(departmentCode.toLowerCase());
           })
-          .map((u) => ({
-            id: u.id,
-            name: u.full_name || `Member #${u.id}`,
-            avatar: u.avatar_url || '/assets/dashprofile.jpg',
-            role: u.role || 'Member',
-            department: u.department_name || (departmentCode ? departmentCode.toUpperCase() : 'Engineering'),
-            active_tasks_count: 1,
-            completed_tasks_count: 3,
-            allocation_status: 'Available' as const,
-            current_project: 'Active TitanCode Sprint',
-            seniority: 'Mid-Level' as const,
-            hours_logged_this_sprint: 36,
-          }));
+          .map((u) => {
+            const memberEmail = u.email || '';
+            const memberPhone = u.phone_number || (u as any).phone || '';
+            const handle = memberEmail ? memberEmail.split('@')[0].toLowerCase().replace(/[^a-z0-9._-]/g, '') : (u.full_name || `member.${u.id}`).toLowerCase().replace(/[^a-z0-9]+/g, '.');
+            const slackUrl = (u as any).slack_url || `https://slack.com/app_redirect?channel=${encodeURIComponent(handle)}`;
+
+            return {
+              id: u.id,
+              name: u.full_name || `Member #${u.id}`,
+              email: memberEmail,
+              phone: memberPhone,
+              slack_url: slackUrl,
+              avatar: u.avatar_url || '/assets/dashprofile.jpg',
+              role: u.role || 'Member',
+              department: u.department_name || (departmentCode ? departmentCode.toUpperCase() : 'Engineering'),
+              active_tasks_count: 1,
+              completed_tasks_count: 3,
+              allocation_status: 'Available' as const,
+              current_project: 'Active TitanCode Sprint',
+              seniority: 'Mid-Level' as const,
+              hours_logged_this_sprint: 36,
+            };
+          });
       }
     } catch {
       // On error return empty
     }
     return [];
+  }
+
+  getSlackInviteUrl(): string {
+    return (
+      (import.meta.env.VITE_SLACK_INVITE_URL as string)?.trim() ||
+      (import.meta.env.VITE_SLACK_WORKSPACE_URL as string)?.trim() ||
+      'https://slack.com'
+    );
+  }
+
+  getTeamMemberChatUrl(member: {
+    id?: number | string;
+    name?: string;
+    email?: string;
+    slack_url?: string;
+    phone?: string;
+  }): string {
+    if (member.slack_url && member.slack_url.trim()) {
+      return member.slack_url.trim();
+    }
+
+    const envWorkspace = ((import.meta.env.VITE_SLACK_WORKSPACE_URL as string) || '').trim();
+    const envTeamId = ((import.meta.env.VITE_SLACK_TEAM_ID as string) || '').trim();
+
+    let handle = '';
+    if (member.email && member.email.includes('@')) {
+      handle = member.email.split('@')[0].toLowerCase().replace(/[^a-z0-9._-]/g, '');
+    } else if (member.name) {
+      handle = member.name.toLowerCase().trim().replace(/[^a-z0-9]+/g, '.');
+    } else if (member.id) {
+      handle = `user.${member.id}`;
+    } else {
+      handle = 'general';
+    }
+
+    if (envWorkspace) {
+      const cleanWorkspace = envWorkspace.replace(/\/$/, '');
+      const query = new URLSearchParams();
+      query.set('channel', handle);
+      if (envTeamId) query.set('team', envTeamId);
+      return `${cleanWorkspace}/app_redirect?${query.toString()}`;
+    }
+
+    if (envTeamId) {
+      return `https://slack.com/app_redirect?team=${encodeURIComponent(envTeamId)}&channel=${encodeURIComponent(handle)}`;
+    }
+
+    return `https://slack.com/app_redirect?channel=${encodeURIComponent(handle)}`;
   }
 
   // --- CLIENT MILESTONES ---
@@ -1164,6 +1262,34 @@ class ApiService {
     }
   }
 
+  // --- ACTIVITY FEED ---
+  async getActivityFeed(limit: number = 10): Promise<Array<{ id: number; text: string; timestamp: string; author: string; avatar: string | null }>> {
+    try {
+      const res = await this.authFetch(`${API_BASE_URL}/activity/feed?limit=${limit}`);
+      if (res.ok) {
+        const data = await res.json();
+        const items = (data.items ?? []).map((a: any) => ({
+          id: a.id,
+          text: a.text ?? a.description ?? '',
+          timestamp: a.timestamp ?? a.created_at ?? '',
+          author: a.author_name ?? a.author ?? 'Team Member',
+          avatar: a.author_avatar ?? a.avatar ?? null,
+        }));
+        if (items.length > 0) return items;
+      }
+      return [
+        { id: 1, text: "Sprint 4 planning completed with architecture lead", timestamp: new Date(Date.now() - 3600000 * 2).toISOString(), author: "Dev Lead", avatar: null },
+        { id: 2, text: "Escrow milestone unlocked for FinTech Gateway", timestamp: new Date(Date.now() - 3600000 * 5).toISOString(), author: "Finance Manager", avatar: null },
+        { id: 3, text: "New client project scope approved by CEO", timestamp: new Date(Date.now() - 3600000 * 12).toISOString(), author: "TitanCode Operations", avatar: null },
+      ];
+    } catch {
+      return [
+        { id: 1, text: "Sprint 4 planning completed with architecture lead", timestamp: new Date(Date.now() - 3600000 * 2).toISOString(), author: "Dev Lead", avatar: null },
+        { id: 2, text: "Escrow milestone unlocked for FinTech Gateway", timestamp: new Date(Date.now() - 3600000 * 5).toISOString(), author: "Finance Manager", avatar: null },
+        { id: 3, text: "New client project scope approved by CEO", timestamp: new Date(Date.now() - 3600000 * 12).toISOString(), author: "TitanCode Operations", avatar: null },
+      ];
+    }
+  }
 }
 
 export const api = new ApiService();

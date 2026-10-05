@@ -13,57 +13,21 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
   children,
 }) => {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '24px', paddingBottom: '32px' }} className="tc-fade-in">
+    <div className="tc-fade-in tc-settings-layout-container">
       {/* Top Title: Account Settings */}
-      <h1 style={{
-        fontSize: '24px',
-        fontWeight: '700',
-        color: '#FFFFFF',
-        letterSpacing: '-0.4px',
-        margin: 0,
-      }}>
+      <h1 className="tc-page-title">
         Account Settings
       </h1>
 
       {/* Main Settings Body: Left Subnav Column + Right Content Area */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '240px minmax(0, 1fr)',
-        gap: '24px',
-        alignItems: 'start',
-      }}
-      className="tc-settings-split"
-      >
+      <div className="tc-settings-split">
         {/* Left Sub-Navigation Menu (Figma) */}
-        <div style={{
-          backgroundColor: '#232324',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '16px 12px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '6px',
-        }}>
+        <div className="tc-settings-subnav">
           {/* Profile Settings Tab */}
           <button
             type="button"
             onClick={() => onTabChange('profile')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              padding: '10px 16px',
-              borderRadius: '9999px',
-              backgroundColor: activeTab === 'profile' ? 'transparent' : 'transparent',
-              border: activeTab === 'profile' ? '1px solid #dfae32' : '1px solid transparent',
-              color: activeTab === 'profile' ? '#dfae32' : '#9CA3AF',
-              fontWeight: activeTab === 'profile' ? 700 : 500,
-              fontSize: '14px',
-              cursor: 'pointer',
-              textAlign: 'left',
-              width: '100%',
-              transition: 'all 0.15s ease',
-            }}
+            className={`tc-settings-subnav-btn ${activeTab === 'profile' ? 'tc-settings-subnav-btn--active' : ''}`}
           >
             <User size={18} />
             <span>Profile Settings</span>
@@ -73,22 +37,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
           <button
             type="button"
             onClick={() => onTabChange('password')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              padding: '10px 16px',
-              borderRadius: '9999px',
-              backgroundColor: activeTab === 'password' ? 'transparent' : 'transparent',
-              border: activeTab === 'password' ? '1px solid #dfae32' : '1px solid transparent',
-              color: activeTab === 'password' ? '#dfae32' : '#9CA3AF',
-              fontWeight: activeTab === 'password' ? 700 : 500,
-              fontSize: '14px',
-              cursor: 'pointer',
-              textAlign: 'left',
-              width: '100%',
-              transition: 'all 0.15s ease',
-            }}
+            className={`tc-settings-subnav-btn ${activeTab === 'password' ? 'tc-settings-subnav-btn--active' : ''}`}
           >
             <Lock size={18} />
             <span>Password</span>
@@ -98,22 +47,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
           <button
             type="button"
             onClick={() => onTabChange('notifications')}
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              padding: '10px 16px',
-              borderRadius: '9999px',
-              backgroundColor: activeTab === 'notifications' ? 'transparent' : 'transparent',
-              border: activeTab === 'notifications' ? '1px solid #dfae32' : '1px solid transparent',
-              color: activeTab === 'notifications' ? '#dfae32' : '#9CA3AF',
-              fontWeight: activeTab === 'notifications' ? 700 : 500,
-              fontSize: '14px',
-              cursor: 'pointer',
-              textAlign: 'left',
-              width: '100%',
-              transition: 'all 0.15s ease',
-            }}
+            className={`tc-settings-subnav-btn ${activeTab === 'notifications' ? 'tc-settings-subnav-btn--active' : ''}`}
           >
             <Bell size={18} />
             <span>Notifications</span>
@@ -121,7 +55,7 @@ export const SettingsLayout: React.FC<SettingsLayoutProps> = ({
         </div>
 
         {/* Right Content Panel */}
-        <div style={{ minWidth: 0 }}>
+        <div className="tc-flex-1-min-0">
           {children}
         </div>
       </div>

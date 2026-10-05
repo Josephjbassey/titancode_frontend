@@ -7,10 +7,11 @@ import {
   Loader2,
   DollarSign,
   Users,
+  Plus,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
 import { api } from '../services/api';
-import type { SalaryProjection } from '../types';
+import type { SalaryProjection, PricingTier } from '../types';
 
 export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => void }> = () => {
   const [companyName, setCompanyName] = useState('TitanCode Technologies Ltd.');
@@ -22,17 +23,21 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
   const [notifyOnMilestone, setNotifyOnMilestone] = useState(true);
   const [notifyOnWithdrawal, setNotifyOnWithdrawal] = useState(true);
 
-  // Status & Loading
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [saveError, setSaveError] = useState('');
+  // Dynamic Pricing Tiers
+  const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
+  const [editingTier, setEditingTier] = useState<PricingTier | null>(null);
 
   // Salary from Profit Split Logic Calculator state
   const [calcBudget, setCalcBudget] = useState(50000);
   const [calcMemberCount, setCalcMemberCount] = useState(5);
   const [salaryProjection, setSalaryProjection] = useState<SalaryProjection | null>(null);
   const [isCalculating, setIsCalculating] = useState(false);
+
+  // Status & Loading
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
+  const [saveError, setSaveError] = useState('');
 
   useEffect(() => {
     let mounted = true;
@@ -49,6 +54,9 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         setMemberSplit(settings.member_split_percent);
         setNotifyOnMilestone(settings.notify_on_milestone);
         setNotifyOnWithdrawal(settings.notify_on_withdrawal);
+        if (settings.pricing_tiers) {
+          setPricingTiers(settings.pricing_tiers);
+        }
         setIsLoading(false);
       })
       .catch(() => {
@@ -104,18 +112,6 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
     };
   }, [calcBudget, calcMemberCount, platformSplit, memberSplit]);
 
-  const handlePlatformSplitChange = (val: number) => {
-    const clamped = Math.max(0, Math.min(100, val));
-    setPlatformSplit(clamped);
-    setMemberSplit(100 - clamped);
-  };
-
-  const handleMemberSplitChange = (val: number) => {
-    const clamped = Math.max(0, Math.min(100, val));
-    setMemberSplit(clamped);
-    setPlatformSplit(100 - clamped);
-  };
-
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSaving) return;
@@ -137,6 +133,7 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         member_split_percent: memberSplit,
         notify_on_milestone: notifyOnMilestone,
         notify_on_withdrawal: notifyOnWithdrawal,
+        pricing_tiers: pricingTiers,
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -147,47 +144,51 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
     }
   };
 
+  const handleMemberSplitChange = (val: number) => {
+    const clamped = Math.max(0, Math.min(100, val));
+    setMemberSplit(clamped);
+    setPlatformSplit(100 - clamped);
+  };
+
+  const handlePlatformSplitChange = (val: number) => {
+    const clamped = Math.max(0, Math.min(100, val));
+    setPlatformSplit(clamped);
+    setMemberSplit(100 - clamped);
+  };
+
   if (isLoading) {
     return (
-      <div style={{ padding: '60px', textAlign: 'center', color: '#9CA3AF' }}>
-        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '10px' }}>
+      <div className="tc-settings-loading">
+        <div className="tc-settings-loading-inner">
           <Loader2 size={20} className="tc-spin" color="#dfae32" />
-          <span style={{ fontSize: '14px' }}>Loading system and financial settings...</span>
+          <span>Loading system and financial settings...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', maxWidth: '840px', paddingBottom: '40px' }}>
+    <div className="tc-settings-container tc-fade-in">
       {/* Header */}
-      <div style={{ marginBottom: '28px' }}>
-        <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+      <div className="tc-settings-header">
+        <h1 className="tc-settings-title">
           System & Enterprise Settings
         </h1>
-        <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
+        <p className="tc-settings-subtitle">
           Global agency configuration, escrow profit split schedules, member salary logic, and real-time alerts.
         </p>
       </div>
 
       <form onSubmit={handleSave}>
         {/* Section 1: Company Profile */}
-        <div
-          style={{
-            backgroundColor: '#232324',
-            borderRadius: '14px',
-            padding: '24px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            marginBottom: '20px',
-          }}
-        >
-          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '18px', color: '#dfae32' }}>
+        <div className="tc-settings-card">
+          <h3 className="tc-settings-section-title">
             Organization Entity & Branding
           </h3>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '16px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+          <div className="tc-settings-grid-2">
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">
                 Legal Company Name
               </label>
               <input
@@ -195,20 +196,11 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
                 required
-                style={{
-                  width: '100%',
-                  backgroundColor: '#161617',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
-                  padding: '10px 14px',
-                  color: '#FFFFFF',
-                  fontSize: '13px',
-                  outline: 'none',
-                }}
+                className="tc-settings-input"
               />
             </div>
-            <div>
-              <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">
                 Support / Billing Email
               </label>
               <input
@@ -216,78 +208,40 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 value={supportEmail}
                 onChange={(e) => setSupportEmail(e.target.value)}
                 required
-                style={{
-                  width: '100%',
-                  backgroundColor: '#161617',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
-                  padding: '10px 14px',
-                  color: '#FFFFFF',
-                  fontSize: '13px',
-                  outline: 'none',
-                }}
+                className="tc-settings-input"
               />
             </div>
           </div>
         </div>
 
         {/* Section 2: Financial & Escrow Profit Split */}
-        <div
-          style={{
-            backgroundColor: '#232324',
-            borderRadius: '14px',
-            padding: '24px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            marginBottom: '20px',
-          }}
-        >
-          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '18px', color: '#dfae32' }}>
+        <div className="tc-settings-card">
+          <h3 className="tc-settings-section-title">
             Financial Settlement & Escrow Profit Split (70 / 30 Standard)
           </h3>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+          <div className="tc-settings-grid-2">
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">
                 Settlement Base Currency
               </label>
               <select
                 value={currency}
                 onChange={(e) => setCurrency(e.target.value)}
-                style={{
-                  width: '100%',
-                  backgroundColor: '#161617',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
-                  padding: '10px 14px',
-                  color: '#FFFFFF',
-                  fontSize: '13px',
-                  outline: 'none',
-                }}
+                className="tc-settings-select"
               >
                 <option value="USD">USD ($) United States Dollar</option>
-                <option value="NGN">NGN (₦) Nigerian Naira</option>
-                <option value="GBP">GBP (£) British Pound</option>
-                <option value="EUR">EUR (€) Euro</option>
               </select>
             </div>
 
-            <div>
-              <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">
                 System Timezone
               </label>
               <select
                 value={timezone}
                 onChange={(e) => setTimezone(e.target.value)}
-                style={{
-                  width: '100%',
-                  backgroundColor: '#161617',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
-                  padding: '10px 14px',
-                  color: '#FFFFFF',
-                  fontSize: '13px',
-                  outline: 'none',
-                }}
+                className="tc-settings-select"
               >
                 <option value="UTC+01:00 (Lagos / Paris)">UTC+01:00 (Lagos / Paris)</option>
                 <option value="UTC+00:00 (London / Accra)">UTC+00:00 (London / Accra)</option>
@@ -298,13 +252,13 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
           </div>
 
           {/* Profit Split Sliders */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', padding: '16px', backgroundColor: '#181819', borderRadius: '10px', marginBottom: '16px' }}>
+          <div className="tc-settings-slider-card">
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontSize: '13px', color: '#D1D5DB', fontWeight: 600 }}>
+              <div className="tc-settings-slider-header">
+                <span className="tc-settings-slider-label">
                   Team Member Pool Share
                 </span>
-                <span style={{ fontSize: '13px', color: '#10B981', fontWeight: 700 }}>
+                <span className="tc-settings-slider-val tc-settings-slider-val--emerald">
                   {memberSplit}%
                 </span>
               </div>
@@ -315,19 +269,19 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 step="5"
                 value={memberSplit}
                 onChange={(e) => handleMemberSplitChange(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#10B981', cursor: 'pointer' }}
+                className="tc-settings-range tc-settings-range--emerald"
               />
-              <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px' }}>
+              <div className="tc-settings-helper-text">
                 Allocated to participating engineers, designers, and contributors.
               </div>
             </div>
 
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <span style={{ fontSize: '13px', color: '#D1D5DB', fontWeight: 600 }}>
+              <div className="tc-settings-slider-header">
+                <span className="tc-settings-slider-label">
                   Platform Treasury Reserve
                 </span>
-                <span style={{ fontSize: '13px', color: '#dfae32', fontWeight: 700 }}>
+                <span className="tc-settings-slider-val tc-settings-slider-val--gold">
                   {platformSplit}%
                 </span>
               </div>
@@ -338,43 +292,200 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 step="5"
                 value={platformSplit}
                 onChange={(e) => handlePlatformSplitChange(Number(e.target.value))}
-                style={{ width: '100%', accentColor: '#dfae32', cursor: 'pointer' }}
+                className="tc-settings-range tc-settings-range--gold"
               />
-              <div style={{ fontSize: '11px', color: '#6B7280', marginTop: '4px' }}>
+              <div className="tc-settings-helper-text">
                 Retained for platform operations, infrastructure, and buffer reserves.
               </div>
             </div>
           </div>
         </div>
 
-        {/* Section 3: Salary from Profit Split Logic Calculator (Interactive) */}
-        <div
-          style={{
-            backgroundColor: '#232324',
-            borderRadius: '14px',
-            padding: '24px',
-            border: '1px solid rgba(223, 174, 50, 0.25)',
-            marginBottom: '20px',
-            boxShadow: '0 8px 24px rgba(0, 0, 0, 0.35)',
-          }}
-        >
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '14px' }}>
+        {/* Section 3: Dynamic Client Project Pricing Tiers */}
+        <div className="tc-settings-card">
+          <div className="tc-pricing-tiers-header">
+            <div className="tc-flex-center-gap">
+              <DollarSign size={18} color="#dfae32" />
+              <h3 className="tc-modal-title">
+                Client Project Pricing Tiers
+              </h3>
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setEditingTier({
+                  id: `tier-${Date.now()}`,
+                  label: '',
+                  min_amount: 0,
+                  max_amount: null,
+                  description: '',
+                  is_active: true,
+                });
+              }}
+              className="tc-action-btn-gold"
+            >
+              <Plus size={14} /> Add Tier
+            </button>
+          </div>
+          <p className="tc-dashboard-subtitle tc-mb-3">
+            Configure the budget tiers clients select when requesting projects. Admin can adjust ranges, labels, and descriptions anytime.
+          </p>
+
+          {editingTier && (
+            <div className="tc-pricing-tier-edit-box">
+              <h4 className="tc-tier-edit-title">
+                {editingTier.id.startsWith('tier-') ? 'Create New Tier' : 'Edit Tier'}
+              </h4>
+              <div className="tc-settings-grid-3">
+                <div className="tc-settings-field">
+                  <label className="tc-settings-label tc-settings-label--small">Tier Label</label>
+                  <input
+                    type="text"
+                    value={editingTier.label}
+                    onChange={(e) => setEditingTier({ ...editingTier, label: e.target.value })}
+                    placeholder="e.g. Starter, Standard, Professional"
+                    className="tc-settings-input"
+                  />
+                </div>
+                <div className="tc-settings-field">
+                  <label className="tc-settings-label tc-settings-label--small">Minimum Amount ($)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1000"
+                    value={editingTier.min_amount}
+                    onChange={(e) => setEditingTier({ ...editingTier, min_amount: Number(e.target.value) })}
+                    className="tc-settings-input"
+                  />
+                </div>
+                <div className="tc-settings-field">
+                  <label className="tc-settings-label tc-settings-label--small">Maximum Amount ($)</label>
+                  <input
+                    type="number"
+                    min="0"
+                    step="1000"
+                    value={editingTier.max_amount ?? ''}
+                    onChange={(e) => setEditingTier({ ...editingTier, max_amount: e.target.value ? Number(e.target.value) : null })}
+                    placeholder="Unlimited"
+                    className="tc-settings-input"
+                  />
+                </div>
+              </div>
+              <div className="tc-mb-3">
+                <label className="tc-settings-label tc-settings-label--small">Description</label>
+                <textarea
+                  rows={2}
+                  value={editingTier.description}
+                  onChange={(e) => setEditingTier({ ...editingTier, description: e.target.value })}
+                  placeholder="What's included in this tier..."
+                  className="tc-settings-textarea"
+                />
+              </div>
+              <div className="tc-flex-center-gap tc-mb-3">
+                <label className="tc-checkbox-row tc-text-white">
+                  <input
+                    type="checkbox"
+                    checked={editingTier.is_active}
+                    onChange={(e) => setEditingTier({ ...editingTier, is_active: e.target.checked })}
+                    className="tc-checkbox-gold-sm"
+                  />
+                  Active
+                </label>
+              </div>
+              <div className="tc-flex-end-gap">
+                <button
+                  type="button"
+                  onClick={() => setEditingTier(null)}
+                  className="tc-btn-subtle-edit"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (editingTier.id.startsWith('tier-')) {
+                      setPricingTiers([...pricingTiers, editingTier]);
+                    } else {
+                      setPricingTiers(pricingTiers.map((t) => (t.id === editingTier.id ? editingTier : t)));
+                    }
+                    setEditingTier(null);
+                  }}
+                  disabled={!editingTier.label.trim() || editingTier.min_amount === null || editingTier.min_amount < 0}
+                  className="tc-action-btn-gold"
+                >
+                  {editingTier.id.startsWith('tier-') ? 'Add Tier' : 'Save Changes'}
+                </button>
+              </div>
+            </div>
+          )}
+
+          <div className="tc-pricing-tiers-list">
+            {pricingTiers.length === 0 ? (
+              <div className="tc-tier-empty-state">
+                No pricing tiers configured. Click "Add Tier" to create your first tier.
+              </div>
+            ) : (
+              pricingTiers.map((tier) => (
+                <div
+                  key={tier.id}
+                  className={`tc-pricing-tier-row ${tier.is_active ? 'tc-pricing-tier-row--active' : ''}`}
+                >
+                  <div className="tc-flex-1-min-0">
+                    <div className="tc-flex-center-gap tc-flex-wrap tc-mb-1">
+                      <span className="tc-font-bold tc-text-white">{tier.label}</span>
+                      <span className={`tc-tier-badge ${tier.is_active ? 'tc-tier-badge--active' : 'tc-tier-badge--inactive'}`}>
+                        {tier.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </div>
+                    <div className="tc-text-gold tc-font-semibold tc-text-xs">
+                      ${tier.min_amount.toLocaleString()}
+                      {tier.max_amount !== null ? ` - $${tier.max_amount.toLocaleString()}` : '+'}
+                    </div>
+                    <div className="tc-text-muted tc-tier-desc-truncate">
+                      {tier.description}
+                    </div>
+                  </div>
+                  <div className="tc-flex-center-gap">
+                    <button
+                      type="button"
+                      onClick={() => setEditingTier(tier)}
+                      className="tc-btn-subtle-edit"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPricingTiers(pricingTiers.filter((t) => t.id !== tier.id))}
+                      className="tc-btn-subtle-delete"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
+        {/* Section 4: Simulator */}
+        <div className="tc-settings-card tc-settings-card--highlight">
+          <div className="tc-flex-center-gap tc-mb-3">
             <Calculator size={18} color="#dfae32" />
-            <h3 style={{ fontSize: '16px', fontWeight: 700, margin: 0, color: '#FFFFFF' }}>
+            <h3 className="tc-modal-title">
               Salary from Profit Split Simulator
             </h3>
           </div>
-          <p style={{ fontSize: '13px', color: '#9CA3AF', margin: '0 0 20px', lineHeight: 1.5 }}>
+          <p className="tc-dashboard-subtitle tc-mb-4">
             Simulate real take-home member salary and agency earnings dynamically from project budget and roster size using the live profit-split engine.
           </p>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '20px' }}>
-            <div>
-              <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '6px' }}>
+          <div className="tc-settings-grid-2">
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">
                 Project Total Contract Budget ($)
               </label>
-              <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF' }}>
+              <div className="tc-input-icon-wrapper">
+                <span className="tc-input-icon">
                   <DollarSign size={14} />
                 </span>
                 <input
@@ -383,27 +494,17 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                   step="1000"
                   value={calcBudget}
                   onChange={(e) => setCalcBudget(Math.max(0, Number(e.target.value)))}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px 14px 10px 32px',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    outline: 'none',
-                  }}
+                  className="tc-settings-input tc-settings-input-with-icon"
                 />
               </div>
             </div>
 
-            <div>
-              <label style={{ display: 'block', fontSize: '13px', color: '#D1D5DB', marginBottom: '6px' }}>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">
                 Assigned Team Members Count
               </label>
-              <div style={{ position: 'relative' }}>
-                <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', color: '#9CA3AF' }}>
+              <div className="tc-input-icon-wrapper">
+                <span className="tc-input-icon">
                   <Users size={14} />
                 </span>
                 <input
@@ -412,97 +513,79 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                   max="50"
                   value={calcMemberCount}
                   onChange={(e) => setCalcMemberCount(Math.max(1, Number(e.target.value)))}
-                  style={{
-                    width: '100%',
-                    backgroundColor: '#161617',
-                    border: '1px solid rgba(255, 255, 255, 0.1)',
-                    borderRadius: '8px',
-                    padding: '10px 14px 10px 32px',
-                    color: '#FFFFFF',
-                    fontSize: '14px',
-                    fontWeight: 600,
-                    outline: 'none',
-                  }}
+                  className="tc-settings-input tc-settings-input-with-icon"
                 />
               </div>
             </div>
           </div>
 
           {/* Results Grid */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '14px' }}>
-            <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-              <div style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '4px' }}>Total Developer Pool ({memberSplit}%)</div>
-              <div style={{ fontSize: '20px', fontWeight: 800, color: '#10B981' }}>
+          <div className="tc-simulator-results-grid">
+            <div className="tc-simulator-result-card">
+              <div className="tc-text-muted tc-mb-1 tc-text-xs">Total Developer Pool ({memberSplit}%)</div>
+              <div className="tc-font-extrabold tc-text-xl tc-text-success">
                 ${(salaryProjection?.team_pool_share || 0).toLocaleString()}
               </div>
             </div>
 
-            <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(255, 255, 255, 0.03)', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-              <div style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '4px' }}>Platform Treasury ({platformSplit}%)</div>
-              <div style={{ fontSize: '20px', fontWeight: 800, color: '#dfae32' }}>
+            <div className="tc-simulator-result-card">
+              <div className="tc-text-muted tc-mb-1 tc-text-xs">Platform Treasury ({platformSplit}%)</div>
+              <div className="tc-font-extrabold tc-text-xl tc-text-gold">
                 ${(salaryProjection?.platform_treasury_share || 0).toLocaleString()}
               </div>
             </div>
 
-            <div style={{ padding: '16px', borderRadius: '10px', backgroundColor: 'rgba(223, 174, 50, 0.1)', border: '1px solid rgba(223, 174, 50, 0.3)' }}>
-              <div style={{ fontSize: '12px', color: '#ECC046', fontWeight: 600, marginBottom: '4px' }}>Projected Salary / Member</div>
-              <div style={{ fontSize: '20px', fontWeight: 800, color: '#FFFFFF' }}>
+            <div className="tc-simulator-result-card tc-simulator-result-card--highlight">
+              <div className="tc-font-semibold tc-mb-1 tc-text-xs tc-text-gold">Projected Salary / Member</div>
+              <div className="tc-font-extrabold tc-text-xl tc-text-white">
                 ${(salaryProjection?.projected_salary_per_member || 0).toLocaleString()}
               </div>
             </div>
           </div>
           {isCalculating && (
-            <div style={{ fontSize: '11px', color: '#9CA3AF', marginTop: '8px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <div className="tc-text-muted tc-flex-center-gap tc-mt-2 tc-text-2xs">
               <Loader2 size={12} className="tc-spin" />
               <span>Syncing with backend payout engine...</span>
             </div>
           )}
         </div>
 
-        {/* Section 4: Real-Time Notification Policies */}
-        <div
-          style={{
-            backgroundColor: '#232324',
-            borderRadius: '14px',
-            padding: '24px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-            marginBottom: '28px',
-          }}
-        >
-          <h3 style={{ fontSize: '16px', fontWeight: 700, marginBottom: '18px', color: '#dfae32' }}>
+        {/* Section 5: Real-Time Notification Policies */}
+        <div className="tc-settings-card">
+          <h3 className="tc-settings-section-title">
             Notification Triggers & Webhooks
           </h3>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+          <div className="tc-notification-triggers-list">
+            <label className="tc-checkbox-row">
               <input
                 type="checkbox"
                 checked={notifyOnMilestone}
                 onChange={(e) => setNotifyOnMilestone(e.target.checked)}
-                style={{ accentColor: '#dfae32', width: '18px', height: '18px' }}
+                className="tc-checkbox-gold"
               />
               <div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF' }}>
+                <div className="tc-font-semibold tc-text-white tc-text-sm">
                   Auto-broadcast WebSocket alert on Project Milestone Complete
                 </div>
-                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                <div className="tc-text-muted tc-text-xs">
                   Notifies all contributing engineering members and clients immediately.
                 </div>
               </div>
             </label>
 
-            <label style={{ display: 'flex', alignItems: 'center', gap: '12px', cursor: 'pointer' }}>
+            <label className="tc-checkbox-row">
               <input
                 type="checkbox"
                 checked={notifyOnWithdrawal}
                 onChange={(e) => setNotifyOnWithdrawal(e.target.checked)}
-                style={{ accentColor: '#dfae32', width: '18px', height: '18px' }}
+                className="tc-checkbox-gold"
               />
               <div>
-                <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF' }}>
+                <div className="tc-font-semibold tc-text-white tc-text-sm">
                   Notify Admin on Member Bank Withdrawal Submission
                 </div>
-                <div style={{ fontSize: '12px', color: '#9CA3AF' }}>
+                <div className="tc-text-muted tc-text-xs">
                   Dispatches high-priority alert to the executive treasury team for wire clearance.
                 </div>
               </div>
@@ -512,45 +595,24 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
 
         {/* Error message */}
         {saveError && (
-          <div style={{
-            padding: '12px 16px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(239, 68, 68, 0.12)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            color: '#EF4444',
-            fontSize: '13px',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-            marginBottom: '16px',
-          }}>
+          <div className="tc-alert-banner-error">
             <AlertCircle size={16} />
             <span>{saveError}</span>
           </div>
         )}
 
         {/* Save CTA */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="tc-save-actions-row">
           <button
             type="submit"
             disabled={isSaving}
-            className="tc-action-btn-gold"
-            style={{
-              fontSize: '14px',
-              padding: '12px 28px',
-              height: 'auto',
-              opacity: isSaving ? 0.7 : 1,
-              cursor: isSaving ? 'not-allowed' : 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '8px',
-            }}
+            className="tc-action-btn-gold tc-btn-save-settings"
           >
             {isSaving ? <Loader2 size={16} className="tc-spin" /> : <Save size={16} />}
             <span>{isSaving ? 'Saving...' : 'Save System Settings'}</span>
           </button>
           {saved && (
-            <span style={{ color: '#10B981', fontSize: '13px', display: 'flex', alignItems: 'center', gap: '4px' }}>
+            <span className="tc-save-success-msg">
               <CheckCircle2 size={16} />
               <span>Settings successfully updated</span>
             </span>
@@ -560,3 +622,4 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
     </div>
   );
 };
+

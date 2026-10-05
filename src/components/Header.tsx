@@ -14,86 +14,27 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenNotifications,
 }) => {
   return (
-    <header
-      style={{
-        height: '100px',
-        backgroundColor: 'var(--tc-figma-black)',
-        borderBottom: '1px solid var(--tc-figma-card-border)',
-        padding: '0 36px',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        position: 'sticky',
-        top: 0,
-        zIndex: 30,
-        flexShrink: 0,
-      }}
-    >
+    <header className="tc-app-header">
       {/* Search Pill on Left (Figma Rectangle 255: 482px x 36px) */}
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          maxWidth: '482px',
-          display: 'flex',
-          alignItems: 'center',
-        }}
-      >
+      <div className="tc-header-search-wrap">
         <Search
           size={16}
-          style={{
-            position: 'absolute',
-            left: '16px',
-            color: 'rgba(255, 255, 255, 0.4)',
-            pointerEvents: 'none',
-          }}
+          className="tc-header-search-icon"
         />
         <input
           type="text"
           placeholder="Search..."
           aria-label="Search workspace"
-          style={{
-            width: '100%',
-            height: '36px',
-            backgroundColor: 'var(--tc-bg-input)',
-            border: '1px solid var(--tc-figma-card-border)',
-            borderRadius: '9999px',
-            padding: '0 18px 0 42px',
-            color: '#FFFFFF',
-            fontSize: '13px',
-            outline: 'none',
-            transition: 'all 0.2s ease',
-          }}
-          onFocus={(e) => {
-            e.target.style.borderColor = '#dfae32';
-            e.target.style.backgroundColor = 'var(--tc-bg-input-focus)';
-          }}
-          onBlur={(e) => {
-            e.target.style.borderColor = 'var(--tc-figma-card-border)';
-            e.target.style.backgroundColor = 'var(--tc-bg-input)';
-          }}
+          className="tc-header-search-input"
         />
       </div>
 
       {/* Right Controls: Role Badge, Bell, and Avatar */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+      <div className="tc-header-right-controls">
         {/* Static Role Badge */}
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '6px',
-            height: '34px',
-            padding: '0 12px',
-            borderRadius: '8px',
-            backgroundColor: 'rgba(223, 174, 50, 0.1)',
-            border: '1px solid rgba(223, 174, 50, 0.3)',
-          }}
-        >
-          <Shield size={14} style={{ color: '#DFAE32' }} />
-          <span style={{ color: '#DFAE32', fontSize: '12px', fontWeight: 700 }}>
-            {user.role}
-          </span>
+        <div className="tc-header-role-badge">
+          <Shield size={14} color="currentColor" />
+          <span>{user.role}</span>
         </div>
 
         {/* Notification Bell (Figma Rectangle 265: 34px x 34px) */}
@@ -101,37 +42,11 @@ export const Header: React.FC<HeaderProps> = ({
           type="button"
           onClick={onOpenNotifications}
           aria-label="View notifications"
-          style={{
-            position: 'relative',
-            width: '34px',
-            height: '34px',
-            borderRadius: '10px',
-            backgroundColor: 'var(--tc-icon-bg)',
-            border: '1px solid var(--tc-figma-card-border)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            color: '#FFFFFF',
-            cursor: 'pointer',
-            transition: 'all 0.15s ease',
-          }}
-          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--tc-icon-bg-active)')}
-          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--tc-icon-bg)')}
+          className="tc-header-bell-btn"
         >
           <Bell size={17} />
           {/* Notification pink dot */}
-          <span
-            style={{
-              position: 'absolute',
-              top: '6px',
-              right: '6px',
-              width: '7px',
-              height: '7px',
-              borderRadius: '50%',
-              backgroundColor: '#EC4899',
-              border: '1.5px solid #0b0b0c',
-            }}
-          />
+          <span className="tc-header-bell-dot" />
         </button>
 
         {/* Profile Avatar (Figma Ellipse 9: 50px x 50px) */}
@@ -139,56 +54,33 @@ export const Header: React.FC<HeaderProps> = ({
           type="button"
           onClick={onOpenProfile}
           aria-label="User Profile and Settings"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '12px',
-            background: 'none',
-            border: 'none',
-            cursor: 'pointer',
-            padding: 0,
-          }}
+          className="tc-header-avatar-btn"
         >
-          <div
-            style={{
-              position: 'relative',
-              width: '50px',
-              height: '50px',
-              borderRadius: '50%',
-              overflow: 'hidden',
-              border: '2px solid rgba(223, 174, 50, 0.4)',
-              backgroundColor: 'var(--tc-bg-input)',
-              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.4)',
-            }}
-          >
-            <img
-              src={user.avatar_url || '/assets/dashprofile.jpg'}
-              alt={user.full_name}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-              }}
-            />
+          <div className="tc-header-avatar-circle">
+            {user.avatar_url ? (
+              <img
+                src={user.avatar_url}
+                alt={user.full_name}
+                className="tc-header-avatar-img"
+              />
+            ) : (
+              user.full_name
+                ?.split(' ')
+                .map((n) => n[0])
+                .join('')
+                .slice(0, 2)
+            )}
           </div>
-          <div style={{ display: 'none', textAlign: 'left' }} className="tc-header-user-info">
-            <div style={{ fontSize: '13px', fontWeight: 600, color: '#FFFFFF', lineHeight: 1.2 }}>
+          <div className="tc-header-user-info">
+            <div className="tc-header-user-name">
               {user.first_name || user.full_name}
             </div>
-            <div style={{ fontSize: '11px', color: '#DFAE32', marginTop: '2px' }}>
+            <div className="tc-header-user-role">
               {user.role}
             </div>
           </div>
         </button>
       </div>
-
-      <style>{`
-        @media (min-width: 900px) {
-          .tc-header-user-info {
-            display: block !important;
-          }
-        }
-      `}</style>
     </header>
   );
 };

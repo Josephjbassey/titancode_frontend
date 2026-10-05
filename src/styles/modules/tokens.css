@@ -1,0 +1,203 @@
+/* TitanCode Workspace - Core Design Tokens */
+:root {
+  /* Colors */
+  --tc-figma-black: #0B0B0C;
+  --tc-figma-gold: #DFAE32;
+  --tc-figma-gold-light: #ECC046;
+  --tc-figma-gold-muted: rgba(223, 174, 50, 0.15);
+  --tc-figma-gold-border: rgba(223, 174, 50, 0.3);
+  --tc-figma-card-border: rgba(255, 255, 255, 0.08);
+  --tc-figma-card-bg: rgba(255, 255, 255, 0.1);
+  --tc-figma-input-border: rgba(255, 255, 255, 0.35);
+  --tc-figma-footer-line: #DFAE32;
+  --tc-figma-teamdash-icon-bg: rgba(223, 174, 50, 0.3);
+  --tc-figma-teamdash-highlight: #DDC998;
+
+  /* Legacy & Semantic Palette Tokens */
+  --tc-bg-primary: #0B0B0C;
+  --tc-bg-card: #111214;
+  --tc-bg-card-hover: #17191d;
+  --tc-bg-surface-elevated: #111214;
+  --tc-border-subtle: rgba(255, 255, 255, 0.08);
+  --tc-border-subtle-hover: rgba(223, 174, 50, 0.35);
+  --tc-border-focus: #DFAE32;
+
+  --tc-brand-gold: #DFAE32;
+  --tc-brand-gold-hover: #EEC147;
+  --tc-brand-gold-active: #C89C28;
+  --tc-brand-gold-light: rgba(223, 174, 50, 0.12);
+  --tc-brand-gold-glow: rgba(223, 174, 50, 0.28);
+
+  --tc-bg-input: rgba(255, 255, 255, 0.05);
+  --tc-bg-input-focus: rgba(255, 255, 255, 0.08);
+  --tc-icon-bg: rgba(255, 255, 255, 0.05);
+  --tc-icon-bg-active: rgba(223, 174, 50, 0.15);
+  --tc-text-primary: #FFFFFF;
+  --tc-text-secondary: #D1D5DB;
+  --tc-text-muted: #9CA3AF;
+  --tc-text-dim: #6B7280;
+  --tc-text-inverse: #0B0B0C;
+
+  --tc-success: #10B981;
+  --tc-warning: #F59E0B;
+  --tc-error: #EF4444;
+  --tc-info: #3B82F6;
+  --tc-purple: #A855F7;
+
+  --tc-status-green: #10B981;
+  --tc-status-green-bg: rgba(16, 185, 129, 0.14);
+  --tc-status-amber: #F59E0B;
+  --tc-status-amber-bg: rgba(245, 158, 11, 0.14);
+  --tc-status-red: #EF4444;
+  --tc-status-red-bg: rgba(239, 68, 68, 0.14);
+  --tc-status-blue: #3B82F6;
+  --tc-status-blue-bg: rgba(59, 130, 246, 0.14);
+  --tc-status-purple: #8B5CF6;
+  --tc-status-purple-bg: rgba(139, 92, 246, 0.14);
+
+  /* Spacing */
+  --tc-space-xs: 4px;
+  --tc-space-sm: 8px;
+  --tc-space-md: 16px;
+  --tc-space-lg: 24px;
+  --tc-space-xl: 32px;
+  --tc-space-2xl: 40px;
+
+  /* Border Radius */
+  --tc-radius-sm: 6px;
+  --tc-radius-md: 8px;
+  --tc-radius-lg: 10px;
+  --tc-radius-xl: 12px;
+  --tc-radius-2xl: 16px;
+  --tc-radius-pill: 9999px;
+
+  /* Shadows */
+  --tc-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.25);
+  --tc-shadow-md: 0 4px 20px rgba(0, 0, 0, 0.3);
+  --tc-shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.4);
+  --tc-shadow-gold: 0 4px 16px rgba(223, 174, 50, 0.3);
+
+  /* Transitions */
+  --tc-transition-fast: 0.15s ease;
+  --tc-transition-normal: 0.2s ease;
+  --tc-transition-slow: 0.3s ease;
+
+  /* Typography */
+  --tc-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --tc-font-body: 'Poppins', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --tc-font-heading: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --tc-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Layout */
+  --tc-radius-full: 9999px;
+  --tc-sidebar-width: 280px;
+  --tc-sidebar-collapsed-width: 76px;
+  --tc-header-height: 100px;
+  --tc-container-max: 1400px;
+}
+
+/* Base Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  margin: 0;
+  font-family: var(--tc-font-sans);
+  background-color: var(--tc-figma-black);
+  color: var(--tc-text-primary);
+  line-height: 1.6;
+}
+
+a {
+  color: var(--tc-figma-gold);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea, select {
+  font-family: inherit;
+  font-size: inherit;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--tc-figma-black);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Focus Visible */
+:focus-visible {
+  outline: 2px solid var(--tc-figma-gold);
+  outline-offset: 2px;
+}
+
+/* Utility Classes */
+.tc-sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.tc-fade-in {
+  animation: tcFadeIn 0.3s ease-out;
+}
+
+@keyframes tcFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tc-spin {
+  animation: tcSpin 1s linear infinite;
+}
+
+@keyframes tcSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}

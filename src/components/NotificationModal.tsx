@@ -27,41 +27,29 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
   if (type === 'kyc') {
     return (
       <Modal isOpen={isOpen} onClose={onClose} maxWidth="480px">
-        <div style={{ textAlign: 'center', padding: '10px 0 6px' }}>
-          <div style={{
-            width: '64px',
-            height: '64px',
-            borderRadius: '50%',
-            background: 'var(--tc-brand-gold-light)',
-            color: 'var(--tc-brand-gold)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 20px',
-            border: '1px solid rgba(223, 174, 50, 0.3)',
-          }}>
+        <div className="tc-kyc-modal-body">
+          <div className="tc-kyc-modal-icon-wrap">
             <ShieldCheck size={32} />
           </div>
 
-          <h3 style={{ fontSize: '20px', fontWeight: '700', marginBottom: '8px', color: '#FFFFFF' }}>
+          <h3 className="tc-kyc-modal-title">
             {title || 'Employee Identity Verification (Sumsub)'}
           </h3>
 
-          <p style={{ fontSize: '14px', color: 'var(--tc-text-secondary)', lineHeight: '1.6', marginBottom: '24px' }}>
+          <p className="tc-kyc-modal-desc">
             {message || 'As a TitanCode engineering team member, KYC identity verification is securely handled by Sumsub. Your National ID and biometric data are verified directly without storing sensitive government credentials on our servers.'}
           </p>
 
-          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
-            <button className="tc-btn tc-btn-secondary" onClick={onClose} style={{ flex: 1 }}>
+          <div className="tc-kyc-modal-actions">
+            <button className="tc-btn tc-btn-secondary tc-kyc-btn-dismiss" onClick={onClose}>
               Dismiss
             </button>
             <button
-              className="tc-btn tc-btn-primary"
+              className="tc-btn tc-btn-primary tc-kyc-btn-launch"
               onClick={() => {
                 if (onAction) onAction();
                 onClose();
               }}
-              style={{ flex: 1.2 }}
             >
               {actionText || 'Launch Sumsub SDK'}
             </button>
@@ -75,58 +63,19 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
 
   // Figma Solid Gold Modals for Incorrect Code (Screen 15) and Password Changed Successfully (Screen 16)
   return (
-    <div style={{
-      position: 'fixed',
-      inset: 0,
-      backgroundColor: 'rgba(0, 0, 0, 0.75)',
-      backdropFilter: 'blur(4px)',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      zIndex: 100,
-      padding: '20px',
-    }}>
-      <div style={{
-        backgroundColor: '#dfae32',
-        borderRadius: '20px',
-        padding: '36px 28px',
-        width: '100%',
-        maxWidth: '440px',
-        textAlign: 'center',
-        position: 'relative',
-        boxShadow: '0 20px 50px rgba(0, 0, 0, 0.5)',
-        animation: 'tc-fadeIn 0.2s ease',
-      }}>
+    <div className="tc-notification-backdrop">
+      <div className="tc-gold-modal-card">
         {/* Top Right Close 'x' */}
         <button
           type="button"
           onClick={onClose}
-          style={{
-            position: 'absolute',
-            top: '16px',
-            right: '16px',
-            background: 'none',
-            border: 'none',
-            color: '#000000',
-            cursor: 'pointer',
-            padding: '4px',
-            display: 'flex',
-          }}
+          className="tc-gold-modal-close"
         >
           <X size={20} strokeWidth={2.5} />
         </button>
 
         {/* Dark Circle Icon Container */}
-        <div style={{
-          width: '68px',
-          height: '68px',
-          borderRadius: '50%',
-          backgroundColor: '#0b0b0c',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          margin: '0 auto 20px',
-        }}>
+        <div className="tc-gold-modal-icon-circle">
           {isSuccess ? (
             <Check size={36} color="#dfae32" strokeWidth={3} />
           ) : (
@@ -135,24 +84,12 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
         </div>
 
         {/* Modal Title (Black Bold) */}
-        <h3 style={{
-          fontSize: '22px',
-          fontWeight: '800',
-          color: '#000000',
-          marginBottom: '10px',
-          letterSpacing: '-0.3px',
-        }}>
+        <h3 className="tc-gold-modal-title">
           {title || (isSuccess ? 'Password Changed Successfully' : 'Incorrect Code')}
         </h3>
 
         {/* Modal Subtitle Message */}
-        <p style={{
-          fontSize: '14px',
-          color: '#1F2937',
-          lineHeight: '1.5',
-          margin: '0 0 24px',
-          fontWeight: '500',
-        }}>
+        <p className="tc-gold-modal-message">
           {message || (isSuccess
             ? 'Your password has been changed successfully'
             : 'Your code is incorrect. Please, try again to confirm your password.')}
@@ -165,18 +102,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
             if (onAction) onAction();
             onClose();
           }}
-          style={{
-            width: '100%',
-            height: '44px',
-            borderRadius: '9999px',
-            backgroundColor: '#0b0b0c',
-            color: '#FFFFFF',
-            fontSize: '14px',
-            fontWeight: '600',
-            border: 'none',
-            cursor: 'pointer',
-            transition: 'background-color 0.15s ease',
-          }}
+          className="tc-gold-modal-btn"
         >
           {actionText || (isSuccess ? 'Continue' : 'Try Again')}
         </button>

@@ -88,7 +88,7 @@ export interface DepartmentInfo {
   code: string;
   description: string;
   manager_name: string;
-  manager_avatar: string;
+  manager_avatar: string | null;
   manager_email: string;
   assistant_name?: string;
   assistant_avatar?: string;
@@ -103,8 +103,11 @@ export interface DepartmentInfo {
 export interface TeamMemberWorkload {
   id: number | string;
   name: string;
+  email?: string;
+  phone?: string;
+  slack_url?: string;
   role: string;
-  avatar: string;
+  avatar: string | null;
   department: string;
   active_tasks_count: number;
   completed_tasks_count: number;
@@ -174,6 +177,7 @@ export interface Project {
   project_name: string;
   name?: string; // Backward compatibility alias for project_name
   title?: string; // Backward compatibility alias for project_name
+  description?: string;
   client_id?: number;
   client_name?: string;
   budget: number;
@@ -206,7 +210,7 @@ export interface Wallet {
   id: number;
   user_id: number;
   balance: number;
-  currency: 'NGN' | 'USD';
+  currency: 'USD';
   total_earned: number;
   pending_payout: number;
   monthly_salary_accrued?: number;
@@ -278,6 +282,17 @@ export interface FinancialSettings {
   member_split_percent: number;
   notify_on_milestone: boolean;
   notify_on_withdrawal: boolean;
+  // Dynamic pricing tiers for client projects
+  pricing_tiers: PricingTier[];
+}
+
+export interface PricingTier {
+  id: string;
+  label: string;
+  min_amount: number;
+  max_amount: number | null; // null = unlimited
+  description: string;
+  is_active: boolean;
 }
 
 export interface SalaryProjection {

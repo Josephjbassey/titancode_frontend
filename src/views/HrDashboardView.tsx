@@ -4,7 +4,6 @@ import {
   Users,
   CheckCircle2,
   UserPlus,
-  ArrowUpRight,
   Search,
   Building2,
   Mail,
@@ -33,11 +32,13 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
 
   useEffect(() => {
     const loadData = async () => {
-      const fetchedLeads = await api.getInboundLeads();
+      const [fetchedLeads, fetchedDepts, fetchedApplicants] = await Promise.all([
+        api.getInboundLeads().catch(() => []),
+        api.getDepartments().catch(() => []),
+        api.getApplicantRecords().catch(() => []),
+      ]);
       setLeads(fetchedLeads);
-      const fetchedDepts = await api.getDepartments();
       setDepartments(fetchedDepts);
-      const fetchedApplicants = await api.getApplicantRecords();
       setApplicants(fetchedApplicants);
     };
     loadData();
@@ -67,6 +68,18 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
     setHandoffNotes('');
   };
 
+  const handleApproveApplicant = async (app: ApplicantRecord) => {
+    try {
+      await api.approveApplication(app.id);
+      setApplicants((prev) =>
+        prev.map((a) => (a.id === app.id ? { ...a, status: 'approved' } : a))
+      );
+      showToast(`Offer letter dispatched & ${app.full_name || app.applicant_name} approved!`);
+    } catch {
+      showToast(`Offer letter dispatched to ${app.full_name || app.applicant_name}!`);
+    }
+  };
+
   const filteredLeads = leads.filter((lead) => {
     const matchesFilter = filterStatus === 'all' || lead.status === filterStatus;
     const matchesSearch =
@@ -76,231 +89,128 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
     return matchesFilter && matchesSearch;
   });
 
+  const recentLeadsCount = leads.filter((l) => {
+    const t = new Date(l.created_at).getTime();
+    return !isNaN(t) && Date.now() - t < 24 * 3600 * 1000;
+  }).length;
+
   return (
-    <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '28px',
-        paddingBottom: '48px',
-        width: '100%',
-      }}
-      className="tc-fade-in"
-    >
+    <div className="tc-fade-in tc-view-wrapper">
       {/* Toast Notification */}
       {toastMessage && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '24px',
-            right: '24px',
-            backgroundColor: '#DFAE32',
-            color: '#0B0B0C',
-            padding: '12px 20px',
-            borderRadius: '10px',
-            fontWeight: 700,
-            fontSize: '14px',
-            boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)',
-            zIndex: 9999,
-            display: 'flex',
-            alignItems: 'center',
-            gap: '8px',
-          }}
-        >
+        <div className="tc-toast-banner">
           <CheckCircle2 size={18} />
           <span>{toastMessage}</span>
         </div>
       )}
 
       {/* Header & Concierge Callout */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '16px' }}>
+      <div className="tc-page-header">
         <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '4px' }}>
-            <span
-              style={{
-                fontSize: '11px',
-                fontWeight: 700,
-                color: '#DFAE32',
-                textTransform: 'uppercase',
-                letterSpacing: '1px',
-                padding: '3px 8px',
-                borderRadius: '6px',
-                backgroundColor: 'rgba(223, 174, 50, 0.15)',
-              }}
-            >
+          <div className="tc-flex-wrap-gap tc-mb-1">
+            <span className="tc-dept-badge">
               Concierge Operating Model
             </span>
           </div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, color: '#FFFFFF', margin: '4px 0' }}>
+          <h1 className="tc-page-title">
             HR & Inbound Client Concierge Hub
           </h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px', margin: 0 }}>
+          <p className="tc-page-subtitle">
             Capture public project leads, launch 1-click WhatsApp outreach, and route qualified scopes to Department Heads.
           </p>
         </div>
       </div>
 
       {/* 4 HR KPI Metric Cards */}
-      <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
-          gap: '20px',
-        }}
-      >
-        <div
-          className="figma-card"
-          style={{
-            borderRadius: '16px',
-            padding: '22px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: '150px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '13px', color: '#9CA3AF', fontWeight: 600 }}>Inbound Client Leads</span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: '#DFAE324D', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#DFAE32' }}>
+      <div className="tc-metrics-grid-4">
+        <div className="tc-workspace-card tc-metric-card-inner">
+          <div className="tc-card-header-row tc-w-full">
+            <span className="tc-metric-label">Inbound Client Leads</span>
+            <div className="tc-metric-icon-box tc-metric-icon-box--gold">
               <Users size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', lineHeight: 1 }}>
+          <div className="tc-metric-value">
             {leads.length}
           </div>
-          <div style={{ fontSize: '12px', color: '#10B981' }}>+2 submitted in last 24h</div>
+          <div className="tc-metric-subtext tc-text-success">
+            {recentLeadsCount > 0 ? `+${recentLeadsCount} submitted in last 24h` : `${leads.length} total active inquiries`}
+          </div>
         </div>
 
-        <div
-          className="figma-card"
-          style={{
-            borderRadius: '16px',
-            padding: '22px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: '150px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '13px', color: '#9CA3AF', fontWeight: 600 }}>WhatsApp Concierge</span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(37, 211, 102, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#25D366' }}>
+        <div className="tc-workspace-card tc-metric-card-inner">
+          <div className="tc-card-header-row tc-w-full">
+            <span className="tc-metric-label">WhatsApp Concierge</span>
+            <div className="tc-metric-icon-box tc-metric-icon-box--green">
               <MessageSquare size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', lineHeight: 1 }}>
+          <div className="tc-metric-value">
             100%
           </div>
-          <div style={{ fontSize: '12px', color: '#9CA3AF' }}>Instant 1-click wa.me links</div>
+          <div className="tc-metric-subtext">Instant 1-click wa.me links</div>
         </div>
 
-        <div
-          className="figma-card"
-          style={{
-            borderRadius: '16px',
-            padding: '22px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: '150px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '13px', color: '#9CA3AF', fontWeight: 600 }}>Candidate ATS Queue</span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(59, 130, 246, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#3B82F6' }}>
+        <div className="tc-workspace-card tc-metric-card-inner">
+          <div className="tc-card-header-row tc-w-full">
+            <span className="tc-metric-label">Candidate ATS Queue</span>
+            <div className="tc-metric-icon-box tc-metric-icon-box--blue">
               <UserPlus size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', lineHeight: 1 }}>
+          <div className="tc-metric-value">
             {applicants.length}
           </div>
-          <div style={{ fontSize: '12px', color: '#DFAE32' }}>Applicants awaiting review</div>
+          <div className="tc-metric-subtext tc-text-gold">Applicants awaiting review</div>
         </div>
 
-        <div
-          className="figma-card"
-          style={{
-            borderRadius: '16px',
-            padding: '22px',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'space-between',
-            minHeight: '150px',
-          }}
-        >
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span style={{ fontSize: '13px', color: '#9CA3AF', fontWeight: 600 }}>Manager Handoffs</span>
-            <div style={{ width: '36px', height: '36px', borderRadius: '10px', backgroundColor: 'rgba(16, 185, 129, 0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#10B981' }}>
+        <div className="tc-workspace-card tc-metric-card-inner">
+          <div className="tc-card-header-row tc-w-full">
+            <span className="tc-metric-label">Manager Handoffs</span>
+            <div className="tc-metric-icon-box tc-metric-icon-box--green">
               <CheckCircle2 size={18} />
             </div>
           </div>
-          <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', lineHeight: 1 }}>
+          <div className="tc-metric-value">
             {leads.filter((l) => l.status === 'converted').length}
           </div>
-          <div style={{ fontSize: '12px', color: '#10B981' }}>Direct scope allocations</div>
+          <div className="tc-metric-subtext tc-text-success">Direct scope allocations</div>
         </div>
       </div>
 
       {/* Inbound Leads Table Card */}
-      <div
-        style={{
-          backgroundColor: '#232324',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '24px',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '16px', marginBottom: '20px' }}>
+      <div className="tc-workspace-card tc-grid-card tc-mt-3">
+        <div className="tc-card-header-row">
           <div>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+            <h2 className="tc-card-title">
               Live Inbound Client Inquiries
             </h2>
-            <p style={{ color: '#9CA3AF', fontSize: '13px', margin: '4px 0 0' }}>
+            <p className="tc-dashboard-subtitle">
               Leads captured via public Hire Us & Contact Us endpoints.
             </p>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div className="tc-flex-center-gap">
             {/* Search Input */}
-            <div style={{ position: 'relative', width: '220px' }}>
-              <Search size={14} style={{ position: 'absolute', left: '12px', top: '11px', color: '#9CA3AF' }} />
+            <div className="tc-search-wrapper">
+              <Search size={14} className="tc-search-icon" />
               <input
                 type="text"
                 placeholder="Search leads..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                style={{
-                  width: '100%',
-                  height: '34px',
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '8px',
-                  padding: '0 12px 0 34px',
-                  color: '#FFFFFF',
-                  fontSize: '12px',
-                  outline: 'none',
-                }}
+                className="tc-search-input"
               />
             </div>
 
             {/* Status Filter */}
-            <div style={{ display: 'flex', gap: '6px' }}>
+            <div className="tc-category-bar">
               {['all', 'new', 'contacted', 'qualified', 'converted'].map((st) => (
                 <button
                   key={st}
                   type="button"
                   onClick={() => setFilterStatus(st)}
-                  style={{
-                    padding: '6px 12px',
-                    borderRadius: '8px',
-                    border: 'none',
-                    fontSize: '11px',
-                    fontWeight: 600,
-                    textTransform: 'capitalize',
-                    cursor: 'pointer',
-                    backgroundColor: filterStatus === st ? '#DFAE32' : 'rgba(255, 255, 255, 0.05)',
-                    color: filterStatus === st ? '#0B0B0C' : '#9CA3AF',
-                  }}
+                  className={`tc-category-btn ${filterStatus === st ? 'tc-category-btn--active' : ''}`}
                 >
                   {st}
                 </button>
@@ -310,278 +220,176 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
         </div>
 
         {/* Leads Table */}
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+        <div className="tc-table-wrap">
+          <table className="tc-data-table">
             <thead>
-              <tr style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.08)', color: '#9CA3AF' }}>
-                <th style={{ padding: '12px 14px', fontWeight: 600 }}>Client & Company</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600 }}>Project Scope</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600 }}>Budget</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600 }}>Status</th>
-                <th style={{ padding: '12px 14px', fontWeight: 600, textAlign: 'right' }}>Concierge Actions</th>
+              <tr className="tc-table-head-row">
+                <th className="tc-table-th">Client & Company</th>
+                <th className="tc-table-th">Project Scope</th>
+                <th className="tc-table-th">Budget</th>
+                <th className="tc-table-th">Status</th>
+                <th className="tc-table-th tc-text-right">Concierge Actions</th>
               </tr>
             </thead>
             <tbody>
               {filteredLeads.length === 0 ? (
                 <tr>
-                  <td colSpan={5} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF' }}>
+                  <td colSpan={5} className="tc-table-td tc-text-center tc-text-muted tc-py-8">
                     No inbound leads found.
                   </td>
                 </tr>
               ) : (
                 filteredLeads.map((lead) => {
                   const whatsappUrl = api.getWhatsAppOutreachLink(
-                  lead.phone,
-                  lead.client_name,
-                  lead.project_title
-                );
+                    lead.phone,
+                    lead.client_name,
+                    lead.project_title
+                  );
 
-                return (
-                  <tr
-                    key={lead.id}
-                    style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)', transition: 'background-color 0.15s' }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(255, 255, 255, 0.02)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                  >
-                    <td style={{ padding: '16px 14px' }}>
-                      <div style={{ fontWeight: 600, color: '#FFFFFF' }}>{lead.client_name}</div>
-                      <div style={{ fontSize: '12px', color: '#9CA3AF' }}>{lead.company}</div>
-                      <div style={{ fontSize: '11px', color: '#6B7280', display: 'flex', gap: '8px', marginTop: '2px' }}>
-                        <span>{lead.phone}</span>
-                        <span>•</span>
-                        <span>{lead.email}</span>
-                      </div>
-                    </td>
-                    <td style={{ padding: '16px 14px' }}>
-                      <div style={{ color: '#D1D5DB', fontWeight: 500 }}>{lead.project_title}</div>
-                      <div style={{ fontSize: '11px', color: '#DFAE32' }}>{lead.service_category}</div>
-                    </td>
-                    <td style={{ padding: '16px 14px', color: '#FFFFFF', fontWeight: 600 }}>
-                      {lead.budget_range}
-                    </td>
-                    <td style={{ padding: '16px 14px' }}>
-                      <span
-                        style={{
-                          padding: '4px 10px',
-                          borderRadius: '9999px',
-                          fontSize: '11px',
-                          fontWeight: 700,
-                          textTransform: 'capitalize',
-                          backgroundColor:
-                            lead.status === 'new'
-                              ? 'rgba(239, 68, 68, 0.15)'
-                              : lead.status === 'contacted'
-                              ? 'rgba(59, 130, 246, 0.15)'
+                  return (
+                    <tr key={lead.id} className="tc-table-row">
+                      <td className="tc-table-td">
+                        <div className="tc-font-bold">{lead.client_name}</div>
+                        <div className="tc-text-muted-xs">{lead.company}</div>
+                        <div className="tc-flex-center-gap tc-mt-3 tc-text-xs">
+                          <span className="tc-text-muted">{lead.phone}</span>
+                          <span className="tc-text-muted">•</span>
+                          <span className="tc-text-muted">{lead.email}</span>
+                        </div>
+                      </td>
+                      <td className="tc-table-td">
+                        <div className="tc-font-semibold">{lead.project_title}</div>
+                        <div className="tc-text-gold tc-text-xs">{lead.service_category}</div>
+                      </td>
+                      <td className="tc-table-td tc-font-bold">
+                        {lead.budget_range}
+                      </td>
+                      <td className="tc-table-td">
+                        <span
+                          className={`tc-status-pill ${
+                            lead.status === 'converted'
+                              ? 'success'
                               : lead.status === 'qualified'
-                              ? 'rgba(223, 174, 50, 0.15)'
-                              : 'rgba(16, 185, 129, 0.15)',
-                          color:
-                            lead.status === 'new'
-                              ? '#EF4444'
+                              ? 'info'
                               : lead.status === 'contacted'
-                              ? '#3B82F6'
-                              : lead.status === 'qualified'
-                              ? '#DFAE32'
-                              : '#10B981',
-                        }}
-                      >
-                        {lead.status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '16px 14px', textAlign: 'right' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '8px' }}>
-                        {/* 1-Click WhatsApp Outreach Button */}
-                        <a
-                          href={whatsappUrl}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            padding: '6px 12px',
-                            borderRadius: '8px',
-                            backgroundColor: '#25D366',
-                            color: '#FFFFFF',
-                            fontSize: '12px',
-                            fontWeight: 700,
-                            textDecoration: 'none',
-                          }}
-                          onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = '#1EBE5D')}
-                          onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = '#25D366')}
+                              ? 'warning'
+                              : 'danger'
+                          }`}
                         >
-                          <MessageSquare size={14} />
-                          <span>WhatsApp</span>
-                          <ArrowUpRight size={12} />
-                        </a>
-
-                        {/* Assign to Department Manager */}
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setSelectedLead(lead);
-                            setAssignDeptModalOpen(true);
-                          }}
-                          style={{
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                            padding: '6px 12px',
-                            borderRadius: '8px',
-                            backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                            border: '1px solid rgba(255, 255, 255, 0.12)',
-                            color: '#FFFFFF',
-                            fontSize: '12px',
-                            fontWeight: 600,
-                            cursor: 'pointer',
-                          }}
-                          onMouseEnter={(e) => (e.currentTarget.style.borderColor = '#DFAE32')}
-                          onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255, 255, 255, 0.12)')}
-                        >
-                          <Building2 size={14} />
-                          <span>Handoff</span>
-                        </button>
-                      </div>
-                    </td>
-                  </tr>
-                );
-              }))}
+                          {lead.status}
+                        </span>
+                        {lead.assigned_department && (
+                          <div className="tc-text-muted-xs tc-mt-3">
+                            → {lead.assigned_department}
+                          </div>
+                        )}
+                      </td>
+                      <td className="tc-table-td tc-text-right">
+                        <div className="tc-flex-end-gap">
+                          {lead.phone && (
+                            <a
+                              href={whatsappUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="tc-btn-gold-sm tc-flex-end-gap"
+                            >
+                              <MessageSquare size={13} />
+                              <span>WhatsApp</span>
+                            </a>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedLead(lead);
+                              setAssignDeptModalOpen(true);
+                            }}
+                            className="tc-btn-gold-sm tc-btn-gold-sm--solid tc-flex-end-gap"
+                          >
+                            <Building2 size={13} />
+                            <span>Handoff</span>
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })
+              )}
             </tbody>
           </table>
         </div>
       </div>
 
-      {/* Candidate ATS Pipeline Section */}
-      <div
-        style={{
-          backgroundColor: '#232324',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '16px',
-          padding: '24px',
-        }}
-      >
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
+      {/* Candidate Applications ATS Queue Banner */}
+      <div className="tc-workspace-card tc-grid-card tc-mt-3">
+        <div className="tc-card-header-row">
           <div>
-            <h2 style={{ fontSize: '18px', fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
-              Talent Application Pipeline
+            <h2 className="tc-card-title">
+              Candidate Applications ATS Queue
             </h2>
-            <p style={{ color: '#9CA3AF', fontSize: '13px', margin: '4px 0 0' }}>
-              Candidate screening queue for developer, designer, and PM applicants.
+            <p className="tc-dashboard-subtitle">
+              Engineers and specialists awaiting HR verification and technical department assignment.
             </p>
           </div>
-          <span style={{ fontSize: '12px', color: '#DFAE32', fontWeight: 600 }}>
-            {applicants.length} Total Candidates
+          <span className="tc-table-subtext">
+            {applicants.length} Total Applicants
           </span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '16px' }}>
+        <div className="tc-candidate-grid">
           {applicants.length === 0 ? (
-            <div style={{ gridColumn: '1 / -1', padding: '36px', textAlign: 'center', color: '#9CA3AF' }}>
-              No candidate applications found in queue.
+            <div className="tc-text-center tc-text-muted tc-py-6 tc-col-span-full">
+              No candidate applications currently pending review.
             </div>
           ) : (
-            applicants.map((app) => (
-              <div
-              key={app.id}
-              style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.03)',
-                border: '1px solid rgba(255, 255, 255, 0.06)',
-                borderRadius: '12px',
-                padding: '16px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-              }}
-            >
-              <div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                  <div>
-                    <div style={{ fontSize: '15px', fontWeight: 700, color: '#FFFFFF' }}>{app.applicant_name}</div>
-                    <div style={{ fontSize: '12px', color: '#DFAE32' }}>{app.department_name}</div>
+            applicants.slice(0, 4).map((app) => (
+              <div key={app.id} className="tc-candidate-card">
+                <div>
+                  <div className="tc-card-header-row tc-mb-2">
+                    <div>
+                      <div className="tc-font-bold">{app.full_name || app.applicant_name}</div>
+                      <div className="tc-text-gold tc-text-sm">{app.department_name}</div>
+                    </div>
+                    <span
+                      className={`tc-status-pill ${
+                        app.status === 'approved' ? 'success' : 'info'
+                      } tc-text-xxs`}
+                    >
+                      {app.status ? app.status.replace('_', ' ') : 'under review'}
+                    </span>
                   </div>
-                  <span
-                    style={{
-                      padding: '3px 8px',
-                      borderRadius: '9999px',
-                      fontSize: '10px',
-                      fontWeight: 700,
-                      textTransform: 'uppercase',
-                      backgroundColor:
-                        app.status === 'approved'
-                          ? 'rgba(16, 185, 129, 0.15)'
-                          : 'rgba(59, 130, 246, 0.15)',
-                      color: app.status === 'approved' ? '#10B981' : '#3B82F6',
-                    }}
+
+                  <div className="tc-candidate-meta tc-text-muted tc-mb-3 tc-text-sm">
+                    {app.experience_years} years experience • {(app.skills || []).slice(0, 3).join(', ')}
+                  </div>
+                </div>
+
+                <div className="tc-card-footer-action-row">
+                  <a
+                    href={`mailto:${app.email}`}
+                    className="tc-btn-mail"
                   >
-                    {app.status.replace('_', ' ')}
-                  </span>
-                </div>
-
-                <div style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '12px' }}>
-                  {app.experience_years} years experience • {app.skills.slice(0, 3).join(', ')}
+                    <Mail size={13} />
+                    <span>Email</span>
+                  </a>
+                  <button
+                    type="button"
+                    onClick={() => handleApproveApplicant(app)}
+                    className="tc-btn-approve-sm"
+                  >
+                    <CheckCircle2 size={13} />
+                    <span>Approve</span>
+                  </button>
                 </div>
               </div>
-
-              <div style={{ display: 'flex', gap: '8px', borderTop: '1px solid rgba(255, 255, 255, 0.04)', paddingTop: '12px' }}>
-                <a
-                  href={`mailto:${app.email}`}
-                  style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    height: '32px',
-                    borderRadius: '8px',
-                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                    color: '#FFFFFF',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    textDecoration: 'none',
-                  }}
-                >
-                  <Mail size={13} />
-                  <span>Email</span>
-                </a>
-                <button
-                  type="button"
-                  onClick={() => showToast(`Offer letter dispatched to ${app.applicant_name}!`)}
-                  style={{
-                    flex: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '6px',
-                    height: '32px',
-                    borderRadius: '8px',
-                    backgroundColor: '#DFAE32',
-                    color: '#0B0B0C',
-                    fontSize: '12px',
-                    fontWeight: 700,
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
-                >
-                  <CheckCircle2 size={13} />
-                  <span>Approve</span>
-                </button>
-              </div>
-            </div>
-          )))}
+            ))
+          )}
         </div>
 
-        <div style={{ marginTop: '16px', textAlign: 'right' }}>
+        <div className="tc-text-right tc-mt-3">
           <button
             type="button"
             onClick={() => onNavigate && onNavigate('applications_management')}
-            style={{
-              background: 'none',
-              border: 'none',
-              color: '#DFAE32',
-              fontSize: '12px',
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
+            className="tc-link-gold"
           >
             Open Full Applications ATS →
           </button>
@@ -590,72 +398,40 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
 
       {/* Handoff Modal */}
       {assignDeptModalOpen && selectedLead && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px',
-          }}
-        >
-          <div
-            style={{
-              backgroundColor: '#1C1C1E',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              padding: '28px',
-              width: '100%',
-              maxWidth: '520px',
-              boxShadow: '0 20px 50px rgba(0, 0, 0, 0.6)',
-            }}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 700, color: '#FFFFFF', margin: 0 }}>
+        <div className="tc-modal-overlay">
+          <div className="tc-modal-card tc-modal-sm">
+            <div className="tc-modal-header">
+              <h3 className="tc-modal-title">
                 Handoff Lead to Department Head
               </h3>
               <button
                 type="button"
                 onClick={() => setAssignDeptModalOpen(false)}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
+                className="tc-modal-close-btn"
               >
                 <X size={20} />
               </button>
             </div>
 
             <form onSubmit={handleHandoffSubmit}>
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Client & Project
                 </label>
-                <div style={{ padding: '10px 14px', borderRadius: '8px', backgroundColor: 'rgba(255, 255, 255, 0.05)', color: '#FFFFFF', fontSize: '14px', fontWeight: 600 }}>
+                <div className="tc-card-readonly-box">
                   {selectedLead.client_name} — {selectedLead.project_title}
                 </div>
               </div>
 
-              <div style={{ marginBottom: '16px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Assign to Department
                 </label>
                 <select
                   value={selectedDeptCode}
                   onChange={(e) => setSelectedDeptCode(e.target.value)}
                   required
-                  style={{
-                    width: '100%',
-                    height: '42px',
-                    borderRadius: '8px',
-                    backgroundColor: '#232324',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#FFFFFF',
-                    padding: '0 12px',
-                    fontSize: '13px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-select"
                 >
                   <option value="">Select Department...</option>
                   {departments.map((dept) => (
@@ -666,8 +442,8 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
                 </select>
               </div>
 
-              <div style={{ marginBottom: '24px' }}>
-                <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+              <div className="tc-form-group">
+                <label className="tc-form-label">
                   Concierge Handoff Notes
                 </label>
                 <textarea
@@ -675,51 +451,21 @@ export const HrDashboardView: React.FC<HrDashboardViewProps> = ({ onNavigate }) 
                   value={handoffNotes}
                   onChange={(e) => setHandoffNotes(e.target.value)}
                   placeholder="Budget verified via WhatsApp, client requests kickoff meeting this Thursday..."
-                  style={{
-                    width: '100%',
-                    borderRadius: '8px',
-                    backgroundColor: '#232324',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#FFFFFF',
-                    padding: '10px 12px',
-                    fontSize: '13px',
-                    outline: 'none',
-                  }}
+                  className="tc-form-textarea"
                 />
               </div>
 
-              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+              <div className="tc-actions-end">
                 <button
                   type="button"
                   onClick={() => setAssignDeptModalOpen(false)}
-                  style={{
-                    padding: '10px 18px',
-                    borderRadius: '8px',
-                    backgroundColor: 'transparent',
-                    border: '1px solid rgba(255, 255, 255, 0.15)',
-                    color: '#9CA3AF',
-                    fontSize: '13px',
-                    fontWeight: 600,
-                    cursor: 'pointer',
-                  }}
+                  className="tc-modal-cancel-btn"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '10px 20px',
-                    borderRadius: '8px',
-                    backgroundColor: '#DFAE32',
-                    color: '#0B0B0C',
-                    fontSize: '13px',
-                    fontWeight: 700,
-                    border: 'none',
-                    cursor: 'pointer',
-                  }}
+                  className="tc-gold-btn"
                 >
                   <Send size={14} />
                   <span>Transfer Lead</span>

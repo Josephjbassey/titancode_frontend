@@ -33,149 +33,39 @@ export const ServerErrorView: React.FC<ServerErrorViewProps> = ({
   const details = error?.stack || error?.message || errorDetails;
 
   return (
-    <div
-      className="tc-fade-in"
-      style={{
-        minHeight: '100vh',
-        width: '100%',
-        backgroundColor: '#0B0B0C',
-        color: '#FFFFFF',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '40px 24px',
-        position: 'relative',
-        overflow: 'hidden',
-        fontFamily: "'Poppins', sans-serif",
-      }}
-    >
+    <div className="tc-fade-in tc-error-page-container">
       {/* Background Ambient Glow */}
-      <div
-        style={{
-          position: 'absolute',
-          top: '20%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          width: '560px',
-          height: '560px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(239, 68, 68, 0.12) 0%, rgba(11, 11, 12, 0) 70%)',
-          pointerEvents: 'none',
-          filter: 'blur(50px)',
-          zIndex: 0,
-        }}
-      />
+      <div className="tc-error-ambient-glow tc-error-ambient-glow--red" />
 
-      <div
-        style={{
-          position: 'relative',
-          zIndex: 1,
-          maxWidth: '580px',
-          width: '100%',
-          textAlign: 'center',
-          backgroundColor: 'rgba(255, 255, 255, 0.03)',
-          border: '1px solid rgba(255, 255, 255, 0.08)',
-          borderRadius: '24px',
-          padding: '48px 36px',
-          backdropFilter: 'blur(16px)',
-          boxShadow: '0 24px 60px rgba(0, 0, 0, 0.65)',
-        }}
-      >
+      <div className="tc-error-card tc-error-card--wide">
         {/* Animated Server Crash Icon */}
-        <div
-          style={{
-            width: '90px',
-            height: '90px',
-            borderRadius: '24px',
-            backgroundColor: 'rgba(239, 68, 68, 0.12)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            margin: '0 auto 24px',
-            boxShadow: '0 0 35px rgba(239, 68, 68, 0.25)',
-          }}
-        >
+        <div className="tc-error-icon-box tc-error-icon-box--red">
           <ServerCrash size={44} color="#EF4444" strokeWidth={1.8} />
         </div>
 
         {/* 500 Status Badge */}
-        <div
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px',
-            padding: '4px 14px',
-            borderRadius: '9999px',
-            backgroundColor: 'rgba(239, 68, 68, 0.12)',
-            border: '1px solid rgba(239, 68, 68, 0.3)',
-            fontSize: '12px',
-            fontWeight: 700,
-            color: '#EF4444',
-            marginBottom: '16px',
-            textTransform: 'uppercase',
-            letterSpacing: '0.5px',
-          }}
-        >
+        <div className="tc-error-badge tc-error-badge--red">
           <AlertOctagon size={14} />
           Error 500: Server Exception
         </div>
 
-        <h1
-          style={{
-            fontSize: '24px',
-            fontWeight: 700,
-            color: '#FFFFFF',
-            marginBottom: '12px',
-            fontFamily: "'Inter', sans-serif",
-            letterSpacing: '-0.3px',
-          }}
-        >
+        <h1 className="tc-error-title">
           Internal System Error
         </h1>
 
-        <p
-          style={{
-            fontSize: '14px',
-            color: '#9CA3AF',
-            lineHeight: '1.6',
-            marginBottom: '28px',
-          }}
-        >
+        <p className="tc-error-desc tc-error-desc--compact">
           {errorMessage}
         </p>
 
         {/* Technical Diagnostics Accordion */}
         {details && (
-          <div
-            style={{
-              marginBottom: '28px',
-              textAlign: 'left',
-              border: '1px solid rgba(255, 255, 255, 0.1)',
-              borderRadius: '12px',
-              backgroundColor: 'rgba(0, 0, 0, 0.4)',
-              overflow: 'hidden',
-            }}
-          >
+          <div className="tc-diagnostics-box">
             <button
               type="button"
               onClick={() => setShowTechnical(!showTechnical)}
-              style={{
-                width: '100%',
-                padding: '12px 16px',
-                background: 'none',
-                border: 'none',
-                color: '#DFAE32',
-                fontSize: '13px',
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-              }}
+              className="tc-diagnostics-header"
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <div className="tc-flex-center-gap8">
                 <Terminal size={15} />
                 Technical Diagnostics
               </div>
@@ -183,54 +73,20 @@ export const ServerErrorView: React.FC<ServerErrorViewProps> = ({
             </button>
 
             {showTechnical && (
-              <div
-                style={{
-                  padding: '12px 16px',
-                  borderTop: '1px solid rgba(255, 255, 255, 0.08)',
-                  backgroundColor: '#070708',
-                  maxHeight: '180px',
-                  overflowY: 'auto',
-                }}
-              >
-                <pre
-                  style={{
-                    margin: 0,
-                    fontSize: '11px',
-                    color: '#EF4444',
-                    fontFamily: 'monospace',
-                    whiteSpace: 'pre-wrap',
-                    wordBreak: 'break-all',
-                  }}
-                >
-                  {details}
-                </pre>
-              </div>
+              <pre className="tc-diagnostics-pre">
+                {details}
+              </pre>
             )}
           </div>
         )}
 
         {/* Action Buttons */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+        <div className="tc-error-actions-stack">
           <button
             type="button"
             onClick={handleRetry}
             disabled={isRetrying}
-            style={{
-              height: '48px',
-              borderRadius: '9999px',
-              backgroundColor: '#DFAE32',
-              color: '#0B0B0C',
-              fontSize: '15px',
-              fontWeight: 700,
-              border: 'none',
-              cursor: isRetrying ? 'not-allowed' : 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-              boxShadow: '0 4px 16px rgba(223, 174, 50, 0.3)',
-              opacity: isRetrying ? 0.75 : 1,
-            }}
+            className="tc-btn-error-primary"
           >
             <RefreshCw size={18} className={isRetrying ? 'tc-spin' : ''} />
             {isRetrying ? 'Re-establishing Connection...' : 'Retry Connection'}
@@ -239,20 +95,7 @@ export const ServerErrorView: React.FC<ServerErrorViewProps> = ({
           <button
             type="button"
             onClick={() => onNavigate('home')}
-            style={{
-              height: '44px',
-              borderRadius: '9999px',
-              backgroundColor: 'rgba(255, 255, 255, 0.05)',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              color: '#FFFFFF',
-              fontSize: '14px',
-              fontWeight: 600,
-              cursor: 'pointer',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '8px',
-            }}
+            className="tc-btn-error-secondary"
           >
             <Home size={16} />
             Return to Homepage

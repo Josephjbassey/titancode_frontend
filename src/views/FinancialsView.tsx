@@ -27,6 +27,15 @@ interface PayoutInvoice {
   generatedDate: string;
 }
 
+interface WalletTransaction {
+  ref: string;
+  project: string;
+  type: string;
+  date: string;
+  amount: string;
+  isCredit: boolean;
+}
+
 const mapApiWithdrawal = (w: any): Withdrawal => ({
   id: `WTH-${w.id}`,
   member: `Member #${w.user_id}`,
@@ -58,32 +67,8 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
   });
 
   // Payout Invoices
-  const [invoices, setInvoices] = useState<PayoutInvoice[]>([
-    {
-      id: 'INV-901',
-      project: 'OmniTrade Crypto Arbitrage Bot',
-      totalPayout: 18500,
-      status: 'Pending Approval',
-      generatedDate: '2026-09-18',
-      split: [
-        { role: 'Algorithm Lead', member: 'Munis Samuel', share: 50, amount: 9250 },
-        { role: 'Systems Engineer', member: 'Joseph John', share: 40, amount: 7400 },
-        { role: 'TitanCode Platform Treasury', member: 'Reserve Fund', share: 10, amount: 1850 },
-      ],
-    },
-    {
-      id: 'INV-902',
-      project: 'Aurelia FinTech Milestone 2',
-      totalPayout: 12000,
-      status: 'Settled',
-      generatedDate: '2026-09-08',
-      split: [
-        { role: 'Lead Developer', member: 'Joseph John', share: 45, amount: 5400 },
-        { role: 'UI/UX Designer', member: 'Benedicta Atagamen', share: 45, amount: 5400 },
-        { role: 'Company Reserve', member: 'Reserve Fund', share: 10, amount: 1200 },
-      ],
-    },
-  ]);
+  const [invoices, setInvoices] = useState<PayoutInvoice[]>([]);
+  const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
 
   useEffect(() => {
     let mounted = true;
@@ -92,7 +77,9 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
       api.getWallet().catch(() => null),
       api.listWithdrawals().catch(() => []),
       api.getCeoOverview().catch(() => null),
-    ]).then(([wallet, withdrawalList, overview]) => {
+      api.getProjects().catch(() => []),
+      api.getFinancialSettings().catch(() => null),
+    ]).then(([wallet, withdrawalList, overview, fetchedProjects, financialSettings]) => {
       if (!mounted) return;
       if (wallet) {
         setMyBalance(Number(wallet.balance ?? 0));
@@ -106,6 +93,95 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
           treasuryBalance: overview.treasuryBalance,
           developerPoolPaid: overview.developerPoolPaid,
         });
+      }
+      if (fetchedProjects && fetchedProjects.length > 0) {
+        const pSplit = financialSettings?.platform_split_percent ?? 30;
+        const mSplit = financialSettings?.member_split_percent ?? 70;
+        const dynamicInvoices: PayoutInvoice[] = fetchedProjects.map((p: any) => {
+          const budget = p.budget ? Number(p.budget) : 15000;
+          const devShare = Math.round((budget * mSplit) / 100);
+          const treasuryShare = budget - devShare;
+          const team = p.team && p.team.length > 0 ? p.team : ['Lead Engineer', 'UI/UX Designer'];
+          const perMemberShare = Math.round(mSplit / team.length);
+          const perMemberAmount = Math.round(devShare / team.length);
+
+          return {
+            id: `INV-${String(p.id).padStart(3, '0')}`,
+            project: p.name || p.project_name || 'Sprint Deliverable',
+            totalPayout: budget,
+            status: p.progress === 100 ? 'Settled' : 'Pending Approval',
+            generatedDate: p.created_at ? p.created_at.split('T')[0] : '2026-09-20',
+            split: [
+              ...team.map((m: string) => ({
+                role: 'Contributor',
+                member: m,
+                share: perMemberShare,
+                amount: perMemberAmount,
+              })),
+              { role: 'TitanCode Platform Treasury', member: 'Reserve Fund', share: pSplit, amount: treasuryShare },
+            ],
+          };
+        });
+        setInvoices(dynamicInvoices);
+
+        // Build dynamic transactions
+        const txns: WalletTransaction[] = [];
+        (withdrawalList || []).slice(0, 5).forEach((w: any) => {
+          txns.push({
+            ref: `TXN-WTH-${w.id}`,
+            project: `Bank Wire Withdrawal (${w.bank_info || 'Bank Wire'})`,
+            type: 'Settlement Debit',
+            date: w.created_at ? w.created_at.split('T')[0] : '2026-09-20',
+            amount: `-$${Number(w.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            isCredit: false,
+          });
+        });
+        fetchedProjects.slice(0, 5).forEach((p: any) => {
+          const budget = p.budget ? Number(p.budget) : 12000;
+          const share = Math.round((budget * mSplit) / 100);
+          txns.push({
+            ref: `TXN-PRJ-${p.id}`,
+            project: p.name || p.project_name || 'Active Project',
+            type: 'Milestone Credit',
+            date: p.created_at ? p.created_at.split('T')[0] : '2026-09-15',
+            amount: `+$${share.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            isCredit: true,
+          });
+        });
+        setTransactions(txns.sort((a, b) => b.date.localeCompare(a.date)));
+      } else {
+        // Fallback default transactions
+        setTransactions([
+          { ref: 'TXN-991', project: 'OmniTrade Crypto Arbitrage Bot', type: 'Milestone Credit', date: '2026-09-18', amount: '+$7,400.00', isCredit: true },
+          { ref: 'TXN-942', project: 'Bank Wire Withdrawal (GTBank)', type: 'Settlement Debit', date: '2026-09-12', amount: '-$5,000.00', isCredit: false },
+          { ref: 'TXN-880', project: 'Aurelia FinTech Milestone 2', type: 'Milestone Credit', date: '2026-09-08', amount: '+$5,400.00', isCredit: true },
+        ]);
+        setInvoices([
+          {
+            id: 'INV-901',
+            project: 'OmniTrade Crypto Arbitrage Bot',
+            totalPayout: 18500,
+            status: 'Pending Approval',
+            generatedDate: '2026-09-18',
+            split: [
+              { role: 'Algorithm Lead', member: 'Munis Samuel', share: 50, amount: 9250 },
+              { role: 'Systems Engineer', member: 'Joseph John', share: 40, amount: 7400 },
+              { role: 'TitanCode Platform Treasury', member: 'Reserve Fund', share: 10, amount: 1850 },
+            ],
+          },
+          {
+            id: 'INV-902',
+            project: 'Aurelia FinTech Milestone 2',
+            totalPayout: 12000,
+            status: 'Settled',
+            generatedDate: '2026-09-08',
+            split: [
+              { role: 'Lead Developer', member: 'Joseph John', share: 45, amount: 5400 },
+              { role: 'UI/UX Designer', member: 'Benedicta Atagamen', share: 45, amount: 5400 },
+              { role: 'Company Reserve', member: 'Reserve Fund', share: 10, amount: 1200 },
+            ],
+          },
+        ]);
       }
     }).finally(() => {
       if (mounted) setIsLoading(false);
@@ -153,37 +229,20 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
   };
 
   return (
-    <div className="tc-fade-in" style={{ color: '#FFFFFF', width: '100%', display: 'flex', flexDirection: 'column', paddingBottom: '40px' }}>
+    <div className="tc-financials-container tc-fade-in">
       {/* Top Header */}
-      <div
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          marginBottom: '28px',
-          flexWrap: 'wrap',
-          gap: '16px',
-        }}
-      >
+      <div className="tc-dashboard-header">
         <div>
-          <h1 style={{ fontSize: '26px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+          <h1 className="tc-dashboard-title">
             Financials & Treasury Hub
           </h1>
-          <p style={{ color: '#9CA3AF', fontSize: '14px', margin: '4px 0 0' }}>
+          <p className="tc-dashboard-subtitle">
             Manage escrow milestone settlements, member wallets, payout splits, and corporate cashflow.
           </p>
         </div>
 
         {/* Tab Switcher */}
-        <div
-          style={{
-            display: 'flex',
-            backgroundColor: 'rgba(255, 255, 255, 0.04)',
-            borderRadius: '8px',
-            padding: '3px',
-            border: '1px solid rgba(255, 255, 255, 0.08)',
-          }}
-        >
+        <div className="tc-tab-pill-group">
           {[
             { id: 'my_wallet', label: 'My Wallet' },
             { id: 'admin_payouts', label: 'Withdrawal Approvals' },
@@ -194,17 +253,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               key={tab.id}
               type="button"
               onClick={() => setActiveTab(tab.id as any)}
-              style={{
-                padding: '8px 16px',
-                borderRadius: '6px',
-                border: 'none',
-                backgroundColor: activeTab === tab.id ? '#dfae32' : 'transparent',
-                color: activeTab === tab.id ? '#0A0D14' : '#9CA3AF',
-                fontWeight: activeTab === tab.id ? 700 : 500,
-                fontSize: '13px',
-                cursor: 'pointer',
-                transition: 'all 0.15s ease',
-              }}
+              className={`tc-tab-pill-btn ${activeTab === tab.id ? 'tc-tab-pill-btn--active' : ''}`}
             >
               {tab.label}
             </button>
@@ -216,28 +265,15 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
       {activeTab === 'my_wallet' && (
         <div>
           {/* Balance Hero Card */}
-          <div
-            style={{
-              backgroundColor: '#232324',
-              borderRadius: '16px',
-              padding: '36px',
-              border: '1px solid rgba(223, 174, 50, 0.3)',
-              marginBottom: '28px',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              flexWrap: 'wrap',
-              gap: '24px',
-            }}
-          >
+          <div className="tc-wallet-card">
             <div>
-              <div style={{ color: '#9CA3AF', fontSize: '14px', marginBottom: '8px' }}>
+              <div className="tc-wallet-label">
                 Available Settlement Balance
               </div>
-              <div style={{ fontSize: '42px', fontWeight: 800, color: '#dfae32', letterSpacing: '-0.02em' }}>
-                ${myBalance.toLocaleString()} <span style={{ fontSize: '20px', color: '#FFFFFF' }}>USD</span>
+              <div className="tc-wallet-amount">
+                ${myBalance.toLocaleString()} <span className="tc-wallet-unit">USD</span>
               </div>
-              <div style={{ color: '#10B981', fontSize: '13px', marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+              <div className="tc-wallet-status">
                 <CheckCircle2 size={14} />
                 <span>KYC Bank Verified: GTBank •••• 6789</span>
               </div>
@@ -247,7 +283,6 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               type="button"
               onClick={() => setShowWithdrawModal(true)}
               className="tc-action-btn-gold"
-              style={{ fontSize: '15px', padding: '14px 32px', height: 'auto' }}
             >
               <ArrowUpRight size={18} strokeWidth={2.5} />
               <span>Withdraw Funds</span>
@@ -255,39 +290,28 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
           </div>
 
           {/* Transaction Ledger */}
-          <div
-            style={{
-              backgroundColor: '#232324',
-              borderRadius: '14px',
-              border: '1px solid rgba(255, 255, 255, 0.08)',
-              overflow: 'hidden',
-            }}
-          >
-            <div style={{ padding: '20px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', fontWeight: 700, fontSize: '15px' }}>
+          <div className="tc-tx-table-card">
+            <div className="tc-tx-table-header">
               Recent Payout Settlements & Disbursals
             </div>
-            <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+            <table className="tc-tx-table">
               <thead>
-                <tr style={{ backgroundColor: '#0E121B', color: '#9CA3AF' }}>
-                  <th style={{ padding: '14px 20px' }}>Reference</th>
-                  <th style={{ padding: '14px 20px' }}>Project Milestone</th>
-                  <th style={{ padding: '14px 20px' }}>Type</th>
-                  <th style={{ padding: '14px 20px' }}>Date</th>
-                  <th style={{ padding: '14px 20px', textAlign: 'right' }}>Amount</th>
+                <tr>
+                  <th className="tc-tx-table-th">Reference</th>
+                  <th className="tc-tx-table-th">Project Milestone</th>
+                  <th className="tc-tx-table-th">Type</th>
+                  <th className="tc-tx-table-th">Date</th>
+                  <th className="tc-tx-table-th tc-tx-table-th--right">Amount</th>
                 </tr>
               </thead>
               <tbody>
-                {[
-                  { ref: 'TXN-991', project: 'OmniTrade Crypto Arbitrage Bot', type: 'Milestone Credit', date: '2026-09-18', amount: '+$7,400.00', isCredit: true },
-                  { ref: 'TXN-942', project: 'Bank Wire Withdrawal (GTBank)', type: 'Settlement Debit', date: '2026-09-12', amount: '-$5,000.00', isCredit: false },
-                  { ref: 'TXN-880', project: 'Aurelia FinTech Milestone 2', type: 'Milestone Credit', date: '2026-09-08', amount: '+$5,400.00', isCredit: true },
-                ].map((row, i) => (
-                  <tr key={i} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                    <td style={{ padding: '14px 20px', color: '#dfae32', fontWeight: 600 }}>{row.ref}</td>
-                    <td style={{ padding: '14px 20px', color: '#FFFFFF', fontWeight: 600 }}>{row.project}</td>
-                    <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{row.type}</td>
-                    <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{row.date}</td>
-                    <td style={{ padding: '14px 20px', textAlign: 'right', fontWeight: 700, color: row.isCredit ? '#10B981' : '#FFFFFF' }}>
+                {transactions.map((row, i) => (
+                  <tr key={i} className="tc-tx-table-tr">
+                    <td className="tc-tx-table-td tc-tx-table-td--gold">{row.ref}</td>
+                    <td className="tc-tx-table-td tc-tx-table-td--white">{row.project}</td>
+                    <td className="tc-tx-table-td tc-tx-table-td--muted">{row.type}</td>
+                    <td className="tc-tx-table-td tc-tx-table-td--muted">{row.date}</td>
+                    <td className={`tc-tx-table-td tc-tx-table-td--right tc-tx-table-td--amount ${row.isCredit ? 'tc-text-success' : 'tc-text-white'}`}>
                       {row.amount}
                     </td>
                   </tr>
@@ -300,34 +324,27 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
 
       {/* 2. ADMIN WITHDRAWAL APPROVALS TAB */}
       {activeTab === 'admin_payouts' && (
-        <div
-          style={{
-            backgroundColor: '#232324',
-            borderRadius: '14px',
-            border: '1px solid rgba(255, 255, 255, 0.06)',
-            overflow: 'hidden',
-          }}
-        >
-          <div style={{ padding: '20px', borderBottom: '1px solid rgba(255, 255, 255, 0.06)', fontWeight: 700, fontSize: '15px' }}>
+        <div className="tc-tx-table-card">
+          <div className="tc-tx-table-header">
             Pending Member Withdrawal Requests
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left', fontSize: '13px' }}>
+          <table className="tc-tx-table">
             <thead>
-              <tr style={{ backgroundColor: '#0E121B', color: '#9CA3AF' }}>
-                <th style={{ padding: '14px 20px' }}>Request ID</th>
-                <th style={{ padding: '14px 20px' }}>Member</th>
-                <th style={{ padding: '14px 20px' }}>Settlement Bank</th>
-                <th style={{ padding: '14px 20px' }}>Account</th>
-                <th style={{ padding: '14px 20px' }}>Amount</th>
-                <th style={{ padding: '14px 20px' }}>Status</th>
-                <th style={{ padding: '14px 20px', textAlign: 'right' }}>Authorization</th>
+              <tr>
+                <th className="tc-tx-table-th">Request ID</th>
+                <th className="tc-tx-table-th">Member</th>
+                <th className="tc-tx-table-th">Settlement Bank</th>
+                <th className="tc-tx-table-th">Account</th>
+                <th className="tc-tx-table-th">Amount</th>
+                <th className="tc-tx-table-th">Status</th>
+                <th className="tc-tx-table-th tc-tx-table-th--right">Authorization</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF' }}>
-                    <div style={{ display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                  <td colSpan={7} className="tc-tx-table-td tc-text-center tc-text-muted">
+                    <div className="tc-flex-center-all">
                       <Loader2 size={16} className="tc-spin" color="#dfae32" />
                       <span>Loading withdrawal authorizations...</span>
                     </div>
@@ -335,52 +352,34 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                 </tr>
               ) : withdrawals.length === 0 ? (
                 <tr>
-                  <td colSpan={7} style={{ padding: '36px', textAlign: 'center', color: '#9CA3AF', fontSize: '13px' }}>
+                  <td colSpan={7} className="tc-tx-table-td tc-text-center tc-text-muted tc-text-sm">
                     No withdrawal requests submitted yet.
                   </td>
                 </tr>
               ) : (
                 withdrawals.map((w) => (
-                  <tr key={w.id} style={{ borderBottom: '1px solid rgba(255, 255, 255, 0.04)' }}>
-                    <td style={{ padding: '14px 20px', color: '#dfae32', fontWeight: 600 }}>{w.id}</td>
-                    <td style={{ padding: '14px 20px', color: '#FFFFFF', fontWeight: 700 }}>{w.member}</td>
-                    <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{w.bankName}</td>
-                    <td style={{ padding: '14px 20px', color: '#9CA3AF' }}>{w.account}</td>
-                    <td style={{ padding: '14px 20px', fontWeight: 700, color: '#dfae32' }}>${w.amount.toLocaleString()}</td>
-                    <td style={{ padding: '14px 20px' }}>
-                      <span
-                        style={{
-                          padding: '3px 8px',
-                          borderRadius: '999px',
-                          fontSize: '11px',
-                          fontWeight: 700,
-                          backgroundColor: w.status === 'Approved' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(223, 174, 50, 0.15)',
-                          color: w.status === 'Approved' ? '#10B981' : '#dfae32',
-                        }}
-                      >
+                  <tr key={w.id} className="tc-tx-table-tr">
+                    <td className="tc-tx-table-td tc-tx-table-td--gold">{w.id}</td>
+                    <td className="tc-tx-table-td tc-tx-table-td--white">{w.member}</td>
+                    <td className="tc-tx-table-td tc-tx-table-td--muted">{w.bankName}</td>
+                    <td className="tc-tx-table-td tc-tx-table-td--muted">{w.account}</td>
+                    <td className="tc-tx-table-td tc-font-bold tc-text-gold">${w.amount.toLocaleString()}</td>
+                    <td className="tc-tx-table-td">
+                      <span className={`tc-tier-badge ${w.status === 'Approved' ? 'tc-tier-badge--active' : 'tc-tier-badge--inactive'}`}>
                         ● {w.status}
                       </span>
                     </td>
-                    <td style={{ padding: '14px 20px', textAlign: 'right' }}>
+                    <td className="tc-tx-table-td tc-tx-table-td--right">
                       {w.status === 'Pending' ? (
                         <button
                           type="button"
                           onClick={() => handleApproveWithdrawal(w.id)}
-                          style={{
-                            backgroundColor: '#10B981',
-                            color: '#FFFFFF',
-                            border: 'none',
-                            borderRadius: '6px',
-                            padding: '6px 14px',
-                            fontSize: '12px',
-                            fontWeight: 700,
-                            cursor: 'pointer',
-                          }}
+                          className="tc-btn-subtle-edit"
                         >
                           Approve Payout
                         </button>
                       ) : (
-                        <span style={{ color: '#9CA3AF', fontSize: '12px' }}>Wire Transferred</span>
+                        <span className="tc-text-muted tc-text-xs">Wire Transferred</span>
                       )}
                     </td>
                   </tr>
@@ -393,75 +392,49 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
 
       {/* 3. PAYOUT INVOICES SPLIT TAB */}
       {activeTab === 'payout_invoices' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+        <div className="tc-pricing-tiers-list">
           {invoices.map((inv) => (
-            <div
-              key={inv.id}
-              style={{
-                backgroundColor: '#232324',
-                borderRadius: '14px',
-                border: '1px solid rgba(255, 255, 255, 0.08)',
-                padding: '24px',
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+            <div key={inv.id} className="tc-settings-card">
+              <div className="tc-pricing-tiers-header">
                 <div>
-                  <span style={{ color: '#dfae32', fontSize: '12px', fontWeight: 700 }}>{inv.id}</span>
-                  <h3 style={{ fontSize: '18px', fontWeight: 800, margin: '4px 0 0' }}>{inv.project}</h3>
-                  <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '2px' }}>Generated: {inv.generatedDate}</div>
+                  <span className="tc-text-gold tc-text-xs tc-font-bold">{inv.id}</span>
+                  <h3 className="tc-text-lg tc-font-extrabold tc-text-white tc-mt-1">{inv.project}</h3>
+                  <div className="tc-text-muted tc-text-xs tc-mt-1">Generated: {inv.generatedDate}</div>
                 </div>
 
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: '22px', fontWeight: 800, color: '#dfae32' }}>
+                <div className="tc-text-right">
+                  <div className="tc-text-xl tc-font-extrabold tc-text-gold">
                     ${inv.totalPayout.toLocaleString()} USD
                   </div>
-                  <span
-                    style={{
-                      fontSize: '11px',
-                      fontWeight: 700,
-                      padding: '2px 8px',
-                      borderRadius: '4px',
-                      backgroundColor: inv.status === 'Settled' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(223, 174, 50, 0.15)',
-                      color: inv.status === 'Settled' ? '#10B981' : '#dfae32',
-                    }}
-                  >
+                  <span className={`tc-tier-badge ${inv.status === 'Settled' ? 'tc-tier-badge--active' : 'tc-tier-badge--inactive'}`}>
                     {inv.status}
                   </span>
                 </div>
               </div>
 
               {/* Split Breakdown */}
-              <div style={{ backgroundColor: '#161617', borderRadius: '10px', padding: '16px', marginBottom: '16px' }}>
-                <div style={{ fontSize: '12px', color: '#9CA3AF', marginBottom: '10px', fontWeight: 600 }}>
+              <div className="tc-user-detail-box tc-mb-3">
+                <div className="tc-text-muted tc-text-xs tc-font-semibold tc-mb-2">
                   Escrow Contract Split Breakdown:
                 </div>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                <div className="tc-notification-triggers-list">
                   {inv.split.map((s, idx) => (
-                    <div key={idx} style={{ display: 'flex', justifyContent: 'space-between', fontSize: '13px' }}>
-                      <span style={{ color: '#D1D5DB' }}>
-                        <span style={{ fontWeight: 700, color: '#FFFFFF' }}>{s.member}</span> ({s.role}) — {s.share}%
+                    <div key={idx} className="tc-flex-between">
+                      <span className="tc-text-muted tc-text-sm">
+                        <span className="tc-font-bold tc-text-white">{s.member}</span> ({s.role}) — {s.share}%
                       </span>
-                      <span style={{ fontWeight: 700, color: '#dfae32' }}>${s.amount.toLocaleString()} USD</span>
+                      <span className="tc-font-bold tc-text-gold">${s.amount.toLocaleString()} USD</span>
                     </div>
                   ))}
                 </div>
               </div>
 
               {inv.status === 'Pending Approval' && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                <div className="tc-flex-end-gap">
                   <button
                     type="button"
                     onClick={() => handleApproveInvoice(inv.id)}
-                    style={{
-                      backgroundColor: '#10B981',
-                      color: '#FFFFFF',
-                      fontWeight: 700,
-                      fontSize: '13px',
-                      padding: '10px 20px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: 'pointer',
-                    }}
+                    className="tc-action-btn-gold"
                   >
                     Authorize & Disburse Invoices
                   </button>
@@ -474,96 +447,64 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
 
       {/* 4. COMPANY TREASURY TAB */}
       {activeTab === 'company_treasury' && (
-        <div>
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
-              gap: '20px',
-              marginBottom: '28px',
-            }}
-          >
-            <div style={{ backgroundColor: '#232324', borderRadius: '14px', padding: '24px', border: '1px solid rgba(223, 174, 50, 0.3)' }}>
-              <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Corporate Vault Balance</div>
-              <div style={{ fontSize: '32px', fontWeight: 800, color: '#dfae32', marginTop: '6px' }}>
-                ${treasury.treasuryBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-              <div style={{ color: '#10B981', fontSize: '12px', marginTop: '4px' }}>30% Platform Treasury Split</div>
+        <div className="tc-treasury-grid">
+          <div className="tc-treasury-card tc-treasury-card--gold">
+            <div className="tc-treasury-card-label">Corporate Vault Balance</div>
+            <div className="tc-treasury-card-amount tc-treasury-card-amount--gold">
+              ${treasury.treasuryBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
+            <div className="tc-treasury-card-note tc-treasury-card-note--emerald">30% Platform Treasury Split</div>
+          </div>
 
-            <div style={{ backgroundColor: '#232324', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-              <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Total Platform Revenue</div>
-              <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>
-                ${treasury.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-              <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '4px' }}>Gross milestone billings</div>
+          <div className="tc-treasury-card">
+            <div className="tc-treasury-card-label">Total Platform Revenue</div>
+            <div className="tc-treasury-card-amount tc-treasury-card-amount--white">
+              ${treasury.totalRevenue.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
+            <div className="tc-treasury-card-note tc-treasury-card-note--muted">Gross milestone billings</div>
+          </div>
 
-            <div style={{ backgroundColor: '#232324', borderRadius: '14px', padding: '24px', border: '1px solid rgba(255, 255, 255, 0.06)' }}>
-              <div style={{ color: '#9CA3AF', fontSize: '13px' }}>Total Developer Pool Paid</div>
-              <div style={{ fontSize: '32px', fontWeight: 800, color: '#FFFFFF', marginTop: '6px' }}>
-                ${treasury.developerPoolPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </div>
-              <div style={{ color: '#9CA3AF', fontSize: '12px', marginTop: '4px' }}>70% distributed to engineering staff</div>
+          <div className="tc-treasury-card">
+            <div className="tc-treasury-card-label">Total Developer Pool Paid</div>
+            <div className="tc-treasury-card-amount tc-treasury-card-amount--white">
+              ${treasury.developerPoolPaid.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
             </div>
+            <div className="tc-treasury-card-note tc-treasury-card-note--muted">70% distributed to engineering staff</div>
           </div>
         </div>
       )}
 
       {/* WITHDRAWAL MODAL */}
       {showWithdrawModal && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(5px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 1000,
-            padding: '20px',
-          }}
-          onClick={() => setShowWithdrawModal(false)}
-        >
-          <div
-            style={{
-              backgroundColor: '#1C1C1E',
-              border: '1px solid rgba(255, 255, 255, 0.15)',
-              borderRadius: '16px',
-              maxWidth: '480px',
-              width: '100%',
-              padding: '28px',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
-              <h3 style={{ fontSize: '20px', fontWeight: 800, margin: 0, color: '#FFFFFF' }}>
+        <div className="tc-modal-overlay" onClick={() => setShowWithdrawModal(false)}>
+          <div className="tc-modal-card tc-modal-sm" onClick={(e) => e.stopPropagation()}>
+            <div className="tc-modal-header">
+              <h3 className="tc-modal-title">
                 Withdraw to Bank Account
               </h3>
               <button
                 type="button"
                 onClick={() => setShowWithdrawModal(false)}
-                style={{ background: 'none', border: 'none', color: '#9CA3AF', cursor: 'pointer' }}
+                className="tc-modal-close-btn"
               >
                 <X size={20} />
               </button>
             </div>
 
             {withdrawSuccess ? (
-              <div style={{ textAlign: 'center', padding: '30px 0' }}>
-                <CheckCircle2 size={48} color="#10B981" style={{ margin: '0 auto 16px' }} />
-                <h4 style={{ fontSize: '18px', fontWeight: 700, color: '#FFFFFF', margin: '0 0 8px' }}>
+              <div className="tc-text-center tc-py-4">
+                <CheckCircle2 size={48} color="#10B981" className="tc-mx-auto tc-mb-4" />
+                <h4 className="tc-text-lg tc-font-bold tc-text-white tc-mb-2">
                   Withdrawal Request Submitted
                 </h4>
-                <p style={{ color: '#9CA3AF', fontSize: '13px' }}>
+                <p className="tc-text-muted tc-text-sm">
                   Wire transfer is being processed and will hit your bank within 24 hours.
                 </p>
               </div>
             ) : (
               <form onSubmit={handleWithdrawSubmit}>
-                <div style={{ marginBottom: '16px' }}>
-                  <label style={{ display: 'block', fontSize: '13px', color: '#9CA3AF', marginBottom: '6px' }}>
+                <div className="tc-form-group">
+                  <label className="tc-form-label">
                     Withdrawal Amount (USD)
                   </label>
                   <input
@@ -573,55 +514,31 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                     max={myBalance}
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
-                    style={{
-                      width: '100%',
-                      backgroundColor: '#161617',
-                      border: '1px solid rgba(255, 255, 255, 0.1)',
-                      borderRadius: '8px',
-                      padding: '12px 14px',
-                      color: '#FFFFFF',
-                      fontSize: '16px',
-                      outline: 'none',
-                    }}
+                    className="tc-form-input"
                   />
-                  <div style={{ fontSize: '12px', color: '#dfae32', marginTop: '4px' }}>
+                  <div className="tc-text-gold tc-text-xs tc-mt-1">
                     Available: ${myBalance.toLocaleString()} USD
                   </div>
                 </div>
 
-                <div style={{ backgroundColor: '#161617', padding: '14px', borderRadius: '8px', marginBottom: '24px' }}>
-                  <div style={{ fontSize: '11px', color: '#9CA3AF' }}>Destination Account:</div>
-                  <div style={{ fontSize: '13px', fontWeight: 700, color: '#FFFFFF', marginTop: '2px' }}>
+                <div className="tc-user-detail-box tc-mb-4">
+                  <div className="tc-text-muted tc-text-2xs">Destination Account:</div>
+                  <div className="tc-font-bold tc-text-white tc-text-sm tc-mt-1">
                     Guaranty Trust Bank (0123456789)
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '12px' }}>
+                <div className="tc-flex-end-gap">
                   <button
                     type="button"
                     onClick={() => setShowWithdrawModal(false)}
-                    style={{
-                      backgroundColor: 'transparent',
-                      color: '#9CA3AF',
-                      padding: '10px 16px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: 'pointer',
-                    }}
+                    className="tc-btn-subtle-edit"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    style={{
-                      backgroundColor: '#dfae32',
-                      color: '#0A0D14',
-                      fontWeight: 700,
-                      padding: '10px 22px',
-                      borderRadius: '8px',
-                      border: 'none',
-                      cursor: 'pointer',
-                    }}
+                    className="tc-action-btn-gold"
                   >
                     Confirm Withdrawal
                   </button>
