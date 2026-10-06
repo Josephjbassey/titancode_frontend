@@ -278,7 +278,9 @@ export interface FinancialSettings {
   support_email: string;
   currency: string;
   timezone: string;
+  split_model?: 'standard_70_30' | 'three_tier_60_15_25' | 'custom';
   platform_split_percent: number;
+  overhead_split_percent?: number;
   member_split_percent: number;
   notify_on_milestone: boolean;
   notify_on_withdrawal: boolean;
@@ -297,9 +299,12 @@ export interface PricingTier {
 
 export interface SalaryProjection {
   total_budget: number;
+  split_model?: string;
   platform_split_percent: number;
+  overhead_split_percent?: number;
   member_split_percent: number;
   platform_treasury_share: number;
+  overhead_pool_share?: number;
   team_pool_share: number;
   member_count: number;
   projected_salary_per_member: number;

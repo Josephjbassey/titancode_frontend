@@ -327,7 +327,7 @@ export const ApplicationsManagementView: React.FC<ApplicationsManagementViewProp
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Cleared technical interview with Joseph; recommended for frontend."
+                  placeholder="e.g. Cleared technical assessment with engineering panel; recommended for frontend."
                   value={reviewNoteInput}
                   onChange={(e) => setReviewNoteInput(e.target.value)}
                   className="tc-form-input"

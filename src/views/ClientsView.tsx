@@ -33,7 +33,7 @@ export const ClientsView: React.FC = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [newClientName, setNewClientName] = useState('');
   const [newCompany, setNewCompany] = useState('');
-  const [newAmount, setNewAmount] = useState('2,000,000');
+  const [newAmount, setNewAmount] = useState('25,000');
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
   useEffect(() => {
@@ -42,17 +42,20 @@ export const ClientsView: React.FC = () => {
     api.getClients()
       .then((records) => {
         if (!mounted) return;
-        const mapped = records.map((c) => ({
-          id: c.id,
-          date: c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : 'Recent',
-          name: c.name || c.full_name || 'Client Representative',
-          avatar: null,
-          company: c.company || (c.email ? c.email.split('@')[1] : 'Enterprise Client'),
-          amount: '$2,000,000',
-          status: c.status || 'Active',
-          email: c.email,
-          phone: c.phone,
-        }));
+        const mapped = records.map((c) => {
+          const val = c.contract_value ?? 0;
+          return {
+            id: c.id,
+            date: c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: '2-digit' }) : 'Recent',
+            name: c.name || c.full_name || 'Client Representative',
+            avatar: null,
+            company: c.company || (c.email ? c.email.split('@')[1] : 'Enterprise Client'),
+            amount: val > 0 ? `$${val.toLocaleString()}` : '$0.00',
+            status: c.status || 'Active',
+            email: c.email,
+            phone: c.phone,
+          };
+        });
         setClientRows(mapped);
       })
       .catch((err) => {

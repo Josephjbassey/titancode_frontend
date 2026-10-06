@@ -43,7 +43,7 @@ const mapApiWithdrawal = (w: any): Withdrawal => ({
   bankName: w.bank_info || 'Bank Wire',
   account: '•••• ••••',
   status: w.status === 'approved' ? 'Approved' : w.status === 'rejected' ? 'Rejected' : 'Pending',
-  requestedDate: w.created_at ? w.created_at.split('T')[0] : '2026-09-20',
+  requestedDate: w.created_at ? w.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
 });
 
 export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }> = () => {
@@ -98,26 +98,42 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
         const pSplit = financialSettings?.platform_split_percent ?? 30;
         const mSplit = financialSettings?.member_split_percent ?? 70;
         const dynamicInvoices: PayoutInvoice[] = fetchedProjects.map((p: any) => {
-          const budget = p.budget ? Number(p.budget) : 15000;
+          const budget = Number(p.budget ?? 0);
           const devShare = Math.round((budget * mSplit) / 100);
           const treasuryShare = budget - devShare;
-          const team = p.team && p.team.length > 0 ? p.team : ['Lead Engineer', 'UI/UX Designer'];
-          const perMemberShare = Math.round(mSplit / team.length);
-          const perMemberAmount = Math.round(devShare / team.length);
+
+          const teamMembers: string[] = Array.isArray(p.members) && p.members.length > 0
+            ? p.members.map((m: any) => typeof m === 'string' ? m : (m.name || m.full_name || `Member #${m.id || ''}`.trim()))
+            : (Array.isArray(p.team) && p.team.length > 0 ? p.team : []);
+
+          const memberSplits = teamMembers.length > 0
+            ? teamMembers.map((m: string) => ({
+                role: 'Engineering Contributor',
+                member: m,
+                share: Math.round(mSplit / teamMembers.length),
+                amount: Math.round(devShare / teamMembers.length),
+              }))
+            : [
+                {
+                  role: 'Developer Pool',
+                  member: p.team_members_count && p.team_members_count > 0
+                    ? `${p.team_members_count} Assigned Contributor${p.team_members_count > 1 ? 's' : ''}`
+                    : 'Engineering Pool Allocation',
+                  share: mSplit,
+                  amount: devShare,
+                },
+              ];
+
+          const isSettled = p.status === 'completed' || p.progress_percentage === 100 || p.progress === 100;
 
           return {
             id: `INV-${String(p.id).padStart(3, '0')}`,
-            project: p.name || p.project_name || 'Sprint Deliverable',
+            project: p.project_name || p.name || `Project #${p.id}`,
             totalPayout: budget,
-            status: p.progress === 100 ? 'Settled' : 'Pending Approval',
-            generatedDate: p.created_at ? p.created_at.split('T')[0] : '2026-09-20',
+            status: isSettled ? 'Settled' : 'Pending Approval',
+            generatedDate: p.created_at ? p.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
             split: [
-              ...team.map((m: string) => ({
-                role: 'Contributor',
-                member: m,
-                share: perMemberShare,
-                amount: perMemberAmount,
-              })),
+              ...memberSplits,
               { role: 'TitanCode Platform Treasury', member: 'Reserve Fund', share: pSplit, amount: treasuryShare },
             ],
           };
@@ -131,57 +147,39 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
             ref: `TXN-WTH-${w.id}`,
             project: `Bank Wire Withdrawal (${w.bank_info || 'Bank Wire'})`,
             type: 'Settlement Debit',
-            date: w.created_at ? w.created_at.split('T')[0] : '2026-09-20',
-            amount: `-$${Number(w.amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            date: w.created_at ? w.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+            amount: `-$${Number(w.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
             isCredit: false,
           });
         });
         fetchedProjects.slice(0, 5).forEach((p: any) => {
-          const budget = p.budget ? Number(p.budget) : 12000;
+          const budget = Number(p.budget ?? 0);
           const share = Math.round((budget * mSplit) / 100);
           txns.push({
             ref: `TXN-PRJ-${p.id}`,
-            project: p.name || p.project_name || 'Active Project',
+            project: p.project_name || p.name || `Project #${p.id}`,
             type: 'Milestone Credit',
-            date: p.created_at ? p.created_at.split('T')[0] : '2026-09-15',
+            date: p.created_at ? p.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
             amount: `+$${share.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
             isCredit: true,
           });
         });
         setTransactions(txns.sort((a, b) => b.date.localeCompare(a.date)));
       } else {
-        // Fallback default transactions
-        setTransactions([
-          { ref: 'TXN-991', project: 'OmniTrade Crypto Arbitrage Bot', type: 'Milestone Credit', date: '2026-09-18', amount: '+$7,400.00', isCredit: true },
-          { ref: 'TXN-942', project: 'Bank Wire Withdrawal (GTBank)', type: 'Settlement Debit', date: '2026-09-12', amount: '-$5,000.00', isCredit: false },
-          { ref: 'TXN-880', project: 'Aurelia FinTech Milestone 2', type: 'Milestone Credit', date: '2026-09-08', amount: '+$5,400.00', isCredit: true },
-        ]);
-        setInvoices([
-          {
-            id: 'INV-901',
-            project: 'OmniTrade Crypto Arbitrage Bot',
-            totalPayout: 18500,
-            status: 'Pending Approval',
-            generatedDate: '2026-09-18',
-            split: [
-              { role: 'Algorithm Lead', member: 'Munis Samuel', share: 50, amount: 9250 },
-              { role: 'Systems Engineer', member: 'Joseph John', share: 40, amount: 7400 },
-              { role: 'TitanCode Platform Treasury', member: 'Reserve Fund', share: 10, amount: 1850 },
-            ],
-          },
-          {
-            id: 'INV-902',
-            project: 'Aurelia FinTech Milestone 2',
-            totalPayout: 12000,
-            status: 'Settled',
-            generatedDate: '2026-09-08',
-            split: [
-              { role: 'Lead Developer', member: 'Joseph John', share: 45, amount: 5400 },
-              { role: 'UI/UX Designer', member: 'Benedicta Atagamen', share: 45, amount: 5400 },
-              { role: 'Company Reserve', member: 'Reserve Fund', share: 10, amount: 1200 },
-            ],
-          },
-        ]);
+        // If no projects in database, reflect actual withdrawals or empty list
+        const txns: WalletTransaction[] = [];
+        (withdrawalList || []).slice(0, 5).forEach((w: any) => {
+          txns.push({
+            ref: `TXN-WTH-${w.id}`,
+            project: `Bank Wire Withdrawal (${w.bank_info || 'Bank Wire'})`,
+            type: 'Settlement Debit',
+            date: w.created_at ? w.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
+            amount: `-$${Number(w.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            isCredit: false,
+          });
+        });
+        setTransactions(txns);
+        setInvoices([]);
       }
     }).finally(() => {
       if (mounted) setIsLoading(false);
@@ -305,17 +303,25 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((row, i) => (
-                  <tr key={i} className="tc-tx-table-tr">
-                    <td className="tc-tx-table-td tc-tx-table-td--gold">{row.ref}</td>
-                    <td className="tc-tx-table-td tc-tx-table-td--white">{row.project}</td>
-                    <td className="tc-tx-table-td tc-tx-table-td--muted">{row.type}</td>
-                    <td className="tc-tx-table-td tc-tx-table-td--muted">{row.date}</td>
-                    <td className={`tc-tx-table-td tc-tx-table-td--right tc-tx-table-td--amount ${row.isCredit ? 'tc-text-success' : 'tc-text-white'}`}>
-                      {row.amount}
+                {transactions.length === 0 ? (
+                  <tr>
+                    <td colSpan={5} className="tc-tx-table-td tc-text-center tc-text-muted">
+                      No payout settlements recorded yet.
                     </td>
                   </tr>
-                ))}
+                ) : (
+                  transactions.map((row, i) => (
+                    <tr key={i} className="tc-tx-table-tr">
+                      <td className="tc-tx-table-td tc-tx-table-td--gold">{row.ref}</td>
+                      <td className="tc-tx-table-td tc-tx-table-td--white">{row.project}</td>
+                      <td className="tc-tx-table-td tc-tx-table-td--muted">{row.type}</td>
+                      <td className="tc-tx-table-td tc-tx-table-td--muted">{row.date}</td>
+                      <td className={`tc-tx-table-td tc-tx-table-td--right tc-tx-table-td--amount ${row.isCredit ? 'tc-text-success' : 'tc-text-white'}`}>
+                        {row.amount}
+                      </td>
+                    </tr>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
@@ -393,55 +399,61 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
       {/* 3. PAYOUT INVOICES SPLIT TAB */}
       {activeTab === 'payout_invoices' && (
         <div className="tc-pricing-tiers-list">
-          {invoices.map((inv) => (
-            <div key={inv.id} className="tc-settings-card">
-              <div className="tc-pricing-tiers-header">
-                <div>
-                  <span className="tc-text-gold tc-text-xs tc-font-bold">{inv.id}</span>
-                  <h3 className="tc-text-lg tc-font-extrabold tc-text-white tc-mt-1">{inv.project}</h3>
-                  <div className="tc-text-muted tc-text-xs tc-mt-1">Generated: {inv.generatedDate}</div>
-                </div>
-
-                <div className="tc-text-right">
-                  <div className="tc-text-xl tc-font-extrabold tc-text-gold">
-                    ${inv.totalPayout.toLocaleString()} USD
-                  </div>
-                  <span className={`tc-tier-badge ${inv.status === 'Settled' ? 'tc-tier-badge--active' : 'tc-tier-badge--inactive'}`}>
-                    {inv.status}
-                  </span>
-                </div>
-              </div>
-
-              {/* Split Breakdown */}
-              <div className="tc-user-detail-box tc-mb-3">
-                <div className="tc-text-muted tc-text-xs tc-font-semibold tc-mb-2">
-                  Escrow Contract Split Breakdown:
-                </div>
-                <div className="tc-notification-triggers-list">
-                  {inv.split.map((s, idx) => (
-                    <div key={idx} className="tc-flex-between">
-                      <span className="tc-text-muted tc-text-sm">
-                        <span className="tc-font-bold tc-text-white">{s.member}</span> ({s.role}) — {s.share}%
-                      </span>
-                      <span className="tc-font-bold tc-text-gold">${s.amount.toLocaleString()} USD</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {inv.status === 'Pending Approval' && (
-                <div className="tc-flex-end-gap">
-                  <button
-                    type="button"
-                    onClick={() => handleApproveInvoice(inv.id)}
-                    className="tc-action-btn-gold"
-                  >
-                    Authorize & Disburse Invoices
-                  </button>
-                </div>
-              )}
+          {invoices.length === 0 ? (
+            <div className="tc-settings-card tc-text-center tc-p-6">
+              <p className="tc-text-muted">No payout invoices generated yet.</p>
             </div>
-          ))}
+          ) : (
+            invoices.map((inv) => (
+              <div key={inv.id} className="tc-settings-card">
+                <div className="tc-pricing-tiers-header">
+                  <div>
+                    <span className="tc-text-gold tc-text-xs tc-font-bold">{inv.id}</span>
+                    <h3 className="tc-text-lg tc-font-extrabold tc-text-white tc-mt-1">{inv.project}</h3>
+                    <div className="tc-text-muted tc-text-xs tc-mt-1">Generated: {inv.generatedDate}</div>
+                  </div>
+
+                  <div className="tc-text-right">
+                    <div className="tc-text-xl tc-font-extrabold tc-text-gold">
+                      ${inv.totalPayout.toLocaleString()} USD
+                    </div>
+                    <span className={`tc-tier-badge ${inv.status === 'Settled' ? 'tc-tier-badge--active' : 'tc-tier-badge--inactive'}`}>
+                      {inv.status}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Split Breakdown */}
+                <div className="tc-user-detail-box tc-mb-3">
+                  <div className="tc-text-muted tc-text-xs tc-font-semibold tc-mb-2">
+                    Escrow Contract Split Breakdown:
+                  </div>
+                  <div className="tc-notification-triggers-list">
+                    {inv.split.map((s, idx) => (
+                      <div key={idx} className="tc-flex-between">
+                        <span className="tc-text-muted tc-text-sm">
+                          <span className="tc-font-bold tc-text-white">{s.member}</span> ({s.role}) — {s.share}%
+                        </span>
+                        <span className="tc-font-bold tc-text-gold">${s.amount.toLocaleString()} USD</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {inv.status === 'Pending Approval' && (
+                  <div className="tc-flex-end-gap">
+                    <button
+                      type="button"
+                      onClick={() => handleApproveInvoice(inv.id)}
+                      className="tc-action-btn-gold"
+                    >
+                      Authorize & Disburse Invoices
+                    </button>
+                  </div>
+                )}
+              </div>
+            ))
+          )}
         </div>
       )}
 

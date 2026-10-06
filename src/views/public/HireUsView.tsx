@@ -72,11 +72,10 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
   };
 
   return (
-    <div className="tc-page-root" style={{ paddingBottom: '120px' }}>
+    <div className="tc-page-root tc-hireus-root">
       {/* 1. HERO BANNER — Figma: x:0, y:154, w:1440, h:463, no border-radius */}
       <section
-        className="tc-subpage-hero"
-        style={{ backgroundImage: 'url(/assets/hireushero_bg.jpg)' }}
+        className="tc-subpage-hero tc-subpage-hero--hireus"
       >
         <div className="tc-subpage-hero__content">
           <h1 className="tc-hero-title">
@@ -89,42 +88,24 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
       </section>
 
       {/* 2. FORM SECTION */}
-      <section className="tc-section tc-section-inner" style={{ textAlign: 'center' }}>
-        <h2 className="tc-section-title" style={{ marginTop: '90px' }}>
+      <section className="tc-section tc-section-inner tc-section--center">
+        <h2 className="tc-section-title tc-hireus-section-title">
           What do you need <span className="tc-gold">help with?</span>
         </h2>
-        <p className="tc-body-text" style={{ maxWidth: '600px', margin: '0 auto 60px' }}>
+        <p className="tc-body-text tc-hireus-desc">
           Provide the details so we can understand your need
         </p>
 
         {submitted && (
-          <div className="tc-form-success" style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '12px',
-            marginBottom: '40px',
-            fontSize: '15px',
-            textAlign: 'center',
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <div className="tc-form-success tc-hireus-success">
+            <div className="tc-hireus-success-row">
               <CheckCircle2 size={20} />
               <span>Thank you for reaching out! Our project team will review your inquiry and reply within 24 hours.</span>
             </div>
             <button
               type="button"
               onClick={() => _onNavigate('sign_in')}
-              style={{
-                background: 'transparent',
-                border: '1px solid #DFAE32',
-                color: '#DFAE32',
-                padding: '8px 22px',
-                borderRadius: '9999px',
-                fontSize: '14px',
-                fontWeight: '600',
-                cursor: 'pointer',
-              }}
+              className="tc-hireus-portal-btn"
             >
               Sign In to Your Client Portal →
             </button>
@@ -132,7 +113,7 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
         )}
 
         {error && (
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', justifyContent: 'center', marginBottom: '24px', color: '#EF4444', fontSize: '14px' }}>
+          <div className="tc-hireus-error-banner">
             <AlertCircle size={16} />
             <span>{error}</span>
           </div>
@@ -203,7 +184,7 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
             </div>
 
             {/* Row 4: Project Description */}
-            <div className="tc-form-row tc-form-row--lg" style={{ marginBottom: '48px' }}>
+            <div className="tc-form-row tc-form-row--lg tc-form-row--mb48">
               <textarea
                 rows={8}
                 required
@@ -215,8 +196,8 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
             </div>
 
             {/* Submit */}
-            <div style={{ textAlign: 'center' }}>
-              <button type="submit" className="tc-btn-gold tc-btn-gold--full" disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1, cursor: isLoading ? 'not-allowed' : 'pointer' }}>
+            <div className="tc-form-submit-center">
+              <button type="submit" className="tc-btn-gold tc-btn-gold--full" disabled={isLoading}>
                 {isLoading ? 'Submitting…' : 'Submit'}
               </button>
             </div>

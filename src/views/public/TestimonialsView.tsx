@@ -35,43 +35,28 @@ export const TestimonialsView: React.FC<TestimonialsViewProps> = ({ onNavigate: 
   ];
 
   return (
-    <div style={{ backgroundColor: 'var(--tc-figma-black, #0B0B0C)', color: '#FFFFFF', padding: '90px 40px 140px' }}>
-      <div style={{ maxWidth: '1280px', margin: '0 auto' }}>
+    <div className="tc-page-root tc-testimonials-root">
+      <div className="tc-section-inner">
         {/* Header matching Figma Testimonials.png */}
-        <div style={{ textAlign: 'center', marginBottom: '80px' }}>
-          <h2 style={{ fontSize: '46px', fontWeight: '800', marginBottom: '16px', color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
-            What <span style={{ color: 'var(--tc-figma-gold, #DFAE32)' }}>people say</span>
+        <div className="tc-testimonials-header">
+          <h2 className="tc-testimonials-title">
+            What <span className="tc-gold">people say</span>
           </h2>
-          <p style={{ fontSize: '16px', color: '#9CA3AF', maxWidth: '720px', margin: '0 auto', lineHeight: '1.6', fontFamily: "'Poppins', sans-serif" }}>
+          <p className="tc-testimonials-subtitle">
             Discover what our satisfied customers have to say about their experiences with our products and services
           </p>
         </div>
 
         {/* 3 Review Cards Grid matching Figma */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: '30px',
-          }}
-        >
+        <div className="tc-testimonials-grid">
           {testimonials.map((t) => (
             <div
               key={t.id}
-              className="figma-card"
-              style={{
-                borderRadius: '20px',
-                padding: '40px 32px',
-                display: 'flex',
-                flexDirection: 'column',
-                justifyContent: 'space-between',
-                minHeight: '340px',
-                transition: 'border-color 0.2s, transform 0.2s',
-              }}
+              className="figma-card tc-testimonial-card"
             >
               <div>
                 {/* 5 Stars on Top Right matching Figma */}
-                <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '5px', marginBottom: '24px' }}>
+                <div className="tc-testimonial-stars">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
@@ -83,37 +68,23 @@ export const TestimonialsView: React.FC<TestimonialsViewProps> = ({ onNavigate: 
                 </div>
 
                 {/* Quote Text */}
-                <p
-                  style={{
-                    fontSize: '15px',
-                    color: '#E5E7EB',
-                    lineHeight: '1.7',
-                    fontWeight: '400',
-                    fontFamily: "'Poppins', sans-serif",
-                  }}
-                >
+                <p className="tc-testimonial-quote">
                   {t.quote}
                 </p>
               </div>
 
               {/* User Avatar + Name & Role on Bottom */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginTop: '36px' }}>
+              <div className="tc-testimonial-author">
                 <img
                   src={t.avatar}
                   alt={t.name}
-                  style={{
-                    width: '52px',
-                    height: '52px',
-                    borderRadius: '50%',
-                    objectFit: 'cover',
-                    border: '2px solid rgba(223, 174, 50, 0.4)',
-                  }}
+                  className="tc-testimonial-avatar"
                 />
                 <div>
-                  <h4 style={{ fontSize: '16px', fontWeight: '700', color: '#FFFFFF', marginBottom: '4px' }}>
+                  <h4 className="tc-testimonial-name">
                     {t.name}
                   </h4>
-                  <p style={{ fontSize: '13px', color: '#9CA3AF' }}>
+                  <p className="tc-testimonial-role">
                     {t.role}
                   </p>
                 </div>

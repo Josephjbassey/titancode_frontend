@@ -59,11 +59,10 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
   };
 
   return (
-    <div className="tc-page-root" style={{ paddingBottom: '120px' }}>
+    <div className="tc-page-root tc-contact-root">
       {/* 1. HERO — Figma: x:0, y:154, w:1440, h:463, sharp corners */}
       <section
-        className="tc-subpage-hero"
-        style={{ backgroundImage: 'url(/assets/contactus_bg.jpg)' }}
+        className="tc-subpage-hero tc-subpage-hero--contact"
       >
         <div className="tc-subpage-hero__content">
           <h1 className="tc-hero-title">
@@ -78,30 +77,30 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
       {/* 2. SPLIT SECTION: contact info + form */}
       <section className="tc-section">
         <div className="tc-section-inner">
-          <div style={{ display: 'grid', gridTemplateColumns: '1.1fr 1.3fr', gap: '80px', alignItems: 'start' }}>
+          <div className="tc-contact-split-grid">
 
             {/* Left: contact details */}
             <div>
-              <h2 style={{ fontSize: '46px', fontWeight: '800', marginBottom: '20px', color: '#FFFFFF', fontFamily: "'Inter', sans-serif" }}>
+              <h2 className="tc-contact-heading-title">
                 Let's Get in Touch
               </h2>
-              <p className="tc-body-text" style={{ marginBottom: '48px', maxWidth: '480px' }}>
+              <p className="tc-body-text tc-contact-intro-desc">
                 Have a project, an inquiry, or looking to collaborate with us? Our team is ready to assist.
                 Send us a message and we'll respond as soon as possible.
               </p>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
+              <div className="tc-contact-info-list">
                 <div className="tc-contact-row">
                   <div className="tc-contact-icon"><Mail size={20} /></div>
-                  <span style={{ fontSize: '15px', color: '#E5E7EB' }}>Titancodetechnologies@gmail.com</span>
+                  <span className="tc-contact-value">Titancodetechnologies@gmail.com</span>
                 </div>
                 <div className="tc-contact-row">
                   <div className="tc-contact-icon"><Phone size={20} /></div>
-                  <span style={{ fontSize: '15px', color: '#E5E7EB' }}>+233(0)546606807</span>
+                  <span className="tc-contact-value">+233(0)546606807</span>
                 </div>
                 <div className="tc-contact-row">
                   <div className="tc-contact-icon"><MapPin size={20} /></div>
-                  <span style={{ fontSize: '15px', color: '#E5E7EB' }}>Remote</span>
+                  <span className="tc-contact-value">Remote</span>
                 </div>
               </div>
             </div>
@@ -122,7 +121,7 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
               )}
 
               {error && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px', color: '#EF4444', fontSize: '13px' }}>
+                <div className="tc-contact-error-banner">
                   <AlertCircle size={15} />
                   <span>{error}</span>
                 </div>
@@ -138,8 +137,6 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     className="tc-pill-input"
-                    onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
-                    onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
                   />
                   <input
                     type="text"
@@ -148,8 +145,6 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     className="tc-pill-input"
-                    onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
-                    onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
                   />
                 </div>
 
@@ -162,59 +157,30 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="tc-pill-input"
-                    onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
-                    onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
                   />
                 </div>
 
                 {/* Row 3: Subject dropdown */}
-                <div className="tc-form-row" style={{ position: 'relative' }}>
+                <div className="tc-form-row tc-form-row--relative">
                   <div
                     onClick={() => setDropdownOpen(!dropdownOpen)}
-                    className="tc-pill-input"
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      cursor: 'pointer',
-                      userSelect: 'none',
-                      borderColor: dropdownOpen ? '#DFAE32' : '#FFFFFF59',
-                    }}
+                    className={`tc-pill-input tc-dropdown-trigger ${dropdownOpen ? 'tc-dropdown-trigger--open' : ''}`}
                   >
                     <span>{formData.subject}</span>
                     <ChevronDown
                       size={18}
                       color="#DFAE32"
-                      style={{ transform: dropdownOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
+                      className={`tc-dropdown-chevron ${dropdownOpen ? 'tc-dropdown-chevron--open' : ''}`}
                     />
                   </div>
 
                   {dropdownOpen && (
-                    <div style={{
-                      position: 'absolute',
-                      top: '66px',
-                      right: 0,
-                      width: '260px',
-                      backgroundColor: '#0B0B0C',
-                      border: '1px solid rgba(223,174,50,0.4)',
-                      borderRadius: '14px',
-                      padding: '10px 0',
-                      boxShadow: '0 12px 32px rgba(0,0,0,0.7)',
-                      zIndex: 50,
-                    }}>
+                    <div className="tc-dropdown-menu">
                       {subjectOptions.map((opt) => (
                         <div
                           key={opt}
                           onClick={() => { setFormData({ ...formData, subject: opt }); setDropdownOpen(false); }}
-                          style={{
-                            padding: '10px 20px',
-                            fontSize: '14px',
-                            color: formData.subject === opt ? '#DFAE32' : '#E5E7EB',
-                            fontWeight: formData.subject === opt ? '600' : '400',
-                            cursor: 'pointer',
-                          }}
-                          onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(223,174,50,0.15)')}
-                          onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                          className={`tc-dropdown-option ${formData.subject === opt ? 'tc-dropdown-option--active' : ''}`}
                         >
                           {opt}
                         </div>
@@ -224,7 +190,7 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                 </div>
 
                 {/* Row 4: Message */}
-                <div className="tc-form-row" style={{ marginBottom: '32px' }}>
+                <div className="tc-form-row tc-form-row--msg">
                   <textarea
                     rows={6}
                     required
@@ -232,13 +198,11 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     className="tc-textarea"
-                    onFocus={(e) => (e.target.style.borderColor = '#DFAE32')}
-                    onBlur={(e) => (e.target.style.borderColor = '#FFFFFF59')}
                   />
                 </div>
 
-                <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                  <button type="submit" className="tc-btn-gold tc-btn-gold--submit" disabled={isLoading} style={{ opacity: isLoading ? 0.7 : 1 }}>
+                <div className="tc-form-submit-row">
+                  <button type="submit" className="tc-btn-gold tc-btn-gold--submit" disabled={isLoading}>
                     {isLoading ? 'Sending…' : 'Submit'}
                   </button>
                 </div>

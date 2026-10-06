@@ -329,12 +329,7 @@ export const DepartmentsView: React.FC<DepartmentsViewProps> = ({ onNavigate }) 
                       </option>
                     ))
                   ) : (
-                    <>
-                      <option value="Joseph John">Joseph John</option>
-                      <option value="Benedicta Atagamen">Benedicta Atagamen</option>
-                      <option value="Alex Morgan">Alex Morgan</option>
-                      <option value="Munis Samuel">Munis Samuel</option>
-                    </>
+                    <option value="" disabled>No team members available</option>
                   )}
                 </select>
               </div>

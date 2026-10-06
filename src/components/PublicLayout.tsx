@@ -22,14 +22,11 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
   };
 
   return (
-    <div
-      className="tc-public-layout"
-      style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', backgroundColor: 'var(--tc-figma-black)', color: '#FFFFFF' }}
-    >
+    <div className="tc-public-layout">
       {/* PUBLIC NAVBAR */}
       <header className="tc-public-header">
         {/* Brand Logo */}
-        <div onClick={() => navigate('home')} style={{ display: 'flex', alignItems: 'center', gap: '10px', cursor: 'pointer' }}>
+        <div onClick={() => navigate('home')} className="tc-public-brand">
           <div className="tc-logo-crop" aria-label="TitanCode Logo">
             <img src="/assets/logo.png" alt="" />
           </div>
@@ -47,7 +44,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           <span />
         </button>
 
-        <nav className={`tc-public-nav${isMenuOpen ? ' is-open' : ''}`} style={{ display: 'flex', alignItems: 'center', gap: '36px', flexWrap: 'wrap', justifyContent: 'center' }}>
+        <nav className={`tc-public-nav tc-public-nav-list${isMenuOpen ? ' is-open' : ''}`}>
           {[
             { label: 'Home', view: 'home' as ScreenId },
             { label: 'About Us', view: 'about_us' as ScreenId },
@@ -67,22 +64,11 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
         </nav>
 
         {/* Right CTA Area */}
-        <div className="tc-public-cta" style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+        <div className="tc-public-cta tc-public-cta-group">
           <button
             type="button"
             onClick={() => navigate('sign_in')}
-            style={{
-              background: 'transparent',
-              border: 'none',
-              color: '#FFFFFF',
-              fontSize: '14px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              padding: '8px 12px',
-              transition: 'color 0.2s ease',
-            }}
-            onMouseOver={(e) => (e.currentTarget.style.color = '#DFAE32')}
-            onMouseOut={(e) => (e.currentTarget.style.color = '#FFFFFF')}
+            className="tc-btn-signin-nav"
           >
             Sign In
           </button>
@@ -93,7 +79,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
       </header>
 
       {/* PAGE CONTENT */}
-      <main style={{ flex: 1 }}>
+      <main className="tc-public-main">
         {children}
       </main>
 
@@ -104,18 +90,18 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           <div>
             <div
               onClick={() => navigate('home')}
-              style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer', marginBottom: '18px' }}
+              className="tc-footer-brand-btn"
             >
               {/* Footer logo: 115×28px — Figma spec (intentionally smaller than header 158×38) */}
               <div className="tc-logo-crop tc-logo-crop--footer" aria-label="TitanCode">
                 <img src="/assets/logo.png" alt="" />
               </div>
             </div>
-            <p className="tc-body-text" style={{ maxWidth: '360px', marginBottom: '24px' }}>
+            <p className="tc-body-text tc-footer-desc">
               We design and develop modern digital solutions that help businesses grow and stand out in today's competitive world.
             </p>
             {/* Social Icons */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+            <div className="tc-footer-socials">
               <a href="#tiktok" aria-label="TikTok" className="tc-social-icon">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64c.298-.002.595.042.88.13V9.4a6.33 6.33 0 0 0-1-.08A6.34 6.34 0 0 0 3 15.66a6.34 6.34 0 0 0 10.82 4.47 6.27 6.27 0 0 0 1.86-4.47V8.71a8.28 8.28 0 0 0 4.91 1.6v-3.62z" />
@@ -142,7 +128,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           {/* Column 2: Quick Links */}
           <div>
             <h4 className="tc-footer-heading">Quick Links</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div className="tc-footer-links-col">
               {[
                 { label: 'Home', view: 'home' as ScreenId },
                 { label: 'About', view: 'about_us' as ScreenId },
@@ -166,12 +152,12 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({
           {/* Column 3: Contact */}
           <div>
             <h4 className="tc-footer-heading">Contact</h4>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#9CA3AF', fontSize: '14px' }}>
+            <div className="tc-footer-contact-col">
+              <div className="tc-footer-contact-item">
                 <Phone size={16} color="#dfae32" />
                 <span>+233(0)546606807</span>
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', color: '#9CA3AF', fontSize: '14px' }}>
+              <div className="tc-footer-contact-item">
                 <Mail size={16} color="#dfae32" />
                 <span>Titancode@gmail.com</span>
               </div>

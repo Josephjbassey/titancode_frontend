@@ -40,6 +40,7 @@ import { OnboardView } from './views/OnboardView';
 import { NotFoundView, ForbiddenView, ServerErrorView, BadRequestView } from './views/errors';
 import { api } from './services/api';
 import type { User } from './types';
+import { OfflineSyncBanner } from './components/OfflineSyncBanner';
 import './App.css';
 
 export type ScreenId =
@@ -276,7 +277,7 @@ export function App() {
         )
       ) : isWorkspaceView ? (
         /* 2. AUTHENTICATED WORKSPACE WITH SIDEBAR & HEADER */
-        <div style={{ display: 'flex', width: '100%', minHeight: '100vh' }}>
+        <div className="tc-workspace-layout">
           <Sidebar
             currentView={currentView}
             userRole={activeUser.role}
@@ -295,7 +296,7 @@ export function App() {
             }}
           />
 
-          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', minWidth: 0 }}>
+          <div className="tc-workspace-content-wrap">
             <Header
               user={activeUser}
               onOpenProfile={() => {
@@ -308,7 +309,7 @@ export function App() {
               }}
             />
 
-            <main className="tc-workspace-main" style={{ flex: 1, padding: '32px', overflowY: 'auto' }}>
+            <main className="tc-workspace-main">
               {currentView === 'dashboard' && <TeamDashboardView onNavigate={setCurrentView} />}
 
               {currentView === 'manager_dashboard' && (
@@ -432,7 +433,7 @@ export function App() {
         </div>
       ) : isErrorView ? (
         /* 3. DEDICATED ERROR PAGES (404, 403, 500, 400) */
-        <div style={{ width: '100%', minHeight: '100vh' }}>
+        <div className="tc-full-screen-container">
           {currentView === 'not_found' && (
             <NotFoundView
               onNavigate={setCurrentView}
@@ -469,7 +470,7 @@ export function App() {
         </div>
       ) : isAuthOrWizardView ? (
         /* 4. STANDALONE AUTH & WIZARD VIEWS */
-        <div style={{ width: '100%', minHeight: '100vh' }}>
+        <div className="tc-full-screen-container">
           {currentView === 'sign_in' && (
             <SignInView
               onSuccess={(user) => {
@@ -588,6 +589,8 @@ export function App() {
         />
       )}
 
+      {/* Global Offline-First Sync Monitor */}
+      <OfflineSyncBanner />
     </div>
   );
 }

@@ -37,15 +37,15 @@ const mapApiTask = (t: any): Task => {
   };
   return {
     id: `TSK-${t.id}`,
-    title: t.task_title || t.title,
+    title: t.task_title || t.title || 'Untitled Task',
     project: t.project_name || (t.project_id ? `Project #${t.project_id}` : 'General Engineering'),
     assignee: {
       name: t.assigned_user_name || (t.assigned_user ? `Staff #${t.assigned_user}` : 'Assigned Member'),
-      avatar: t.assigned_user_avatar || '/assets/joseph.jpg',
+      avatar: t.assigned_user_avatar || '',
     },
     priority: priorityMap[t.priority] || 'Medium',
     status: statusMap[t.status] || 'Open',
-    deadline: t.deadline ? t.deadline.split('T')[0] : '2026-10-15',
+    deadline: t.deadline ? t.deadline.split('T')[0] : 'Flexible',
     description: t.description || 'Sprint deliverable work package.',
   };
 };
@@ -139,14 +139,18 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
       });
       setTasks([mapApiTask(created), ...tasks]);
     } catch {
+      const activeUser = api.getActiveUser();
       const newTask: Task = {
         id: `TSK-${Math.floor(200 + Math.random() * 800)}`,
         title: newTitle,
         project: selectedProj?.name || 'Active Sprint Project',
-        assignee: { name: selectedUsr?.name || 'Assigned Member', avatar: '/assets/joseph.jpg' },
+        assignee: {
+          name: selectedUsr?.name || activeUser?.full_name || 'Assigned Member',
+          avatar: activeUser?.avatar_url || '',
+        },
         priority: newPriority,
         status: 'Open',
-        deadline: newDeadline || '2026-10-10',
+        deadline: newDeadline || 'Flexible',
         description: newDescription || 'Standard engineering task delivery.',
       };
       setTasks([newTask, ...tasks]);
@@ -321,11 +325,17 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                         {/* Footer info */}
                         <div className="tc-kanban-card-footer">
                           <div className="tc-flex-center-gap">
-                            <img
-                              src={task.assignee.avatar}
-                              alt={task.assignee.name}
-                              className="tc-avatar-xs"
-                            />
+                            {task.assignee.avatar ? (
+                              <img
+                                src={task.assignee.avatar}
+                                alt={task.assignee.name}
+                                className="tc-avatar-xs"
+                              />
+                            ) : (
+                              <div className="tc-avatar-xs tc-flex-center-all tc-text-gold tc-font-bold tc-bg-dark">
+                                {task.assignee.name.slice(0, 2).toUpperCase()}
+                              </div>
+                            )}
                             <span>{task.assignee.name.split(' ')[0]}</span>
                           </div>
                           <div className="tc-flex-center-gap">
@@ -378,11 +388,17 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                     <td className="tc-text-gold">{t.project}</td>
                     <td>
                       <div className="tc-flex-center-gap">
-                        <img
-                          src={t.assignee.avatar}
-                          alt={t.assignee.name}
-                          className="tc-avatar-xs"
-                        />
+                        {t.assignee.avatar ? (
+                          <img
+                            src={t.assignee.avatar}
+                            alt={t.assignee.name}
+                            className="tc-avatar-xs"
+                          />
+                        ) : (
+                          <div className="tc-avatar-xs tc-flex-center-all tc-text-gold tc-font-bold tc-bg-dark">
+                            {t.assignee.name.slice(0, 2).toUpperCase()}
+                          </div>
+                        )}
                         <span>{t.assignee.name}</span>
                       </div>
                     </td>
@@ -444,11 +460,17 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
               <div className="tc-task-meta-cell">
                 <div className="tc-text-muted-xs">Assignee</div>
                 <div className="tc-flex-center-gap tc-mt-1">
-                  <img
-                    src={selectedTask.assignee.avatar}
-                    alt={selectedTask.assignee.name}
-                    className="tc-avatar-sm"
-                  />
+                  {selectedTask.assignee.avatar ? (
+                    <img
+                      src={selectedTask.assignee.avatar}
+                      alt={selectedTask.assignee.name}
+                      className="tc-avatar-sm"
+                    />
+                  ) : (
+                    <div className="tc-avatar-sm tc-flex-center-all tc-text-gold tc-font-bold tc-bg-dark">
+                      {selectedTask.assignee.name.slice(0, 2).toUpperCase()}
+                    </div>
+                  )}
                   <span className="tc-font-semibold tc-text-sm">{selectedTask.assignee.name}</span>
                 </div>
               </div>

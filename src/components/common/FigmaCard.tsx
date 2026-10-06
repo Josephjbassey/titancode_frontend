@@ -17,15 +17,7 @@ export const FigmaCard: React.FC<FigmaCardProps> = ({
   return (
     <div
       className={`figma-card ${hoverable ? 'figma-card-hover' : ''} ${className}`}
-      style={{
-        backgroundColor: 'var(--tc-figma-card-bg, #FFFFFF1A)',
-        border: '1px solid var(--tc-figma-card-border, #FFFFFF26)',
-        backdropFilter: 'blur(16px)',
-        borderRadius: '20px',
-        padding: '32px',
-        transition: hoverable ? 'all 0.25s ease' : undefined,
-        ...style,
-      }}
+      style={style}
       {...props}
     >
       {children}

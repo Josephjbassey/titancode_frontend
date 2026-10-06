@@ -19,28 +19,20 @@ export const DonutChart: React.FC<DonutChartProps> = ({
   size = 180,
   thickness = 22,
   centerLabel = 'Completed',
-  centerValue = '68%',
+  centerValue,
 }) => {
   const total = slices.reduce((acc, s) => acc + s.value, 0) || 1;
   const radius = (size - thickness) / 2;
   const circumference = 2 * Math.PI * radius;
+  const displayValue = centerValue ?? `${Math.round(((slices[0]?.value ?? 0) / total) * 100)}%`;
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '20px',
-    }}>
-      <div style={{
-        position: 'relative',
-        width: size,
-        height: size,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}>
-        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ transform: 'rotate(-90deg)' }}>
+    <div className="tc-donut-container">
+      <div
+        className="tc-donut-svg-wrap"
+        style={{ width: size, height: size }}
+      >
+        <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} className="tc-donut-svg">
           {/* Base background circle */}
           <circle
             cx={size / 2}
@@ -69,57 +61,33 @@ export const DonutChart: React.FC<DonutChartProps> = ({
                 strokeDasharray={strokeDasharray}
                 strokeDashoffset={strokeDashoffset}
                 strokeLinecap="round"
-                style={{
-                  transition: 'stroke-dasharray 0.6s cubic-bezier(0.16, 1, 0.3, 1)',
-                }}
+                className="tc-donut-slice"
               />
             );
           })}
         </svg>
 
         {/* Center Label */}
-        <div style={{
-          position: 'absolute',
-          textAlign: 'center',
-          pointerEvents: 'none',
-        }}>
-          <div style={{
-            fontSize: '22px',
-            fontWeight: '700',
-            color: '#FFFFFF',
-            lineHeight: 1.1,
-          }}>
-            {centerValue}
+        <div className="tc-donut-center">
+          <div className="tc-donut-value">
+            {displayValue}
           </div>
-          <div style={{
-            fontSize: '11px',
-            color: 'var(--tc-text-muted)',
-            marginTop: '2px',
-            fontWeight: '500',
-          }}>
+          <div className="tc-donut-label">
             {centerLabel}
           </div>
         </div>
       </div>
 
       {/* Legend */}
-      <div style={{
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'center',
-        gap: '14px',
-        width: '100%',
-      }}>
+      <div className="tc-donut-legend">
         {slices.map((slice, idx) => (
-          <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{
-              width: '10px',
-              height: '10px',
-              borderRadius: '50%',
-              backgroundColor: slice.color,
-            }} />
-            <span style={{ fontSize: '12px', color: 'var(--tc-text-secondary)' }}>
-              {slice.label} <strong style={{ color: '#FFFFFF', marginLeft: '2px' }}>{slice.value}%</strong>
+          <div key={idx} className="tc-donut-legend-item">
+            <span
+              className="tc-donut-legend-dot"
+              style={{ backgroundColor: slice.color }}
+            />
+            <span className="tc-donut-legend-text">
+              {slice.label} <strong className="tc-donut-legend-strong">{slice.value}%</strong>
             </span>
           </div>
         ))}

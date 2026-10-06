@@ -457,7 +457,12 @@ export const TeamDashboardView: React.FC<TeamDashboardViewProps> = ({ onNavigate
                   {/* Attendees */}
                   <div className="tc-attendee-group">
                     <div className="tc-attendee-list">
-                      {((nextMeeting as any).attendee_names || ['Lead Dev', 'Architecture', 'Client PM']).map(
+                      {(((nextMeeting as any).attendee_names && (nextMeeting as any).attendee_names.length > 0)
+                        ? (nextMeeting as any).attendee_names
+                        : Array.isArray((nextMeeting as any).attendees) && (nextMeeting as any).attendees.length > 0
+                        ? (nextMeeting as any).attendees.map((a: any) => a.name || a.full_name)
+                        : ['Team Sync']
+                      ).map(
                         (name: string, idx: number) => (
                           <div
                             key={idx}

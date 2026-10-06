@@ -124,7 +124,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="examples@gmail.com"
+              placeholder="alex@titancode.tech"
               required
               className="tc-form-input"
             />
@@ -144,7 +144,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="800 000 0000"
+                placeholder="080 1234 5678"
                 className="tc-phone-input"
               />
             </div>
@@ -213,7 +213,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
               type="text"
               value={address}
               onChange={(e) => setAddress(e.target.value)}
-              placeholder="Enter address"
+              placeholder="e.g. 14 Marina, Lagos Island, Lagos"
               required
               className="tc-form-input"
             />

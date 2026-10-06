@@ -33,13 +33,10 @@ const mapApiMeeting = (m: any): Meeting => ({
   time: m.time || '10:00 AM',
   duration: `${m.duration_minutes || 45} mins`,
   roomUrl: m.meet_url || `room_${m.id}`,
-  participants: m.attendees?.length > 0 ? m.attendees.map((a: any) => ({
+  participants: (m.attendees && m.attendees.length > 0) ? m.attendees.map((a: any) => ({
     name: a.name || a.full_name || `Attendee #${a.id}`,
     avatar: a.avatar_url || a.avatar || null,
-  })) : [
-    { name: 'Joseph John', avatar: null },
-    { name: 'Benedicta Atagamen', avatar: null },
-  ],
+  })) : [],
 });
 
 interface MeetingsViewProps {
@@ -97,6 +94,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
       });
       setMeetings([mapApiMeeting(created), ...meetings]);
     } catch {
+      const activeUser = api.getActiveUser();
       const newMeeting: Meeting = {
         id: `MTG-${Math.floor(300 + Math.random() * 700)}`,
         title: newTitle,
@@ -106,9 +104,9 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
         time: newTime || '10:00 AM',
         duration: '45 mins',
         roomUrl: `room_${newTitle.toLowerCase().replace(/\s+/g, '_')}`,
-        participants: [
-          { name: 'Joseph John', avatar: '/assets/joseph.jpg' },
-        ],
+        participants: activeUser?.full_name
+          ? [{ name: `${activeUser.full_name} (Host)`, avatar: activeUser.avatar_url || '' }]
+          : [],
       };
       setMeetings([newMeeting, ...meetings]);
     } finally {

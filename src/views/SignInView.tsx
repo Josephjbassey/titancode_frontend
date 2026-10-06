@@ -152,7 +152,7 @@ export const SignInView: React.FC<SignInViewProps> = ({
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="youremail@gmail.com"
+              placeholder="name@company.com"
               required
               className="tc-auth-input"
             />

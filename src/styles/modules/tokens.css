@@ -193,6 +193,17 @@ img {
   }
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .tc-spin {
   animation: tcSpin 1s linear infinite;
 }
@@ -200,4 +211,40 @@ img {
 @keyframes tcSpin {
   from { transform: rotate(0deg); }
   to { transform: rotate(360deg); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px rgba(223, 174, 50, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 25px rgba(223, 174, 50, 0.45);
+  }
+}
+
+.tc-glow {
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+/* Core Visual & Atomic Layout Utilities */
+.tc-relative {
+  position: relative !important;
+}
+
+.tc-w-full {
+  width: 100% !important;
+}
+
+.tc-cursor-pointer {
+  cursor: pointer !important;
+}
+
+.tc-flex-center-gap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.tc-text-left {
+  text-align: left !important;
 }

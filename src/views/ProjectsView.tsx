@@ -24,25 +24,38 @@ interface Project {
   tasks: { id: string; title: string; completed: boolean }[];
 }
 
-const mapApiProject = (p: any): Project => ({
-  id: `PRJ-${p.id}`,
-  name: p.project_name || p.name,
-  client: p.client_name || (p.client_id ? `Client #${p.client_id}` : 'Enterprise Client'),
-  department: 'Web Engineering',
-  budget: Number(p.budget) || 0,
-  deadline: p.deadline ? p.deadline.split('T')[0] : '2026-12-31',
-  status: (p.status === 'in_progress' || p.status === 'active') ? 'Active' : (p.status === 'completed' ? 'Completed' : 'Pending'),
-  progress: p.progress_percentage ?? (p.status === 'completed' ? 100 : p.status === 'active' ? 50 : 15),
-  description: p.description || 'Custom software engineering deliverable.',
-  members: [
-    { name: 'Joseph John', role: 'Lead Developer', avatar: '/assets/joseph.jpg' },
-    { name: 'Benedicta Atagamen', role: 'UI/UX Designer', avatar: '/assets/benedicta.png' },
-  ],
-  tasks: [
-    { id: `T-${p.id}-1`, title: 'Core architecture and sprint planning', completed: p.status === 'completed' },
-    { id: `T-${p.id}-2`, title: 'Production deployment and QA audit', completed: p.status === 'completed' },
-  ],
-});
+const mapApiProject = (p: any, allTasks: any[] = []): Project => {
+  const projectTasks = allTasks.filter((t) => t.project_id === p.id);
+  const tasksList = Array.isArray(p.tasks) && p.tasks.length > 0
+    ? p.tasks.map((t: any) => ({
+        id: String(t.id),
+        title: t.task_title || t.title || 'Project Milestone',
+        completed: t.status === 'completed' || t.completed === true,
+      }))
+    : projectTasks.length > 0
+    ? projectTasks.map((t: any) => ({
+        id: String(t.id),
+        title: t.task_title || t.title || 'Project Milestone',
+        completed: t.status === 'completed' || t.completed === true,
+      }))
+    : [];
+
+  return {
+    id: `PRJ-${p.id}`,
+    name: p.project_name || p.name || `Project #${p.id}`,
+    client: p.client_name || (p.client_id ? `Client #${p.client_id}` : 'Enterprise Client'),
+    department: p.department_name || p.department || 'Web Engineering',
+    budget: Number(p.budget) || 0,
+    deadline: p.deadline ? p.deadline.split('T')[0] : 'Flexible',
+    status: (p.status === 'in_progress' || p.status === 'active') ? 'Active' : (p.status === 'completed' ? 'Completed' : 'Pending'),
+    progress: p.progress_percentage ?? (p.status === 'completed' ? 100 : p.status === 'active' ? 50 : 0),
+    description: p.description || 'Custom software engineering deliverable.',
+    members: Array.isArray(p.members) && p.members.length > 0
+      ? p.members.map((m: any) => typeof m === 'string' ? { name: m, role: 'Contributor', avatar: '' } : { name: m.name || m.full_name || 'Member', role: m.role || 'Contributor', avatar: m.avatar || m.avatar_url || '' })
+      : [],
+    tasks: tasksList,
+  };
+};
 
 interface ProjectsViewProps {
   onNavigate?: (view: ScreenId) => void;
@@ -73,10 +86,11 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
     Promise.all([
       api.getProjects(),
       api.getClients(),
+      api.getTasks().catch(() => []),
     ])
-      .then(([items, clientList]) => {
+      .then(([items, clientList, taskList]) => {
         if (!mounted) return;
-        setProjects((items || []).map(mapApiProject));
+        setProjects((items || []).map((p) => mapApiProject(p, taskList || [])));
         setClients(clientList || []);
         if (clientList && clientList.length > 0) {
           setSelectedClientId(clientList[0].id);
@@ -115,7 +129,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
         name: newProjectName,
         description: newProjectDesc,
         client_id: typeof selectedClientId === 'number' ? selectedClientId : parseInt(String(selectedClientId), 10) || 1,
-        budget: Number(newProjectBudget) || 10000,
+        budget: Number(newProjectBudget) || 0,
         deadline: newProjectDeadline ? new Date(newProjectDeadline).toISOString() : undefined,
       });
 
@@ -127,23 +141,22 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
       setNewProjectDeadline('');
       setNewProjectDesc('');
     } catch (err: any) {
-      // Offline / fallback fallback
+      // Offline / fallback
+      const activeUser = api.getActiveUser();
       const fallbackProject: Project = {
         id: `PRJ-${Math.floor(200 + Math.random() * 800)}`,
         name: newProjectName,
         client: clientName,
         department: 'Web Engineering',
-        budget: Number(newProjectBudget) || 10000,
-        deadline: newProjectDeadline || '2026-12-31',
+        budget: Number(newProjectBudget) || 0,
+        deadline: newProjectDeadline || 'Flexible',
         status: 'Active',
-        progress: 15,
+        progress: 0,
         description: newProjectDesc || 'Enterprise project deliverable.',
-        members: [
-          { name: 'Joseph John', role: 'Lead Developer', avatar: '/assets/joseph.jpg' },
-        ],
-        tasks: [
-          { id: `T-new-1`, title: 'Project kick-off and environment setup', completed: false },
-        ],
+        members: activeUser?.full_name
+          ? [{ name: activeUser.full_name, role: activeUser.role || 'Contributor', avatar: activeUser.avatar_url || '' }]
+          : [],
+        tasks: [],
       };
       setProjects([fallbackProject, ...projects]);
       setShowCreateModal(false);
@@ -165,7 +178,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
           t.id === taskId ? { ...t, completed: !t.completed } : t
         );
         const completedCount = updatedTasks.filter((t) => t.completed).length;
-        const progress = Math.round((completedCount / updatedTasks.length) * 100);
+        const progress = updatedTasks.length > 0 ? Math.round((completedCount / updatedTasks.length) * 100) : proj.progress;
         return { ...proj, tasks: updatedTasks, progress };
       })
     );
@@ -176,7 +189,7 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
           t.id === taskId ? { ...t, completed: !t.completed } : t
         );
         const completedCount = updatedTasks.filter((t) => t.completed).length;
-        const progress = Math.round((completedCount / updatedTasks.length) * 100);
+        const progress = updatedTasks.length > 0 ? Math.round((completedCount / updatedTasks.length) * 100) : prev.progress;
         return { ...prev, tasks: updatedTasks, progress };
       });
     }
@@ -341,15 +354,29 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                 <div className="tc-dept-footer-row">
                   {/* Team Avatars */}
                   <div className="tc-flex-center-gap">
-                    {project.members.map((m, i) => (
-                      <img
-                        key={i}
-                        src={m.avatar}
-                        alt={m.name}
-                        title={`${m.name} (${m.role})`}
-                        className="tc-avatar-xs"
-                      />
-                    ))}
+                    {project.members.length > 0 ? (
+                      project.members.map((m, i) => (
+                        m.avatar ? (
+                          <img
+                            key={i}
+                            src={m.avatar}
+                            alt={m.name}
+                            title={`${m.name} (${m.role})`}
+                            className="tc-avatar-xs"
+                          />
+                        ) : (
+                          <div
+                            key={i}
+                            className="tc-avatar-fallback tc-avatar-fallback--xs"
+                            title={`${m.name} (${m.role})`}
+                          >
+                            {m.name.slice(0, 2).toUpperCase()}
+                          </div>
+                        )
+                      ))
+                    ) : (
+                      <span className="tc-text-muted-xs">Open allocation</span>
+                    )}
                   </div>
 
                   {/* Budget & Due */}
@@ -428,22 +455,34 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                 Allocated Engineering Squad
               </h4>
               <div className="tc-flex-col-gap">
-                {selectedProject.members.map((member, i) => (
-                  <div key={i} className="tc-scorecard-item">
-                    <div className="tc-flex-center-gap">
-                      <img
-                        src={member.avatar}
-                        alt={member.name}
-                        className="tc-avatar-sm"
-                      />
-                      <div>
-                        <div className="tc-font-bold tc-text-white">{member.name}</div>
-                        <div className="tc-text-muted-xs">{member.role}</div>
-                      </div>
-                    </div>
-                    <span className="tc-badge-status tc-badge-status--approved">Active Contributor</span>
+                {selectedProject.members.length === 0 ? (
+                  <div className="tc-text-muted-xs tc-p-3 tc-bg-card-hover tc-rounded-lg tc-text-center">
+                    No individual contributors directly assigned yet. Engineering pool allocated.
                   </div>
-                ))}
+                ) : (
+                  selectedProject.members.map((member, i) => (
+                    <div key={i} className="tc-scorecard-item">
+                      <div className="tc-flex-center-gap">
+                        {member.avatar ? (
+                          <img
+                            src={member.avatar}
+                            alt={member.name}
+                            className="tc-avatar-sm"
+                          />
+                        ) : (
+                          <div className="tc-avatar-sm tc-flex-center-all tc-text-gold tc-font-bold tc-bg-dark">
+                            {member.name.slice(0, 2).toUpperCase()}
+                          </div>
+                        )}
+                        <div>
+                          <div className="tc-font-bold tc-text-white">{member.name}</div>
+                          <div className="tc-text-muted-xs">{member.role}</div>
+                        </div>
+                      </div>
+                      <span className="tc-badge-status tc-badge-status--approved">Active Contributor</span>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
 
@@ -457,27 +496,33 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                   {selectedProject.progress}% Done
                 </span>
               </div>
-              <div className="tc-flex-col-gap">
-                {selectedProject.tasks.map((task) => (
-                  <div
-                    key={task.id}
-                    onClick={() => toggleTask(selectedProject.id, task.id)}
-                    className={`tc-project-checklist-item ${task.completed ? 'tc-project-checklist-item--completed' : ''}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={task.completed}
-                      onChange={() => {}}
-                      className="tc-cursor-pointer"
-                    />
-                    <span
-                      className={`tc-flex-1 tc-text-sm ${task.completed ? 'tc-text-muted tc-line-through' : 'tc-text-white'}`}
+              {selectedProject.tasks.length === 0 ? (
+                <div className="tc-text-muted-xs tc-p-3 tc-bg-card-hover tc-rounded-lg tc-text-center">
+                  No milestone tasks assigned to this project yet.
+                </div>
+              ) : (
+                <div className="tc-flex-col-gap">
+                  {selectedProject.tasks.map((task) => (
+                    <div
+                      key={task.id}
+                      onClick={() => toggleTask(selectedProject.id, task.id)}
+                      className={`tc-project-checklist-item ${task.completed ? 'tc-project-checklist-item--completed' : ''}`}
                     >
-                      {task.title}
-                    </span>
-                  </div>
-                ))}
-              </div>
+                      <input
+                        type="checkbox"
+                        checked={task.completed}
+                        onChange={() => {}}
+                        className="tc-cursor-pointer"
+                      />
+                      <span
+                        className={`tc-flex-1 tc-text-sm ${task.completed ? 'tc-text-muted tc-line-through' : 'tc-text-white'}`}
+                      >
+                        {task.title}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}

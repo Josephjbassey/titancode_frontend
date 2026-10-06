@@ -107,12 +107,10 @@ export const ManagerDashboardView: React.FC<ManagerDashboardViewProps> = ({
   const displayRoster = currentRoster.length > 0 ? currentRoster : roster;
 
   // Dynamic capacity & sprint metrics
-  const activeSprintTasksCount =
-    displayRoster.reduce((sum, m) => sum + (m.active_tasks_count || 0), 0) ||
-    currentDept.active_projects_count * 4 + 7;
+  const activeSprintTasksCount = displayRoster.reduce((sum, m) => sum + (m.active_tasks_count || 0), 0);
   const availableStaff = displayRoster.filter((m) => m.allocation_status === 'Available').length;
   const totalStaff = displayRoster.length || currentDept.member_count;
-  const allocationPct = totalStaff > 0 ? Math.round(((totalStaff - availableStaff) / totalStaff) * 100) : 85;
+  const allocationPct = totalStaff > 0 ? Math.round(((totalStaff - availableStaff) / totalStaff) * 100) : 0;
 
   const formattedBudget =
     currentDept.monthly_budget >= 1000000

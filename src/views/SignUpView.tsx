@@ -143,7 +143,7 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
               type="text"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
-              placeholder="enter name"
+              placeholder="Your Full Name"
               required
               className="tc-auth-input"
             />
@@ -163,7 +163,7 @@ export const SignUpView: React.FC<SignUpViewProps> = ({
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="youremail@gmail.com"
+              placeholder="name@company.com"
               required
               className="tc-auth-input"
             />

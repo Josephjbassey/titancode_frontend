@@ -84,11 +84,11 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
   const isEmailError = appState === 'required' || appState === 'email_exists';
 
   return (
-    <div className="tc-page-root" style={{ padding: '80px clamp(20px, 5vw, 80px) 140px', position: 'relative', width: '100%' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="tc-page-root tc-application-root">
+      <div className="tc-application-container">
         {/* Header */}
-        <div className="tc-section-header" style={{ marginBottom: '70px' }}>
-          <h1 className="tc-section-title" style={{ fontSize: '42px', fontWeight: 800 }}>
+        <div className="tc-section-header tc-application-header">
+          <h1 className="tc-section-title tc-application-title">
             Fill in Your Details to <span className="tc-gold">Get Started</span>
           </h1>
           <p className="tc-body-text">
@@ -97,14 +97,14 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <form onSubmit={handleSubmit} className="tc-application-form">
           {/* Row 1: First Name | Last Name */}
           <div className="tc-form-grid-2col">
             <div>
               <label className="tc-form-label">First Name</label>
               <input
                 type="text"
-                placeholder="Enter Name"
+                placeholder="First Name (e.g. Alex)"
                 value={formData.firstName}
                 onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                 className="tc-rect-input"
@@ -114,7 +114,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
               <label className="tc-form-label">Last Name</label>
               <input
                 type="text"
-                placeholder="Enter Name"
+                placeholder="Last Name (e.g. Vance)"
                 value={formData.lastName}
                 onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                 className="tc-rect-input"
@@ -124,10 +124,10 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
 
           {/* Row 2: Email (with error states) */}
           <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <label className="tc-form-label" style={{ marginBottom: 0 }}>Email</label>
+            <div className="tc-app-label-row">
+              <label className="tc-form-label tc-form-label--no-mb">Email</label>
               {appState === 'required' && (
-                <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#df0e0e', fontSize: '14px', fontWeight: '600' }}>
+                <div className="tc-email-error-badge">
                   <AlertCircle size={16} />
                   <span>Required</span>
                 </div>
@@ -135,7 +135,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
             </div>
             <input
               type="text"
-              placeholder="Enter Email"
+              placeholder="alex.vance@example.com"
               value={formData.email}
               onChange={(e) => {
                 setFormData({ ...formData, email: e.target.value });
@@ -143,14 +143,10 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
                   setAppState('default');
                 }
               }}
-              className="tc-rect-input"
-              style={{
-                border: isEmailError ? '1px solid #df0e0e' : undefined,
-                color: isEmailError ? '#df0e0e' : undefined,
-              }}
+              className={`tc-rect-input ${isEmailError ? 'tc-rect-input--error' : ''}`}
             />
             {appState === 'email_exists' && (
-              <p style={{ color: '#df0e0e', fontSize: '14px', marginTop: '8px', fontWeight: '500' }}>
+              <p className="tc-email-error-msg">
                 Email already exist
               </p>
             )}
@@ -161,7 +157,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
             <label className="tc-form-label">Phone Number</label>
             <input
               type="text"
-              placeholder="1234567890"
+              placeholder="+234 801 234 5678"
               value={formData.phoneNumber}
               onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
               className="tc-rect-input"
@@ -173,7 +169,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
             <label className="tc-form-label">Location</label>
             <input
               type="text"
-              placeholder="Lagos"
+              placeholder="e.g. Accra, Ghana or Lagos, Nigeria"
               value={formData.location}
               onChange={(e) => setFormData({ ...formData, location: e.target.value })}
               className="tc-rect-input"
@@ -181,56 +177,27 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
           </div>
 
           {/* Row 5: Department dropdown */}
-          <div style={{ position: 'relative' }}>
+          <div className="tc-dropdown-wrap">
             <label className="tc-form-label">Department</label>
             <div
               onClick={() => setDepartmentOpen(!departmentOpen)}
-              className="tc-rect-input"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                cursor: 'pointer',
-                border: departmentOpen ? '1px solid var(--tc-figma-gold, #DFAE32)' : undefined,
-              }}
+              className={`tc-rect-input tc-app-dept-trigger ${departmentOpen ? 'tc-app-dept-trigger--open' : ''}`}
             >
               <span>{formData.department}</span>
               <ChevronDown
                 size={18}
                 color="#DFAE32"
-                style={{ transform: departmentOpen ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.2s ease' }}
+                className={`tc-dropdown-chevron ${departmentOpen ? 'tc-dropdown-chevron--open' : ''}`}
               />
             </div>
 
             {departmentOpen && (
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '90px',
-                  left: 0,
-                  right: 0,
-                  backgroundColor: '#1E1E20',
-                  border: '1px solid var(--tc-figma-input-border, #FFFFFF59)',
-                  borderRadius: '8px',
-                  padding: '8px 0',
-                  zIndex: 20,
-                  boxShadow: '0 12px 28px rgba(0, 0, 0, 0.6)',
-                }}
-              >
+              <div className="tc-app-dept-menu">
                 {departments.map((dept) => (
                   <div
                     key={dept}
                     onClick={() => { setFormData({ ...formData, department: dept }); setDepartmentOpen(false); }}
-                    style={{
-                      padding: '10px 20px',
-                      fontSize: '14px',
-                      color: formData.department === dept ? '#DFAE32' : '#FFFFFF',
-                      fontWeight: formData.department === dept ? '600' : '400',
-                      cursor: 'pointer',
-                      fontFamily: "'Poppins', sans-serif",
-                    }}
-                    onMouseOver={(e) => (e.currentTarget.style.backgroundColor = 'rgba(223, 174, 50, 0.15)')}
-                    onMouseOut={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
+                    className={`tc-app-dept-option ${formData.department === dept ? 'tc-app-dept-option--active' : ''}`}
                   >
                     {dept}
                   </div>
@@ -242,7 +209,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
           {/* Row 6: LinkedIn */}
           <div>
             <label className="tc-form-label">
-              Linkedin <span style={{ color: '#9CA3AF', fontWeight: '400', fontSize: '15px' }}>(compulsory)</span>
+              Linkedin <span className="tc-field-hint">(compulsory)</span>
             </label>
             <input
               type="text"
@@ -266,7 +233,7 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
           {/* Row 8: Password for Status Tracking */}
           <div>
             <label className="tc-form-label">
-              Create Password <span style={{ color: '#9CA3AF', fontWeight: '400', fontSize: '15px' }}>(set password to log in and track your application status)</span>
+              Create Password <span className="tc-field-hint">(set password to log in and track your application status)</span>
             </label>
             <input
               type="password"
@@ -284,41 +251,22 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
               rows={6}
               value={formData.about}
               onChange={(e) => setFormData({ ...formData, about: e.target.value })}
-              className="tc-textarea"
-              style={{ borderRadius: '8px', padding: '18px 20px' }}
+              className="tc-textarea tc-textarea--rounded8"
             />
           </div>
 
           {submitError && (
-            <div style={{
-              padding: '12px 16px',
-              borderRadius: '8px',
-              backgroundColor: 'rgba(239, 68, 68, 0.12)',
-              border: '1px solid rgba(239, 68, 68, 0.3)',
-              color: '#EF4444',
-              fontSize: '14px',
-              textAlign: 'center',
-            }}>
+            <div className="tc-app-submit-error">
               {submitError}
             </div>
           )}
 
           {/* Submit */}
-          <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <div className="tc-app-submit-wrap">
             <button
               type="submit"
               disabled={isSubmitting}
-              className="tc-btn-gold"
-              style={{
-                padding: '14px 64px',
-                fontSize: '16px',
-                borderRadius: '8px',
-                opacity: isSubmitting ? 0.7 : 1,
-                cursor: isSubmitting ? 'not-allowed' : 'pointer',
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: '8px',
-              }}
+              className="tc-btn-gold tc-btn-gold--app-submit"
             >
               {isSubmitting && <Loader2 size={18} className="tc-spin" />}
               <span>{isSubmitting ? 'Submitting...' : 'Submit'}</span>
@@ -331,78 +279,35 @@ export const ApplicationFormView: React.FC<ApplicationFormViewProps> = ({
       {appState === 'submitted' && (
         <div
           onClick={() => setAppState('default')}
-          style={{
-            position: 'fixed',
-            inset: 0,
-            backgroundColor: 'rgba(0, 0, 0, 0.75)',
-            backdropFilter: 'blur(6px)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            zIndex: 9999,
-            padding: '20px',
-            cursor: 'pointer',
-          }}
+          className="tc-app-modal-backdrop"
         >
           <div
             onClick={(e) => e.stopPropagation()}
-            style={{
-              backgroundColor: '#dfae32',
-              borderRadius: '24px',
-              padding: '60px 48px',
-              maxWidth: '560px',
-              width: '100%',
-              textAlign: 'center',
-              boxShadow: '0 24px 60px rgba(0, 0, 0, 0.6)',
-              animation: 'tcModalIn 0.25s ease-out',
-              cursor: 'default',
-              position: 'relative',
-            }}
+            className="tc-app-modal-gold-card"
           >
             <button
               type="button"
               onClick={() => setAppState('default')}
-              style={{ position: 'absolute', top: '20px', right: '20px', background: 'none', border: 'none', color: '#000000', cursor: 'pointer', padding: '6px', display: 'flex' }}
+              className="tc-app-modal-close-gold"
             >
               <X size={22} strokeWidth={2.5} />
             </button>
 
-            <div
-              style={{
-                width: '88px',
-                height: '88px',
-                borderRadius: '50%',
-                backgroundColor: '#0b0b0c',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                margin: '0 auto 28px',
-              }}
-            >
+            <div className="tc-app-modal-icon-black">
               <Check size={46} color="#dfae32" strokeWidth={3} />
             </div>
 
-            <h2 style={{ fontSize: '32px', fontWeight: '800', color: '#000000', marginBottom: '16px', letterSpacing: '-0.5px', fontFamily: "'Inter', sans-serif" }}>
+            <h2 className="tc-app-modal-title">
               Application Submitted
             </h2>
-            <p style={{ fontSize: '16px', color: '#1F2937', lineHeight: '1.6', maxWidth: '460px', margin: '0 auto', fontWeight: '500', fontFamily: "'Poppins', sans-serif" }}>
+            <p className="tc-app-modal-desc">
               Thank you for applying! Your candidate profile has been created and our team is actively reviewing your qualifications.
             </p>
-            <div style={{ marginTop: '28px' }}>
+            <div className="tc-app-modal-actions">
               <button
                 type="button"
                 onClick={() => onNavigate('applicant_dashboard')}
-                style={{
-                  padding: '14px 36px',
-                  backgroundColor: '#0B0B0C',
-                  color: '#DFAE32',
-                  border: 'none',
-                  borderRadius: '9999px',
-                  fontWeight: '700',
-                  fontSize: '15px',
-                  cursor: 'pointer',
-                  boxShadow: '0 8px 24px rgba(0,0,0,0.3)',
-                }}
+                className="tc-app-modal-btn-black"
               >
                 Go to Candidate Dashboard →
               </button>

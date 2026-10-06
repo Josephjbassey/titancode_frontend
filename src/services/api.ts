@@ -25,6 +25,7 @@ import type {
   FinancialSettings,
   SalaryProjection,
 } from '../types';
+import { offlineSync } from './offlineSync';
 
 const configuredApiUrl = (import.meta.env.VITE_API_URL || 'http://localhost:8000').replace(/\/$/, '');
 const API_BASE_URL = configuredApiUrl.endsWith('/api/v1')
@@ -622,12 +623,23 @@ class ApiService {
   async processWithdrawal(
     id: number,
     action: 'approve' | 'reject' | 'pay',
-    rejectionReason?: string
+    rejectionReason?: string,
+    idempotencyKey?: string
   ): Promise<WithdrawalRecord> {
+    const statusMap: Record<string, string> = {
+      approve: 'approved',
+      reject: 'rejected',
+      pay: 'paid',
+    };
     const res = await this.authFetch(`${API_BASE_URL}/financials/withdrawals/${id}/action`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action, rejection_reason: rejectionReason }),
+      body: JSON.stringify({
+        action,
+        status: statusMap[action] || action,
+        rejection_reason: rejectionReason,
+        idempotency_key: idempotencyKey,
+      }),
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
@@ -653,8 +665,10 @@ class ApiService {
         support_email: 'support@titancode.agency',
         currency: 'USD',
         timezone: 'UTC',
-        platform_split_percent: 30,
-        member_split_percent: 70,
+        split_model: 'three_tier_60_15_25',
+        platform_split_percent: 25,
+        overhead_split_percent: 15,
+        member_split_percent: 60,
         notify_on_milestone: true,
         notify_on_withdrawal: true,
         pricing_tiers: [
@@ -690,19 +704,39 @@ class ApiService {
     return res.json();
   }
 
-  async calculateSalarySplit(budget: number, memberCount: number = 1): Promise<SalaryProjection> {
+  async calculateSalarySplit(
+    budget: number,
+    memberCount: number = 1,
+    splits?: { platform?: number; overhead?: number; member?: number; split_model?: string }
+  ): Promise<SalaryProjection> {
+    const query = new URLSearchParams({
+      budget: String(budget),
+      member_count: String(memberCount),
+    });
+    if (splits?.platform !== undefined) query.append('platform_split_percent', String(splits.platform));
+    if (splits?.overhead !== undefined) query.append('overhead_split_percent', String(splits.overhead));
+    if (splits?.member !== undefined) query.append('member_split_percent', String(splits.member));
+    if (splits?.split_model) query.append('split_model', splits.split_model);
+
     const res = await this.authFetch(
-      `${API_BASE_URL}/financials/salary-projection?budget=${budget}&member_count=${memberCount}`
+      `${API_BASE_URL}/financials/salary-projection?${query.toString()}`
     );
     if (!res.ok) {
-      const platformShare = Math.round(budget * 0.3 * 100) / 100;
-      const teamShare = Math.round(budget * 0.7 * 100) / 100;
+      const pSplit = splits?.platform ?? 25;
+      const oSplit = splits?.overhead ?? 15;
+      const mSplit = splits?.member ?? 60;
+      const platformShare = Math.round(((budget * pSplit) / 100) * 100) / 100;
+      const overheadShare = Math.round(((budget * oSplit) / 100) * 100) / 100;
+      const teamShare = Math.round(((budget * mSplit) / 100) * 100) / 100;
       const perMember = memberCount > 0 ? Math.round((teamShare / memberCount) * 100) / 100 : 0;
       return {
         total_budget: budget,
-        platform_split_percent: 30,
-        member_split_percent: 70,
+        split_model: splits?.split_model || 'three_tier_60_15_25',
+        platform_split_percent: pSplit,
+        overhead_split_percent: oSplit,
+        member_split_percent: mSplit,
         platform_treasury_share: platformShare,
+        overhead_pool_share: overheadShare,
         team_pool_share: teamShare,
         member_count: memberCount,
         projected_salary_per_member: perMember,
@@ -796,17 +830,33 @@ class ApiService {
     company?: string;
     project_type?: string;
     description?: string;
-  }): Promise<{ success: boolean }> {
-    const res = await fetch(`${API_BASE_URL}/leads`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || 'Failed to submit inquiry. Please try again.');
+  }): Promise<{ success: boolean; offlineQueued?: boolean }> {
+    const result = await offlineSync.executeOrQueue(
+      {
+        endpoint: `${API_BASE_URL}/leads`,
+        method: 'POST',
+        body: payload,
+        title: `Hire Us Inquiry: ${payload.name}`,
+        category: 'hire',
+      },
+      async () => {
+        const res = await fetch(`${API_BASE_URL}/leads`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || 'Failed to submit inquiry. Please try again.');
+        }
+        return { success: true };
+      }
+    );
+
+    if (result.queued) {
+      return { success: true, offlineQueued: true };
     }
-    return { success: true };
+    return result.data ?? { success: true };
   }
 
   async submitContact(payload: {
@@ -815,33 +865,74 @@ class ApiService {
     email: string;
     subject: string;
     message: string;
-  }): Promise<{ success: boolean; message: string }> {
-    const res = await fetch(`${API_BASE_URL}/leads/contact`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || 'Failed to send message. Please try again.');
+  }): Promise<{ success: boolean; message: string; offlineQueued?: boolean }> {
+    const result = await offlineSync.executeOrQueue(
+      {
+        endpoint: `${API_BASE_URL}/leads/contact`,
+        method: 'POST',
+        body: payload,
+        title: `Contact Inquiry: ${payload.first_name} ${payload.last_name}`,
+        category: 'contact',
+      },
+      async () => {
+        const res = await fetch(`${API_BASE_URL}/leads/contact`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || 'Failed to send message. Please try again.');
+        }
+        return res.json();
+      }
+    );
+
+    if (result.queued) {
+      return {
+        success: true,
+        message: 'Message saved locally on your device (Offline). It will automatically sync to TitanCode when your connection is restored.',
+        offlineQueued: true,
+      };
     }
-    return res.json();
+    return result.data ?? { success: true, message: 'Message sent!' };
   }
 
   // --- PROFILE & SETTINGS ---
   async updateProfile(updates: Partial<User>): Promise<User> {
-    const res = await this.authFetch(`${API_BASE_URL}/auth/profile`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updates),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || 'Failed to update profile.');
+    const active = this.getActiveUser();
+    const result = await offlineSync.executeOrQueue(
+      {
+        endpoint: `${API_BASE_URL}/auth/profile`,
+        method: 'PUT',
+        body: updates,
+        title: `Profile Update: ${updates.full_name || updates.name || active?.name || 'User'}`,
+        category: 'profile',
+      },
+      async () => {
+        const res = await this.authFetch(`${API_BASE_URL}/auth/profile`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updates),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || 'Failed to update profile.');
+        }
+        const updated: User = await res.json();
+        this.saveActiveUser(updated);
+        return updated;
+      }
+    );
+
+    if (result.queued) {
+      // Optimistically update local active user while offline!
+      const optimistic = { ...(active || {}), ...updates } as User;
+      this.saveActiveUser(optimistic);
+      return optimistic;
     }
-    const updated: User = await res.json();
-    this.saveActiveUser(updated);
-    return updated;
+
+    return result.data!;
   }
 
   async changePassword(currentPass: string, newPass: string): Promise<{ success: boolean; message: string }> {

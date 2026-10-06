@@ -48,11 +48,10 @@ export const FaqsView: React.FC<FaqsViewProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="tc-page-root" style={{ paddingBottom: '140px' }}>
+    <div className="tc-page-root tc-faqs-root">
       {/* 1. HERO — Figma: x:0, y:154, w:1440, h:463, sharp corners */}
       <section
-        className="tc-subpage-hero"
-        style={{ backgroundImage: 'url(/assets/faqhero_bg.jpg)' }}
+        className="tc-subpage-hero tc-subpage-hero--faqs"
       >
         <div className="tc-subpage-hero__content">
           <h1 className="tc-hero-title">
@@ -67,84 +66,52 @@ export const FaqsView: React.FC<FaqsViewProps> = ({ onNavigate }) => {
       {/* 2. FAQ ACCORDION */}
       <section className="tc-section">
         <div className="tc-section-inner">
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1.5fr', gap: '80px', alignItems: 'start' }}>
+          <div className="tc-faqs-grid">
 
             {/* Left: heading + sub-copy */}
             <div>
-              <h2 className="tc-section-title" style={{ fontSize: '46px', lineHeight: 1.2, marginBottom: '20px' }}>
+              <h2 className="tc-section-title tc-faqs-heading-title">
                 Frequently Asked <br />
                 <span className="tc-gold">Questions</span>
               </h2>
-              <p className="tc-body-text" style={{ maxWidth: '420px' }}>
+              <p className="tc-body-text tc-faqs-subtext">
                 Have questions? Send us a message and our team will get back to you shortly
               </p>
             </div>
 
             {/* Right: accordion card */}
-            <div className="figma-card" style={{ borderRadius: '24px', padding: '32px 36px', display: 'flex', flexDirection: 'column' }}>
+            <div className="figma-card tc-faqs-card">
               {faqs.map((faq, index) => {
                 const isOpen = openFaq === faq.id;
+                const isFirst = index === 0;
                 const isLast = index === faqs.length - 1;
                 return (
                   <div
                     key={faq.id}
-                    style={{
-                      borderBottom: isLast ? 'none' : '1px solid rgba(255,255,255,0.08)',
-                      paddingTop: index === 0 ? '0' : '20px',
-                      paddingBottom: isLast ? '0' : '20px',
-                    }}
+                    className={`tc-faq-row ${isFirst ? 'tc-faq-row--first' : ''} ${isLast ? 'tc-faq-row--last' : ''}`}
                   >
                     <button
                       type="button"
                       onClick={() => toggleFaq(faq.id)}
-                      style={{
-                        width: '100%',
-                        padding: '12px 0',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        textAlign: 'left',
-                        color: isOpen ? '#DFAE32' : '#FFFFFF',
-                        fontSize: '18px',
-                        fontWeight: '600',
-                        cursor: 'pointer',
-                        border: 'none',
-                        background: 'none',
-                        fontFamily: 'inherit',
-                      }}
+                      className={`tc-faq-trigger ${isOpen ? 'tc-faq-trigger--open' : ''}`}
                     >
                       <span>{faq.question}</span>
                       <ChevronDown
                         size={20}
                         color="#DFAE32"
-                        style={{
-                          transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
-                          transition: 'transform 0.25s ease',
-                          flexShrink: 0,
-                          marginLeft: '16px',
-                        }}
+                        className={`tc-faq-chevron ${isOpen ? 'tc-faq-chevron--open' : ''}`}
                       />
                     </button>
 
                     {isOpen && (
-                      <div className="tc-body-text" style={{ padding: '8px 0 14px', fontSize: '15px', lineHeight: 1.7 }}>
+                      <div className="tc-body-text tc-faq-content-box">
                         {faq.answer}
                         {faq.id === 5 && (
-                          <div style={{ marginTop: '12px' }}>
+                          <div className="tc-faq-extra-action">
                             <button
                               type="button"
                               onClick={() => onNavigate('application_form')}
-                              style={{
-                                color: '#DFAE32',
-                                fontWeight: '600',
-                                fontSize: '14px',
-                                textDecoration: 'underline',
-                                cursor: 'pointer',
-                                background: 'none',
-                                border: 'none',
-                                padding: 0,
-                                fontFamily: 'inherit',
-                              }}
+                              className="tc-faq-link-btn"
                             >
                               Open Member Application Form →
                             </button>

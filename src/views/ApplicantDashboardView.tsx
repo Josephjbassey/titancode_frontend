@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   CheckCircle2,
   Clock,
@@ -142,11 +142,37 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
       })
     : 'Recent';
 
-  // Cooldown countdown calculation
-  const cooldownDays = 24;
-  const cooldownHours = 14;
-  const cooldownMins = 38;
-  const cooldownSecs = 52;
+  // Dynamic cooldown countdown based on backend cooldown_until or 30-day window
+  const cooldownTarget = useMemo(() => {
+    if (myApplication?.cooldown_until) {
+      return new Date(myApplication.cooldown_until);
+    }
+    const base = myApplication?.created_at ? new Date(myApplication.created_at) : new Date();
+    return new Date(base.getTime() + 30 * 24 * 60 * 60 * 1000);
+  }, [myApplication?.cooldown_until, myApplication?.created_at]);
+
+  const [cooldown, setCooldown] = useState(() => {
+    const diff = Math.max(0, cooldownTarget.getTime() - Date.now());
+    return {
+      days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+      hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+      mins: Math.floor((diff / (1000 * 60)) % 60),
+      secs: Math.floor((diff / 1000) % 60),
+    };
+  });
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const diff = Math.max(0, cooldownTarget.getTime() - Date.now());
+      setCooldown({
+        days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((diff / (1000 * 60 * 60)) % 24),
+        mins: Math.floor((diff / (1000 * 60)) % 60),
+        secs: Math.floor((diff / 1000) % 60),
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [cooldownTarget]);
 
   return (
     <div className="tc-fade-in tc-view-wrapper">
@@ -342,10 +368,10 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
             </div>
             <div className="tc-cooldown-grid">
               {[
-                { val: cooldownDays, label: 'DAYS' },
-                { val: cooldownHours, label: 'HOURS' },
-                { val: cooldownMins, label: 'MINUTES' },
-                { val: cooldownSecs, label: 'SECONDS' },
+                { val: cooldown.days, label: 'DAYS' },
+                { val: cooldown.hours, label: 'HOURS' },
+                { val: cooldown.mins, label: 'MINUTES' },
+                { val: cooldown.secs, label: 'SECONDS' },
               ].map((cd, i) => (
                 <div key={i} className="tc-cooldown-digit-box">
                   <div className="tc-cooldown-num">{cd.val}</div>

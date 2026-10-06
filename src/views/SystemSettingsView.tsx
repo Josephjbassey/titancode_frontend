@@ -18,8 +18,10 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
   const [supportEmail, setSupportEmail] = useState('support@titancode.tech');
   const [currency, setCurrency] = useState('USD');
   const [timezone, setTimezone] = useState('UTC+01:00 (Lagos / Paris)');
-  const [platformSplit, setPlatformSplit] = useState(30);
-  const [memberSplit, setMemberSplit] = useState(70);
+  const [splitModel, setSplitModel] = useState<'three_tier_60_15_25' | 'standard_70_30' | 'custom'>('three_tier_60_15_25');
+  const [platformSplit, setPlatformSplit] = useState(25);
+  const [overheadSplit, setOverheadSplit] = useState(15);
+  const [memberSplit, setMemberSplit] = useState(60);
   const [notifyOnMilestone, setNotifyOnMilestone] = useState(true);
   const [notifyOnWithdrawal, setNotifyOnWithdrawal] = useState(true);
 
@@ -50,7 +52,9 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         setSupportEmail(settings.support_email);
         setCurrency(settings.currency);
         setTimezone(settings.timezone);
+        setSplitModel(settings.split_model || 'three_tier_60_15_25');
         setPlatformSplit(settings.platform_split_percent);
+        setOverheadSplit(settings.overhead_split_percent ?? 15);
         setMemberSplit(settings.member_split_percent);
         setNotifyOnMilestone(settings.notify_on_milestone);
         setNotifyOnWithdrawal(settings.notify_on_withdrawal);
@@ -73,18 +77,26 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
     let mounted = true;
     setIsCalculating(true);
 
-    api.calculateSalarySplit(calcBudget, calcMemberCount)
+    api.calculateSalarySplit(calcBudget, calcMemberCount, {
+      platform: platformSplit,
+      overhead: overheadSplit,
+      member: memberSplit,
+      split_model: splitModel,
+    })
       .then((res) => {
         if (!mounted) return;
-        // Overwrite split percentages with local inputs if customized
-        const pShare = Math.round((calcBudget * platformSplit) / 100 * 100) / 100;
-        const mShare = Math.round((calcBudget * memberSplit) / 100 * 100) / 100;
+        const pShare = Math.round(((calcBudget * platformSplit) / 100) * 100) / 100;
+        const oShare = Math.round(((calcBudget * overheadSplit) / 100) * 100) / 100;
+        const mShare = Math.round(((calcBudget * memberSplit) / 100) * 100) / 100;
         const perMember = calcMemberCount > 0 ? Math.round((mShare / calcMemberCount) * 100) / 100 : 0;
         setSalaryProjection({
           ...res,
+          split_model: splitModel,
           platform_split_percent: platformSplit,
+          overhead_split_percent: overheadSplit,
           member_split_percent: memberSplit,
           platform_treasury_share: pShare,
+          overhead_pool_share: oShare,
           team_pool_share: mShare,
           projected_salary_per_member: perMember,
         });
@@ -92,14 +104,18 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
       })
       .catch(() => {
         if (!mounted) return;
-        const pShare = Math.round((calcBudget * platformSplit) / 100 * 100) / 100;
-        const mShare = Math.round((calcBudget * memberSplit) / 100 * 100) / 100;
+        const pShare = Math.round(((calcBudget * platformSplit) / 100) * 100) / 100;
+        const oShare = Math.round(((calcBudget * overheadSplit) / 100) * 100) / 100;
+        const mShare = Math.round(((calcBudget * memberSplit) / 100) * 100) / 100;
         const perMember = calcMemberCount > 0 ? Math.round((mShare / calcMemberCount) * 100) / 100 : 0;
         setSalaryProjection({
           total_budget: calcBudget,
+          split_model: splitModel,
           platform_split_percent: platformSplit,
+          overhead_split_percent: overheadSplit,
           member_split_percent: memberSplit,
           platform_treasury_share: pShare,
+          overhead_pool_share: oShare,
           team_pool_share: mShare,
           member_count: calcMemberCount,
           projected_salary_per_member: perMember,
@@ -110,14 +126,28 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
     return () => {
       mounted = false;
     };
-  }, [calcBudget, calcMemberCount, platformSplit, memberSplit]);
+  }, [calcBudget, calcMemberCount, platformSplit, overheadSplit, memberSplit, splitModel]);
+
+  const applyModelPreset = (model: 'three_tier_60_15_25' | 'standard_70_30') => {
+    setSplitModel(model);
+    if (model === 'three_tier_60_15_25') {
+      setMemberSplit(60);
+      setOverheadSplit(15);
+      setPlatformSplit(25);
+    } else {
+      setMemberSplit(70);
+      setOverheadSplit(0);
+      setPlatformSplit(30);
+    }
+  };
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSaving) return;
 
-    if (platformSplit + memberSplit !== 100) {
-      setSaveError('Split percentages must total exactly 100%.');
+    const total = platformSplit + overheadSplit + memberSplit;
+    if (total !== 100) {
+      setSaveError(`Split percentages must total exactly 100%. Currently: ${total}%.`);
       return;
     }
 
@@ -129,7 +159,9 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         support_email: supportEmail.trim(),
         currency,
         timezone,
+        split_model: splitModel,
         platform_split_percent: platformSplit,
+        overhead_split_percent: overheadSplit,
         member_split_percent: memberSplit,
         notify_on_milestone: notifyOnMilestone,
         notify_on_withdrawal: notifyOnWithdrawal,
@@ -142,18 +174,6 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
     } finally {
       setIsSaving(false);
     }
-  };
-
-  const handleMemberSplitChange = (val: number) => {
-    const clamped = Math.max(0, Math.min(100, val));
-    setMemberSplit(clamped);
-    setPlatformSplit(100 - clamped);
-  };
-
-  const handlePlatformSplitChange = (val: number) => {
-    const clamped = Math.max(0, Math.min(100, val));
-    setPlatformSplit(clamped);
-    setMemberSplit(100 - clamped);
   };
 
   if (isLoading) {
@@ -214,11 +234,33 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
           </div>
         </div>
 
-        {/* Section 2: Financial & Escrow Profit Split */}
+        {/* Section 2: Financial Settlement & Escrow Profit Split */}
         <div className="tc-settings-card">
-          <h3 className="tc-settings-section-title">
-            Financial Settlement & Escrow Profit Split (70 / 30 Standard)
-          </h3>
+          <div className="tc-flex-between tc-mb-3">
+            <h3 className="tc-settings-section-title tc-mb-0">
+              Escrow & Profit Split Model
+            </h3>
+            <div className="tc-tab-pill-group">
+              <button
+                type="button"
+                onClick={() => applyModelPreset('three_tier_60_15_25')}
+                className={`tc-tab-pill-btn ${splitModel === 'three_tier_60_15_25' ? 'tc-tab-pill-btn--active' : ''}`}
+              >
+                3-Tier Model (60 / 15 / 25)
+              </button>
+              <button
+                type="button"
+                onClick={() => applyModelPreset('standard_70_30')}
+                className={`tc-tab-pill-btn ${splitModel === 'standard_70_30' ? 'tc-tab-pill-btn--active' : ''}`}
+              >
+                Standard (70 / 30)
+              </button>
+            </div>
+          </div>
+
+          <p className="tc-dashboard-subtitle tc-mb-3">
+            TitanCode settles client milestone payments automatically. The 3-Tier model provisions 60% to project engineers, 15% to non-billable staff overhead pool (marketing, sales, ops), and 25% to Corporate Treasury.
+          </p>
 
           <div className="tc-settings-grid-2">
             <div className="tc-settings-field">
@@ -251,12 +293,12 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
             </div>
           </div>
 
-          {/* Profit Split Sliders */}
-          <div className="tc-settings-slider-card">
-            <div>
+          {/* Profit Split Sliders (3 Tiers) */}
+          <div className="tc-settings-grid-3">
+            <div className="tc-settings-card tc-mb-0">
               <div className="tc-settings-slider-header">
                 <span className="tc-settings-slider-label">
-                  Team Member Pool Share
+                  Project Squad Pool
                 </span>
                 <span className="tc-settings-slider-val tc-settings-slider-val--emerald">
                   {memberSplit}%
@@ -264,22 +306,51 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
               </div>
               <input
                 type="range"
-                min="10"
-                max="90"
+                min="0"
+                max="100"
                 step="5"
                 value={memberSplit}
-                onChange={(e) => handleMemberSplitChange(Number(e.target.value))}
+                onChange={(e) => {
+                  setMemberSplit(Number(e.target.value));
+                  setSplitModel('custom');
+                }}
                 className="tc-settings-range tc-settings-range--emerald"
               />
               <div className="tc-settings-helper-text">
-                Allocated to participating engineers, designers, and contributors.
+                Distributed to billable developers, designers, and tech leads.
               </div>
             </div>
 
-            <div>
+            <div className="tc-settings-card tc-mb-0">
               <div className="tc-settings-slider-header">
                 <span className="tc-settings-slider-label">
-                  Platform Treasury Reserve
+                  Staff Overhead Pool
+                </span>
+                <span className="tc-settings-slider-val tc-text-info">
+                  {overheadSplit}%
+                </span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="50"
+                step="5"
+                value={overheadSplit}
+                onChange={(e) => {
+                  setOverheadSplit(Number(e.target.value));
+                  setSplitModel('custom');
+                }}
+                className="tc-settings-range"
+              />
+              <div className="tc-settings-helper-text">
+                Covers non-billable staff, project managers, marketing & ops.
+              </div>
+            </div>
+
+            <div className="tc-settings-card tc-mb-0">
+              <div className="tc-settings-slider-header">
+                <span className="tc-settings-slider-label">
+                  Platform Treasury
                 </span>
                 <span className="tc-settings-slider-val tc-settings-slider-val--gold">
                   {platformSplit}%
@@ -287,18 +358,30 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
               </div>
               <input
                 type="range"
-                min="10"
-                max="90"
+                min="0"
+                max="100"
                 step="5"
                 value={platformSplit}
-                onChange={(e) => handlePlatformSplitChange(Number(e.target.value))}
+                onChange={(e) => {
+                  setPlatformSplit(Number(e.target.value));
+                  setSplitModel('custom');
+                }}
                 className="tc-settings-range tc-settings-range--gold"
               />
               <div className="tc-settings-helper-text">
-                Retained for platform operations, infrastructure, and buffer reserves.
+                Corporate reserves, cloud infrastructure, and risk contingency.
               </div>
             </div>
           </div>
+
+          {memberSplit + overheadSplit + platformSplit !== 100 && (
+            <div className="tc-alert-banner-error tc-mt-2">
+              <AlertCircle size={15} />
+              <span>
+                Total split must equal 100%. Currently: {memberSplit + overheadSplit + platformSplit}%.
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Section 3: Dynamic Client Project Pricing Tiers */}
@@ -522,9 +605,16 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
           {/* Results Grid */}
           <div className="tc-simulator-results-grid">
             <div className="tc-simulator-result-card">
-              <div className="tc-text-muted tc-mb-1 tc-text-xs">Total Developer Pool ({memberSplit}%)</div>
+              <div className="tc-text-muted tc-mb-1 tc-text-xs">Squad Pool ({memberSplit}%)</div>
               <div className="tc-font-extrabold tc-text-xl tc-text-success">
                 ${(salaryProjection?.team_pool_share || 0).toLocaleString()}
+              </div>
+            </div>
+
+            <div className="tc-simulator-result-card">
+              <div className="tc-text-muted tc-mb-1 tc-text-xs">Staff Overhead ({overheadSplit}%)</div>
+              <div className="tc-font-extrabold tc-text-xl tc-text-info">
+                ${(salaryProjection?.overhead_pool_share || 0).toLocaleString()}
               </div>
             </div>
 
