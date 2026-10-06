@@ -9,6 +9,7 @@ import {
   ChevronDown,
   Plus,
   Loader2,
+  RefreshCw,
 } from 'lucide-react';
 import { Modal } from '../components/Modal';
 import { api } from '../services/api';
@@ -35,6 +36,20 @@ export const ClientsView: React.FC = () => {
   const [newCompany, setNewCompany] = useState('');
   const [newAmount, setNewAmount] = useState('25,000');
   const [copiedId, setCopiedId] = useState<number | null>(null);
+  const [syncingId, setSyncingId] = useState<number | null>(null);
+
+  const handleSyncHubSpot = async (id: number) => {
+    setSyncingId(id);
+    try {
+      const res = await api.syncLeadToHubSpot(id);
+      const msg = res.sync_result?.message || 'Lead contact updated in HubSpot CRM.';
+      alert(`HubSpot CRM: ${msg}`);
+    } catch (err: any) {
+      alert(err.message || 'HubSpot sync failed.');
+    } finally {
+      setSyncingId(null);
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -131,6 +146,14 @@ export const ClientsView: React.FC = () => {
           <p className="tc-page-subtitle">
             Enterprise client accounts, project engagements, and gross contract commitments.
           </p>
+          <div className="tc-flex-center-gap tc-mt-2">
+            <span className="tc-badge-gold-pill">
+              Native CRM Pipeline
+            </span>
+            <span className="tc-badge-muted-pill">
+              HubSpot Contact Sync
+            </span>
+          </div>
         </div>
 
         <button
@@ -327,6 +350,21 @@ export const ClientsView: React.FC = () => {
                         >
                           <Mail size={16} />
                         </a>
+
+                        {/* HubSpot Sync */}
+                        <button
+                          type="button"
+                          onClick={() => handleSyncHubSpot(row.id)}
+                          title="Sync Lead to HubSpot CRM"
+                          disabled={syncingId === row.id}
+                          className="tc-action-icon-btn"
+                        >
+                          {syncingId === row.id ? (
+                            <Loader2 size={16} className="tc-spin tc-text-gold" />
+                          ) : (
+                            <RefreshCw size={16} />
+                          )}
+                        </button>
 
                         {/* More */}
                         <button

@@ -477,7 +477,7 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
               {
                 title: 'PCI-DSS Payment Gateway Escrow Compliance',
                 value: '100%',
-                desc: 'Zero-token cardholder exposure via Stripe webhooks',
+                desc: 'Zero-token cardholder exposure via Paystack webhooks',
                 status: 'Optimal',
               },
             ].map((gov, i) => (

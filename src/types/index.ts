@@ -309,3 +309,15 @@ export interface SalaryProjection {
   member_count: number;
   projected_salary_per_member: number;
 }
+
+export interface ProjectComment {
+  id: number;
+  project_id: number;
+  content: string;
+  author_id?: number | null;
+  author_name: string;
+  author_role: string;
+  author_avatar?: string | null;
+  created_at: string;
+}
+

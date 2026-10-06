@@ -20,6 +20,7 @@ import type {
   ClientMilestone,
   ApplicantRecord,
   Project,
+  ProjectComment,
   WithdrawalRecord,
   ProductRecord,
   FinancialSettings,
@@ -504,6 +505,28 @@ class ApiService {
     };
   }
 
+  // --- PROJECT COMMENTS & DISCUSSION ---
+  async getProjectComments(projectId: string | number): Promise<ProjectComment[]> {
+    const numericId = typeof projectId === 'string' ? projectId.replace(/\D/g, '') : projectId;
+    const res = await this.authFetch(`${API_BASE_URL}/projects/${numericId}/comments`);
+    if (!res.ok) return [];
+    return res.json();
+  }
+
+  async addProjectComment(projectId: string | number, content: string): Promise<ProjectComment> {
+    const numericId = typeof projectId === 'string' ? projectId.replace(/\D/g, '') : projectId;
+    const res = await this.authFetch(`${API_BASE_URL}/projects/${numericId}/comments`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ content }),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to post project comment.');
+    }
+    return res.json();
+  }
+
   // --- MEETINGS ---
   async getUpcomingMeeting(): Promise<Meeting | null> {
     const res = await this.authFetch(`${API_BASE_URL}/meetings/?limit=1`);
@@ -602,7 +625,7 @@ class ApiService {
     const res = await this.authFetch(`${API_BASE_URL}/financials/withdrawals/request`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ amount, notes: fullNotes }),
+      body: JSON.stringify({ amount, bank_info: bankInfo, notes: fullNotes }),
     });
     if (!res.ok) {
       const err = await res.json().catch(() => ({}));
@@ -821,6 +844,28 @@ class ApiService {
         created_at: lead.created_at,
       };
     });
+  }
+
+  // --- HUBSPOT CRM SYNC ---
+  async syncLeadToHubSpot(leadId: number): Promise<{
+    lead_id: number;
+    email: string;
+    full_name?: string;
+    sync_result: {
+      status: string;
+      message?: string;
+      hubspot_id?: string;
+      error?: string;
+    };
+  }> {
+    const res = await this.authFetch(`${API_BASE_URL}/leads/${leadId}/sync-hubspot`, {
+      method: 'POST',
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.detail || 'Failed to sync lead with HubSpot CRM.');
+    }
+    return res.json();
   }
 
   async submitHireUs(payload: {

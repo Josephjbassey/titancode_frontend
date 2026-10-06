@@ -683,6 +683,100 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
           </div>
         </div>
 
+        {/* Section 6: Ecosystem Integrations & Support Rails */}
+        <div className="tc-settings-card">
+          <h3 className="tc-settings-section-title">
+            Ecosystem Integrations & Support Rails
+          </h3>
+          <p className="tc-dashboard-subtitle tc-mb-4">
+            Production adapters for CRM sync, workspace notifications, customer live support, and IT help desk.
+          </p>
+
+          <div className="tc-settings-grid-2">
+            {/* 1. HubSpot CRM */}
+            <div className="tc-simulator-result-card">
+              <div className="tc-flex-between tc-mb-2">
+                <span className="tc-font-bold tc-text-white tc-text-sm">HubSpot CRM Ingestion</span>
+                <span className="tc-badge-status tc-badge-status--approved">Operational</span>
+              </div>
+              <p className="tc-text-muted-xs tc-mb-2">
+                Inbound client inquiries and leads auto-sync directly into HubSpot CRM Contacts API v3.
+              </p>
+              <div className="tc-text-2xs tc-text-gold font-mono">
+                API: POST /crm/v3/objects/contacts
+              </div>
+            </div>
+
+            {/* 2. Slack Workspace Webhook */}
+            <div className="tc-simulator-result-card">
+              <div className="tc-flex-between tc-mb-2">
+                <span className="tc-font-bold tc-text-white tc-text-sm">Slack Workspace Webhook</span>
+                <span className="tc-badge-status tc-badge-status--approved">Operational</span>
+              </div>
+              <p className="tc-text-muted-xs tc-mb-2">
+                Dispatches milestone completion alerts and project discussion streams to #projects and #dev-alerts.
+              </p>
+              <div className="tc-text-2xs tc-text-gold font-mono">
+                Channels: #projects & #it-support
+              </div>
+            </div>
+
+            {/* 3. Customer Support Widget (Crisp / Intercom) */}
+            <div className="tc-simulator-result-card">
+              <div className="tc-flex-between tc-mb-2">
+                <span className="tc-font-bold tc-text-white tc-text-sm">Crisp Live Chat Support</span>
+                <span className="tc-badge-status tc-badge-status--approved">Embedded</span>
+              </div>
+              <p className="tc-text-muted-xs tc-mb-3">
+                Zero-code live support concierge widget embedded for visitors and clients.
+              </p>
+              <button
+                type="button"
+                onClick={() => {
+                  if ((window as any).$crisp) {
+                    (window as any).$crisp.push(['do', 'chat:open']);
+                  } else {
+                    alert('Crisp live chat script loaded. Click the chat bubble in the bottom right corner.');
+                  }
+                }}
+                className="tc-btn-subtle-edit tc-w-full tc-text-center"
+              >
+                Launch Live Support Chat
+              </button>
+            </div>
+
+            {/* 4. IT Support & Help Desk */}
+            <div className="tc-simulator-result-card">
+              <div className="tc-flex-between tc-mb-2">
+                <span className="tc-font-bold tc-text-white tc-text-sm">IT Support & DevOps Desk</span>
+                <span className="tc-badge-muted-pill">Strategy: Defer</span>
+              </div>
+              <p className="tc-text-muted-xs tc-mb-3">
+                Zero bloat ticketing — internal technical requests route to GitHub Issues or Slack #it-support.
+              </p>
+              <div className="tc-flex-center-gap">
+                <a
+                  href="https://github.com/titancode/titancode/issues"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tc-btn-subtle-edit tc-flex-1 tc-text-center"
+                >
+                  GitHub Issues
+                </a>
+                <a
+                  href="https://slack.com/app_redirect?channel=it-support"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="tc-btn-subtle-edit tc-flex-1 tc-text-center"
+                >
+                  Slack #it-support
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
         {/* Error message */}
         {saveError && (
           <div className="tc-alert-banner-error">

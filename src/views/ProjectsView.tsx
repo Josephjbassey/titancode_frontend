@@ -5,10 +5,13 @@ import {
   CheckCircle2,
   X,
   Loader2,
+  MessageSquare,
+  Send,
+  Share2,
 } from 'lucide-react';
 import type { ScreenId } from '../App';
 import { api } from '../services/api';
-import type { ClientRecord } from '../types';
+import type { ClientRecord, ProjectComment } from '../types';
 
 interface Project {
   id: string;
@@ -78,6 +81,47 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
   const [newProjectBudget, setNewProjectBudget] = useState('');
   const [newProjectDeadline, setNewProjectDeadline] = useState('');
   const [newProjectDesc, setNewProjectDesc] = useState('');
+
+  // Project Comments & Discussion Stream
+  const [projectComments, setProjectComments] = useState<ProjectComment[]>([]);
+  const [isLoadingComments, setIsLoadingComments] = useState(false);
+  const [newComment, setNewComment] = useState('');
+  const [isPostingComment, setIsPostingComment] = useState(false);
+
+  useEffect(() => {
+    if (!selectedProject) {
+      setProjectComments([]);
+      return;
+    }
+    let mounted = true;
+    setIsLoadingComments(true);
+    api.getProjectComments(selectedProject.id)
+      .then((data) => {
+        if (mounted) setProjectComments(data || []);
+      })
+      .catch(() => {
+        if (mounted) setProjectComments([]);
+      })
+      .finally(() => {
+        if (mounted) setIsLoadingComments(false);
+      });
+    return () => { mounted = false; };
+  }, [selectedProject?.id]);
+
+  const handlePostComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedProject || !newComment.trim() || isPostingComment) return;
+    setIsPostingComment(true);
+    try {
+      const added = await api.addProjectComment(selectedProject.id, newComment.trim());
+      setProjectComments((prev) => [...prev, added]);
+      setNewComment('');
+    } catch (err: any) {
+      alert(err.message || 'Failed to post update.');
+    } finally {
+      setIsPostingComment(false);
+    }
+  };
 
   useEffect(() => {
     let mounted = true;
@@ -523,6 +567,72 @@ export const ProjectsView: React.FC<ProjectsViewProps> = ({ onNavigate: _onNavig
                   ))}
                 </div>
               )}
+            </div>
+
+            {/* Project Discussion & Milestone Updates (Slack Synced) */}
+            <div className="tc-project-modal-section">
+              <div className="tc-flex-between tc-mb-2">
+                <div className="tc-flex-center-gap">
+                  <MessageSquare size={16} className="tc-text-gold" />
+                  <h4 className="tc-project-modal-subtitle tc-mb-0">
+                    Project Discussion & Activity Stream
+                  </h4>
+                </div>
+                <span className="tc-badge-muted-pill tc-flex-center-gap">
+                  <Share2 size={12} className="tc-text-info" />
+                  Slack Synced
+                </span>
+              </div>
+              <p className="tc-text-muted-xs tc-mb-3">
+                Team discussion and milestone updates. Posts appear in this thread and dispatch to the connected Slack workspace.
+              </p>
+
+              <div className="tc-meeting-chat-feed tc-max-h-48 tc-overflow-y-auto tc-mb-3 tc-p-3 tc-bg-card-hover tc-rounded-lg">
+                {isLoadingComments ? (
+                  <div className="tc-flex-center-gap tc-justify-center tc-p-4 tc-text-muted-xs">
+                    <Loader2 size={14} className="tc-spin tc-text-gold" />
+                    <span>Loading updates...</span>
+                  </div>
+                ) : projectComments.length === 0 ? (
+                  <div className="tc-text-muted-xs tc-p-3 tc-text-center">
+                    No updates posted yet. Share a milestone note or sprint update below.
+                  </div>
+                ) : (
+                  projectComments.map((c) => (
+                    <div key={c.id} className="tc-chat-bubble tc-mb-2">
+                      <div className="tc-flex-between tc-mb-1">
+                        <span className="tc-chat-sender-name">
+                          {c.author_name} ({c.author_role})
+                        </span>
+                        <span className="tc-chat-timestamp">
+                          {new Date(c.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                      </div>
+                      <div className="tc-text-sm tc-text-white tc-break-words">
+                        {c.content}
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              <form onSubmit={handlePostComment} className="tc-flex-center-gap">
+                <input
+                  type="text"
+                  placeholder="Post an update, milestone status, or note..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  className="tc-meeting-chat-input"
+                />
+                <button
+                  type="submit"
+                  disabled={isPostingComment || !newComment.trim()}
+                  className="tc-meeting-chat-send-btn"
+                  title="Post to Thread and Slack"
+                >
+                  {isPostingComment ? <Loader2 size={14} className="tc-spin" /> : <Send size={14} />}
+                </button>
+              </form>
             </div>
 
             {/* Action Buttons */}

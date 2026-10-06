@@ -55,6 +55,10 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
   const [showWithdrawModal, setShowWithdrawModal] = useState(false);
   const [withdrawAmount, setWithdrawAmount] = useState('');
   const [withdrawSuccess, setWithdrawSuccess] = useState(false);
+  const [payoutRail, setPayoutRail] = useState<'paystack_local' | 'paystack_dom' | 'paystack_recipient'>('paystack_local');
+  const [bankName, setBankName] = useState('Guaranty Trust Bank');
+  const [accountNumber, setAccountNumber] = useState('0123456789');
+  const [recipientCode, setRecipientCode] = useState('');
 
   // Admin Payouts State
   const [withdrawals, setWithdrawals] = useState<Withdrawal[]>([]);
@@ -145,7 +149,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
         (withdrawalList || []).slice(0, 5).forEach((w: any) => {
           txns.push({
             ref: `TXN-WTH-${w.id}`,
-            project: `Bank Wire Withdrawal (${w.bank_info || 'Bank Wire'})`,
+            project: `Paystack Transfer (${w.bank_info || 'Bank Payout'})`,
             type: 'Settlement Debit',
             date: w.created_at ? w.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
             amount: `-$${Number(w.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
@@ -171,7 +175,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
         (withdrawalList || []).slice(0, 5).forEach((w: any) => {
           txns.push({
             ref: `TXN-WTH-${w.id}`,
-            project: `Bank Wire Withdrawal (${w.bank_info || 'Bank Wire'})`,
+            project: `Paystack Transfer (${w.bank_info || 'Bank Payout'})`,
             type: 'Settlement Debit',
             date: w.created_at ? w.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
             amount: `-$${Number(w.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
@@ -192,8 +196,17 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
     const val = Number(withdrawAmount);
     if (!val || val <= 0 || val > myBalance) return;
 
+    let destinationInfo = '';
+    if (payoutRail === 'paystack_recipient') {
+      destinationInfo = recipientCode.trim() || 'RCP_corporate_withdrawal';
+    } else if (payoutRail === 'paystack_dom') {
+      destinationInfo = `${bankName.trim()} [USD Domiciliary: ${accountNumber.trim()}]`;
+    } else {
+      destinationInfo = `${bankName.trim()} [Local Bank: ${accountNumber.trim()}]`;
+    }
+
     try {
-      await api.requestWithdrawal(val, 'Personal Bank Account');
+      await api.requestWithdrawal(val, destinationInfo, `Channel: Paystack (${payoutRail})`);
       setMyBalance((prev) => prev - val);
       setWithdrawSuccess(true);
       setTimeout(() => {
@@ -274,6 +287,10 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
               <div className="tc-wallet-status">
                 <CheckCircle2 size={14} />
                 <span>KYC Bank Verified: GTBank •••• 6789</span>
+              </div>
+              <div className="tc-flex-center-gap tc-mt-2">
+                <span className="tc-badge-gold-pill">⚡ Paystack Direct Transfers</span>
+                <span className="tc-badge-muted-pill">Local Currency & USD Domiciliary</span>
               </div>
             </div>
 
@@ -385,7 +402,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                           Approve Payout
                         </button>
                       ) : (
-                        <span className="tc-text-muted tc-text-xs">Wire Transferred</span>
+                        <span className="tc-text-muted tc-text-xs">Payment Disbursed</span>
                       )}
                     </td>
                   </tr>
@@ -510,7 +527,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                   Withdrawal Request Submitted
                 </h4>
                 <p className="tc-text-muted tc-text-sm">
-                  Wire transfer is being processed and will hit your bank within 24 hours.
+                  Disbursal is queued via Paystack Transfers API and will settle directly into your account.
                 </p>
               </div>
             ) : (
@@ -522,8 +539,10 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                   <input
                     type="number"
                     required
-                    placeholder="Enter amount..."
+                    placeholder="Enter amount in USD..."
                     max={myBalance}
+                    min={1}
+                    step="0.01"
                     value={withdrawAmount}
                     onChange={(e) => setWithdrawAmount(e.target.value)}
                     className="tc-form-input"
@@ -533,10 +552,83 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                   </div>
                 </div>
 
+                <div className="tc-form-group">
+                  <label className="tc-form-label">
+                    Payout Channel (Paystack Settlement Rail)
+                  </label>
+                  <select
+                    className="tc-form-select"
+                    value={payoutRail}
+                    onChange={(e) => setPayoutRail(e.target.value as any)}
+                  >
+                    <option value="paystack_local">
+                      Paystack African Bank Transfer (NGN / GHS / KES / ZAR)
+                    </option>
+                    <option value="paystack_dom">
+                      Paystack USD Domiciliary Account (Direct USD)
+                    </option>
+                    <option value="paystack_recipient">
+                      Paystack Recipient Code (Instant Disbursal)
+                    </option>
+                  </select>
+                </div>
+
+                {payoutRail === 'paystack_recipient' ? (
+                  <div className="tc-form-group">
+                    <label className="tc-form-label">
+                      Paystack Recipient Code
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. RCP_gx2wn530m0i3w3m"
+                      value={recipientCode}
+                      onChange={(e) => setRecipientCode(e.target.value)}
+                      className="tc-form-input"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div className="tc-form-group">
+                      <label className="tc-form-label">
+                        Destination Bank Name
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. Guaranty Trust Bank, Access Bank, Zenith Bank"
+                        value={bankName}
+                        onChange={(e) => setBankName(e.target.value)}
+                        className="tc-form-input"
+                      />
+                    </div>
+                    <div className="tc-form-group">
+                      <label className="tc-form-label">
+                        Account Number
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        placeholder="e.g. 0123456789"
+                        value={accountNumber}
+                        onChange={(e) => setAccountNumber(e.target.value)}
+                        className="tc-form-input"
+                      />
+                    </div>
+                  </>
+                )}
+
                 <div className="tc-user-detail-box tc-mb-4">
-                  <div className="tc-text-muted tc-text-2xs">Destination Account:</div>
-                  <div className="tc-font-bold tc-text-white tc-text-sm tc-mt-1">
-                    Guaranty Trust Bank (0123456789)
+                  <div className="tc-user-detail-box-label">Paystack Disbursal Summary:</div>
+                  <div className="tc-user-detail-box-val">
+                    {payoutRail === 'paystack_dom'
+                      ? `USD Domiciliary Payout — $${withdrawAmount || '0.00'} USD Direct`
+                      : payoutRail === 'paystack_recipient'
+                      ? `Instant Transfer to ${recipientCode || 'Paystack Recipient'}`
+                      : `Local Bank Payout — $${withdrawAmount || '0.00'} USD converted via Paystack live FX`}
+                  </div>
+                  <div className="tc-text-muted tc-text-2xs tc-mt-1">
+                    Zero Stripe setup barrier. Funds disbursed directly via Paystack Transfers API with webhook verification.
                   </div>
                 </div>
 
@@ -552,7 +644,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                     type="submit"
                     className="tc-action-btn-gold"
                   >
-                    Confirm Withdrawal
+                    Confirm Paystack Payout
                   </button>
                 </div>
               </form>
