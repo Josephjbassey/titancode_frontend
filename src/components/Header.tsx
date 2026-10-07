@@ -1,19 +1,23 @@
 import React, { useState } from 'react';
-import { Search, Bell, Shield, HelpCircle, MessageSquare, ExternalLink, LifeBuoy } from 'lucide-react';
+import { Search, Bell, Shield, HelpCircle, MessageSquare, ExternalLink, LifeBuoy, Menu } from 'lucide-react';
 import type { User } from '../types';
 import { Modal } from './Modal';
+import { useCompany } from '../contexts/CompanyContext';
 
 interface HeaderProps {
   user: User;
+  onOpenSidebar?: () => void;
   onOpenProfile?: () => void;
   onOpenNotifications?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   user,
+  onOpenSidebar,
   onOpenProfile,
   onOpenNotifications,
 }) => {
+  const company = useCompany();
   const [isHelpOpen, setIsHelpOpen] = useState(false);
 
   const handleOpenCrispChat = () => {
@@ -27,6 +31,16 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="tc-app-header">
+      {/* Sidebar hamburger — visible only on mobile */}
+      <button
+        type="button"
+        className="tc-header-hamburger"
+        onClick={onOpenSidebar}
+        aria-label="Open navigation menu"
+      >
+        <Menu size={22} />
+      </button>
+
       {/* Search Pill on Left (Figma Rectangle 255: 482px x 36px) */}
       <div className="tc-header-search-wrap">
         <Search
@@ -154,7 +168,7 @@ export const Header: React.FC<HeaderProps> = ({
               </p>
               <div className="tc-flex-center-gap">
                 <a
-                  href="https://github.com/titancode/titancode/issues"
+                  href={company.it_github_issues_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="tc-btn-subtle-edit tc-flex-1 tc-text-center"
@@ -162,7 +176,7 @@ export const Header: React.FC<HeaderProps> = ({
                   Open GitHub Issues
                 </a>
                 <a
-                  href="https://slack.com/app_redirect?channel=it-support"
+                  href={company.it_slack_channel_url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="tc-btn-subtle-edit tc-flex-1 tc-text-center"

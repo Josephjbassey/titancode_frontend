@@ -90,12 +90,24 @@
   width: 100%;
 }
 
+@media (max-width: 600px) {
+  .tc-metrics-grid-4 {
+    grid-template-columns: 1fr;
+  }
+}
+
 /* 3-Metric Grid Row */
 .tc-metrics-grid-3 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   gap: 20px;
   width: 100%;
+}
+
+@media (max-width: 600px) {
+  .tc-metrics-grid-3 {
+    grid-template-columns: 1fr;
+  }
 }
 
 /* Full-width interactive data table */
@@ -489,9 +501,15 @@
    ═════════════════════════════════════════════════════════════════════════ */
 .tc-2col-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr));
   gap: 20px;
   margin-bottom: 28px;
+}
+
+@media (max-width: 768px) {
+  .tc-2col-grid {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tc-panel-card {
@@ -1193,8 +1211,14 @@
 /* 2x2 Grid Section */
 .tc-dashboard-grid-2x2 {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(480px, 100%), 1fr));
   gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .tc-dashboard-grid-2x2 {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tc-grid-card {
@@ -1805,6 +1829,8 @@
   border-radius: 16px;
   padding: 28px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 .tc-modal-header {
@@ -1887,6 +1913,12 @@
   grid-template-columns: 1fr 1fr;
   gap: 12px;
   margin-bottom: 16px;
+}
+
+@media (max-width: 500px) {
+  .tc-grid-2col {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tc-modal-success-banner {
@@ -2495,6 +2527,8 @@
   padding: 28px;
   max-width: 480px;
   width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
 /* ── KANBAN & TASKS CLASSES ── */
@@ -2711,6 +2745,8 @@
   border-radius: 16px;
   max-width: 560px;
   width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
   padding: 28px;
 }
 
@@ -2899,7 +2935,7 @@
 }
 
 .tc-kpi-val-hero {
-  font-size: 36px;
+  font-size: clamp(24px, 4vw, 36px);
   font-weight: 800;
   color: #FFFFFF;
   margin-bottom: 8px;
@@ -2907,7 +2943,7 @@
 }
 
 .tc-kpi-val-hero--dark {
-  font-size: 36px;
+  font-size: clamp(24px, 4vw, 36px);
   font-weight: 800;
   color: #000000;
   margin-bottom: 8px;
@@ -3080,11 +3116,23 @@
   margin-bottom: 16px;
 }
 
+@media (max-width: 600px) {
+  .tc-settings-grid-2 {
+    grid-template-columns: 1fr;
+  }
+}
+
 .tc-settings-grid-3 {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   gap: 12px;
   margin-bottom: 12px;
+}
+
+@media (max-width: 600px) {
+  .tc-settings-grid-3 {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tc-settings-field {
@@ -3152,6 +3200,12 @@
   background-color: #181819;
   border-radius: 10px;
   margin-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  .tc-settings-slider-card {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tc-settings-slider-header {
@@ -3342,7 +3396,7 @@
 }
 
 .tc-wallet-amount {
-  font-size: 42px;
+  font-size: clamp(28px, 6vw, 42px);
   font-weight: 800;
   color: #dfae32;
   letter-spacing: -0.02em;
@@ -3386,7 +3440,7 @@
 }
 
 .tc-treasury-card-amount {
-  font-size: 32px;
+  font-size: clamp(22px, 4vw, 32px);
   font-weight: 800;
   margin-top: 6px;
 }
@@ -3416,7 +3470,7 @@
   background-color: var(--tc-figma-card-bg, #FFFFFF1A);
   border-radius: 14px;
   border: 1px solid var(--tc-figma-card-border, #FFFFFF26);
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .tc-tx-table-header {
@@ -3512,7 +3566,7 @@
 }
 
 .tc-product-kpi-value {
-  font-size: 32px;
+  font-size: clamp(22px, 4vw, 32px);
   font-weight: 800;
   margin-top: 6px;
 }
@@ -3817,6 +3871,11 @@
 
 .tc-mt-2 {
   margin-top: 8px;
+}
+
+.tc-overflow-x-auto {
+  overflow-x: auto;
+  width: 100%;
 }
 
 /* ── DYNAMIC PROJECT SWITCHER ── */
@@ -4130,6 +4189,19 @@
   flex-direction: column;
   gap: 24px;
   padding-bottom: 32px;
+}
+
+.tc-settings-split {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .tc-settings-split {
+    grid-template-columns: 1fr;
+  }
 }
 
 .tc-settings-subnav {
@@ -4628,6 +4700,13 @@
   background-color: #161617;
 }
 
+@media (max-width: 600px) {
+  .tc-meeting-video-grid {
+    grid-template-columns: 1fr;
+    grid-template-rows: none;
+  }
+}
+
 .tc-meeting-participant-card {
   position: relative;
   background-color: rgba(255, 255, 255, 0.06);
@@ -4700,13 +4779,16 @@
 }
 
 .tc-meeting-controls-bar {
-  height: 80px;
+  min-height: 80px;
+  height: auto;
   background-color: #0b0b0c;
   border-top: 1px solid rgba(255, 255, 255, 0.06);
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 16px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
 }
 
 .tc-meeting-circle-btn {

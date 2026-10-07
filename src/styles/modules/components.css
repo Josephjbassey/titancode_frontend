@@ -2449,6 +2449,8 @@
   padding: 32px;
   width: 100%;
   max-width: 480px;
+  max-height: 90vh;
+  overflow-y: auto;
   box-shadow: var(--tc-shadow-lg);
   position: relative;
 }
@@ -2482,4 +2484,127 @@
 
 .error {
   color: var(--tc-error, #EF4444);
+}
+
+/* ── MOBILE SIDEBAR DRAWER ───────────────────────────────────────────── */
+
+/* Sidebar overlay backdrop (mobile only) */
+.tc-sidebar-overlay {
+  display: none;
+}
+
+/* Sidebar close button (mobile only) */
+.tc-sidebar-close-btn {
+  display: none;
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 8px;
+  color: #FFFFFF;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  z-index: 1;
+  flex-shrink: 0;
+}
+
+/* Header hamburger (hidden on desktop) */
+.tc-header-hamburger {
+  display: none;
+  width: 44px;
+  height: 44px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: #FFFFFF;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+@media (max-width: 767px) {
+  /* Show hamburger */
+  .tc-header-hamburger {
+    display: flex;
+  }
+
+  /* Show sidebar close button */
+  .tc-sidebar-close-btn {
+    display: flex;
+  }
+
+  /* Sidebar becomes off-canvas */
+  .tc-app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    z-index: 200;
+    transform: translateX(-100%);
+    transition: transform 0.28s ease;
+    box-shadow: none;
+    padding-top: 52px; /* room for close button */
+  }
+
+  /* Open state */
+  .tc-app-sidebar--open {
+    transform: translateX(0);
+    box-shadow: 4px 0 40px rgba(0, 0, 0, 0.6);
+  }
+
+  /* Dark backdrop */
+  .tc-sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 199;
+  }
+
+  /* Shrink header search on mobile */
+  .tc-header-search-wrap {
+    max-width: 160px;
+  }
+
+  /* Stack header items */
+  .tc-app-header {
+    padding: 0 16px;
+    gap: 8px;
+  }
+
+  /* Hide role badge on tiny screens */
+  .tc-header-role-badge {
+    display: none;
+  }
+
+  /* Reduce header height slightly on mobile */
+  .tc-app-header {
+    height: 64px;
+  }
+}
+
+/* ── MOBILE ERROR PAGE FIXES ─────────────────────────────────────────────── */
+@media (max-width: 480px) {
+  .tc-error-card {
+    padding: 32px 20px;
+    border-radius: 18px;
+  }
+
+  .tc-error-code-hero {
+    font-size: 60px;
+  }
+
+  .tc-error-actions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tc-error-card--wide,
+  .tc-error-card--compact {
+    max-width: 100%;
+  }
 }

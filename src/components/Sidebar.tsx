@@ -16,6 +16,7 @@ import {
   FolderPlus,
   Briefcase,
   ShieldAlert,
+  X,
 } from 'lucide-react';
 import type { UserRole } from '../types';
 
@@ -24,6 +25,8 @@ interface SidebarProps {
   onNavigate: (view: string) => void;
   userRole?: UserRole;
   onLogout?: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -31,6 +34,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onNavigate,
   userRole = 'Member',
   onLogout,
+  isOpen = false,
+  onClose,
 }) => {
   const memberNavItems = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -103,8 +108,32 @@ export const Sidebar: React.FC<SidebarProps> = ({
     currentView === 'password_settings' ||
     currentView === 'change_password';
 
+  const handleNavigate = (view: string) => {
+    if (onClose) onClose();
+    onNavigate(view);
+  };
+
   return (
-    <aside className="tc-app-sidebar">
+    <>
+      {/* Mobile overlay backdrop */}
+      {isOpen && (
+        <div
+          className="tc-sidebar-overlay"
+          onClick={onClose}
+          aria-hidden="true"
+        />
+      )}
+    <aside className={`tc-app-sidebar${isOpen ? ' tc-app-sidebar--open' : ''}`}>
+      {/* Mobile close button */}
+      <button
+        type="button"
+        className="tc-sidebar-close-btn"
+        onClick={onClose}
+        aria-label="Close navigation menu"
+      >
+        <X size={20} />
+      </button>
+
       {/* Brand Logo Header (Figma 606:58) */}
       <div className="tc-sidebar-logo-header">
         <div
@@ -135,7 +164,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
               <button
                 type="button"
-                onClick={() => onNavigate(item.id)}
+                onClick={() => handleNavigate(item.id)}
                 className={`tc-sidebar-nav-btn ${isActive ? 'tc-sidebar-nav-btn--active' : ''}`}
               >
                 {/* Squircle Icon Container */}
@@ -162,7 +191,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
           <button
             type="button"
-            onClick={() => onNavigate('profile_settings')}
+            onClick={() => handleNavigate('profile_settings')}
             className={`tc-sidebar-nav-btn ${isSettingsActive ? 'tc-sidebar-nav-btn--active' : ''}`}
           >
             <div
@@ -187,5 +216,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
       </div>
     </aside>
+    </>
   );
 };

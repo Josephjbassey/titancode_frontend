@@ -1112,3 +1112,40 @@
 .tc-otp-digit-box--error:focus {
   border-color: #EF4444;
 }
+
+/* ── MOBILE AUTH RESPONSIVE FIXES ───────────────────────────────────────── */
+
+/* At ≤480px, reduce padding on the form side so it fits 375px screens */
+@media (max-width: 480px) {
+  .tc-auth-shell {
+    padding: 16px 12px;
+  }
+
+  .tc-auth-unified-card {
+    border-radius: 16px;
+  }
+
+  .tc-auth-form-side {
+    padding: 28px 20px;
+  }
+
+  .tc-auth-form-inner {
+    max-width: 100%;
+  }
+
+  /* Hero side is hidden at mobile to save vertical space */
+  .tc-auth-hero-side {
+    display: none;
+  }
+
+  /* OTP digit boxes — smaller on tiny screens */
+  .tc-otp-digit-box {
+    width: 42px;
+    height: 52px;
+    font-size: 20px;
+  }
+
+  .tc-otp-container {
+    gap: 6px;
+  }
+}

@@ -2934,3 +2934,112 @@
 }
 
 
+
+/* ─── SERVICES WHY-CHOOSE-US GRID (2-col: photos | text) ──────────────────── */
+.tc-services-why-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 60px;
+  align-items: start;
+}
+
+/* ─── ADDITIONAL RESPONSIVE FIXES ────────────────────────────────────────── */
+
+/* Fix: tc-about-img-primary and tc-about-img-accent absolute widths
+   overflow on mobile — hide accent and let primary fill the stack */
+@media (max-width: 640px) {
+  .tc-about-img-primary {
+    width: 100%;
+    height: 100%;
+    border-radius: 12px;
+  }
+
+  .tc-about-img-accent {
+    display: none;
+  }
+
+  .tc-about-image-stack {
+    height: 220px;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  /* Testimonials title fixed px → clamp */
+  .tc-testimonials-title {
+    font-size: clamp(28px, 7vw, 46px);
+  }
+
+  /* Hero title main fixed 44px → clamp */
+  .tc-hero-title-main {
+    font-size: clamp(28px, 8vw, 44px);
+  }
+
+  /* Services why grid single column */
+  .tc-services-why-grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  /* Application title fixed 42px */
+  .tc-application-title {
+    font-size: clamp(26px, 7vw, 42px);
+  }
+
+  /* About mission padding */
+  .tc-about-mission-section {
+    padding: 40px 20px 80px;
+  }
+
+  /* About team section */
+  .tc-about-team-section {
+    padding: 0 20px 80px;
+  }
+
+  /* Contact heading title */
+  .tc-contact-heading-title {
+    font-size: clamp(26px, 7vw, 46px);
+  }
+
+  /* FAQs heading */
+  .tc-faqs-heading-title {
+    font-size: clamp(26px, 7vw, 46px);
+  }
+
+  /* Public header padding at 375px */
+  .tc-public-header {
+    padding: 16px !important;
+  }
+
+  /* Hero cta row wrapping */
+  .tc-hero-cta-row {
+    flex-wrap: wrap;
+  }
+
+  /* Footer social icons touch size */
+  .tc-social-icon {
+    width: 40px;
+    height: 40px;
+  }
+}
+
+@media (max-width: 1024px) {
+  /* Services why grid 2-col → 1-col on tablet */
+  .tc-services-why-grid {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+/* ─── PRICING PAGE ──────────────────────────────────────────────────────────── */
+.tc-subpage-hero--pricing { background: var(--tc-dark, #0d0d0d); }
+.tc-pricing-cards-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+@media (max-width: 1024px) { .tc-pricing-cards-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .tc-pricing-cards-grid { grid-template-columns: 1fr; } }
+.tc-pricing-card { display: flex; flex-direction: column; gap: 12px; padding: 32px 24px; }
+.tc-pricing-label { font-size: 11px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--tc-muted, #888); }
+.tc-pricing-range { font-size: 28px; font-weight: 700; }
+.tc-pricing-desc { flex: 1; }
+.tc-pricing-cta { margin-top: auto; width: 100%; justify-content: center; }
+.tc-pricing-skeleton-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+.tc-pricing-skeleton-card { height: 280px; border-radius: 16px; background: linear-gradient(90deg, #1a1a1a 25%, #242424 50%, #1a1a1a 75%); background-size: 200% 100%; animation: tc-shimmer 1.5s infinite; }
+@keyframes tc-shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
