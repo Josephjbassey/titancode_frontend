@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import type { ScreenId } from '../../App';
 import { CheckCircle2, AlertCircle } from 'lucide-react';
 import {
@@ -23,7 +23,14 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
     phoneNumber: '',
     projectDescription: '',
     password: '',
+    budgetRange: '',
   });
+
+  const [pricingTiers, setPricingTiers] = useState<any[]>([]);
+
+  useEffect(() => {
+    api.getPublicPricingTiers().then(setPricingTiers).catch(() => {});
+  }, []);
 
   const [submitted, setSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -41,6 +48,7 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
         company: formData.companyName || undefined,
         project_type: formData.projectType || undefined,
         description: formData.projectDescription,
+        budget_range: formData.budgetRange || undefined,
       });
 
       // If client provided a password, instantly activate and authenticate their client account
@@ -62,7 +70,7 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
       }
 
       setSubmitted(true);
-      setFormData({ fullName: '', email: '', companyName: '', projectType: '', phoneNumber: '', projectDescription: '', password: '' });
+      setFormData({ fullName: '', email: '', companyName: '', projectType: '', phoneNumber: '', projectDescription: '', password: '', budgetRange: '' });
       setTimeout(() => setSubmitted(false), 8000);
     } catch (err: any) {
       setError(err.message || 'Something went wrong. Please try again.');
@@ -163,6 +171,22 @@ export const HireUsView: React.FC<HireUsViewProps> = ({ onNavigate: _onNavigate 
                 onChange={(e) => setFormData({ ...formData, projectType: e.target.value })}
                 className="tc-pill-input tc-pill-input--lg"
               />
+            </div>
+
+            {/* Row 2b: Budget Range */}
+            <div className="tc-form-row tc-form-row--lg">
+              <select
+                value={formData.budgetRange}
+                onChange={(e) => setFormData({ ...formData, budgetRange: e.target.value })}
+                className="tc-pill-input tc-pill-input--lg"
+              >
+                <option value="">Select Budget Range (Optional)</option>
+                {pricingTiers.map(t => (
+                  <option key={t.id} value={t.label}>
+                    {t.label} — {t.max_amount ? `$${(t.min_amount / 1000).toFixed(0)}k – $${(t.max_amount / 1000).toFixed(0)}k` : `$${(t.min_amount / 1000).toFixed(0)}k+`}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* Row 3: Phone Number | Optional Password */}

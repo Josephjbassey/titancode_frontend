@@ -17,6 +17,7 @@ import { HireUsView } from './views/public/HireUsView';
 import { ContactUsView } from './views/public/ContactUsView';
 import { FaqsView } from './views/public/FaqsView';
 import { TestimonialsView } from './views/public/TestimonialsView';
+import { PricingView } from './views/public/PricingView';
 import { ApplicationFormView } from './views/public/ApplicationFormView';
 import { HomepageView } from './views/public/HomepageView';
 import { AboutUsView } from './views/public/AboutUsView';
@@ -31,6 +32,10 @@ import { FinancialsView } from './views/FinancialsView';
 import { RevenueProductsView } from './views/RevenueProductsView';
 import { ClientRequestProjectView } from './views/ClientRequestProjectView';
 import { SystemSettingsView } from './views/SystemSettingsView';
+import { NotificationSettingsView } from './views/NotificationSettingsView';
+import { BillingView } from './views/BillingView';
+import { KycVerificationView } from './views/KycVerificationView';
+import { TeamWorkloadView } from './views/TeamWorkloadView';
 import { HrDashboardView } from './views/HrDashboardView';
 import { ManagerDashboardView } from './views/ManagerDashboardView';
 import { CeoDashboardView } from './views/CeoDashboardView';
@@ -41,6 +46,7 @@ import { NotFoundView, ForbiddenView, ServerErrorView, BadRequestView } from './
 import { api } from './services/api';
 import type { User } from './types';
 import { OfflineSyncBanner } from './components/OfflineSyncBanner';
+import { CompanyProvider } from './contexts/CompanyContext';
 import './App.css';
 
 export type ScreenId =
@@ -53,6 +59,7 @@ export type ScreenId =
   | 'contact_us'
   | 'faqs'
   | 'testimonials'
+  | 'pricing'
   | 'application_form'
   | 'application_required'
   | 'application_email_exists'
@@ -86,8 +93,12 @@ export type ScreenId =
   | 'system_settings'
   | 'profile_settings'
   | 'password_settings'
+  | 'notifications_settings'
   | 'change_password'
   | 'incorrect_current_password'
+  | 'billing'
+  | 'kyc_verification'
+  | 'team_workload'
   | 'not_found'
   | 'forbidden'
   | 'server_error'
@@ -110,6 +121,7 @@ export function App() {
   const [currentView, setCurrentView] = useState<ScreenId>('home');
   const [currentUser, setCurrentUser] = useState<User | null>(() => api.getActiveUser());
   const [settingsTab, setSettingsTab] = useState<'profile' | 'password' | 'notifications'>('profile');
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Attempt session hydration on mount & synchronize browser URL path
   useEffect(() => {
@@ -145,6 +157,7 @@ export function App() {
       'faqs': 'faqs',
       'faq': 'faqs',
       'testimonials': 'testimonials',
+      'pricing': 'pricing',
       'signin': 'sign_in',
       'sign-in': 'sign_in',
       'login': 'sign_in',
@@ -209,8 +222,12 @@ export function App() {
     'system_settings',
     'profile_settings',
     'password_settings',
+    'notifications_settings',
     'change_password',
     'incorrect_current_password',
+    'billing',
+    'kyc_verification',
+    'team_workload',
   ].includes(currentView);
 
   const isPublicView = [
@@ -223,6 +240,7 @@ export function App() {
     'contact_us',
     'faqs',
     'testimonials',
+    'pricing',
     'application_form',
     'application_required',
     'application_email_exists',
@@ -248,6 +266,7 @@ export function App() {
   ].includes(currentView);
 
   return (
+    <CompanyProvider>
     <div className="tc-app-container">
       {/* 1. PUBLIC MARKETING & APPLICATION PAGES */}
       {isPublicView ? (
@@ -261,6 +280,7 @@ export function App() {
           {currentView === 'contact_us' && <ContactUsView onNavigate={setCurrentView} />}
           {currentView === 'faqs' && <FaqsView onNavigate={setCurrentView} />}
           {currentView === 'testimonials' && <TestimonialsView onNavigate={setCurrentView} />}
+          {currentView === 'pricing' && <PricingView onNavigate={setCurrentView} />}
           {(currentView === 'careers' || currentView === 'application_form') && (
             <ApplicationFormView key={currentView} initialState="default" onNavigate={setCurrentView} />
           )}
@@ -281,6 +301,8 @@ export function App() {
           <Sidebar
             currentView={currentView}
             userRole={activeUser.role}
+            isOpen={isSidebarOpen}
+            onClose={() => setIsSidebarOpen(false)}
             onNavigate={(view) => {
               if (view === 'settings') {
                 setCurrentView('profile_settings');
@@ -299,14 +321,15 @@ export function App() {
           <div className="tc-workspace-content-wrap">
             <Header
               user={activeUser}
+              onOpenSidebar={() => setIsSidebarOpen(true)}
               onOpenProfile={() => {
                 setCurrentView('profile_settings');
                 setSettingsTab('profile');
               }}
               onOpenNotifications={() => {
-                setCurrentView('profile_settings');
-                setSettingsTab('notifications');
-              }}
+                  setCurrentView('notifications_settings');
+                  setSettingsTab('notifications');
+                }}
             />
 
             <main className="tc-workspace-main">
@@ -373,12 +396,29 @@ export function App() {
                 <SystemSettingsView onNavigate={setCurrentView} />
               )}
 
-              {(currentView === 'profile_settings' || currentView === 'password_settings') && (
+              {currentView === 'billing' && (
+                <BillingView onNavigate={setCurrentView} />
+              )}
+
+              {currentView === 'team_workload' && (
+                <TeamWorkloadView onNavigate={setCurrentView} />
+              )}
+
+              {currentView === 'kyc_verification' && (
+                <KycVerificationView
+                  user={activeUser}
+                  onUpdateUser={(u) => setCurrentUser(u)}
+                />
+              )}
+
+              {(currentView === 'profile_settings' || currentView === 'password_settings' || currentView === 'notifications_settings') && (
                 <SettingsLayout
                   activeTab={settingsTab}
                   onTabChange={(tab) => {
                     setSettingsTab(tab);
-                    setCurrentView(tab === 'profile' ? 'profile_settings' : 'password_settings');
+                    if (tab === 'profile') setCurrentView('profile_settings');
+                    else if (tab === 'password') setCurrentView('password_settings');
+                    else if (tab === 'notifications') setCurrentView('notifications_settings');
                   }}
                 >
                   {settingsTab === 'profile' ? (
@@ -386,6 +426,8 @@ export function App() {
                       user={activeUser}
                       onUpdateUser={(u) => setCurrentUser(u)}
                     />
+                  ) : settingsTab === 'notifications' ? (
+                    <NotificationSettingsView />
                   ) : (
                     <PasswordSettingsView
                       onNavigateChangePassword={() => setCurrentView('change_password')}
@@ -592,6 +634,7 @@ export function App() {
       {/* Global Offline-First Sync Monitor */}
       <OfflineSyncBanner />
     </div>
+    </CompanyProvider>
   );
 }
 
