@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import type { ScreenId } from '../../App';
 import { Mail, Phone, MapPin, ChevronDown, CheckCircle2, AlertCircle } from 'lucide-react';
 import { api } from '../../services/api';
+import { useCompany } from '../../contexts/CompanyContext';
 import {
   ContactCornerTopLeft,
   ContactCornerTopRight,
@@ -14,6 +15,7 @@ interface ContactUsViewProps {
 }
 
 export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNavigate }) => {
+  const company = useCompany();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -92,15 +94,15 @@ export const ContactUsView: React.FC<ContactUsViewProps> = ({ onNavigate: _onNav
               <div className="tc-contact-info-list">
                 <div className="tc-contact-row">
                   <div className="tc-contact-icon"><Mail size={20} /></div>
-                  <span className="tc-contact-value">Titancodetechnologies@gmail.com</span>
+                  <span className="tc-contact-value">{company.support_email}</span>
                 </div>
                 <div className="tc-contact-row">
                   <div className="tc-contact-icon"><Phone size={20} /></div>
-                  <span className="tc-contact-value">+233(0)546606807</span>
+                  <span className="tc-contact-value">{company.phone}</span>
                 </div>
                 <div className="tc-contact-row">
                   <div className="tc-contact-icon"><MapPin size={20} /></div>
-                  <span className="tc-contact-value">Remote</span>
+                  <span className="tc-contact-value">{company.address}</span>
                 </div>
               </div>
             </div>

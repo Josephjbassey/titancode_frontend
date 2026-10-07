@@ -18,12 +18,41 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
   const [supportEmail, setSupportEmail] = useState('support@titancode.tech');
   const [currency, setCurrency] = useState('USD');
   const [timezone, setTimezone] = useState('UTC+01:00 (Lagos / Paris)');
+
+  // Company Profile fields
+  const [phone, setPhone] = useState('+233(0)546606807');
+  const [address, setAddress] = useState('Remote');
+  const [websiteUrl, setWebsiteUrl] = useState('https://titancode.tech');
+  const [whatsappNumber, setWhatsappNumber] = useState('+233(0)546606807');
+  const [calendlyUrl, setCalendlyUrl] = useState('');
+  const [emailSignature, setEmailSignature] = useState('— TitanCode Finance Team');
+  const [copyrightYear, setCopyrightYear] = useState(new Date().getFullYear());
+  const [linkedinUrl, setLinkedinUrl] = useState('');
+  const [twitterUrl, setTwitterUrl] = useState('');
+  const [instagramUrl, setInstagramUrl] = useState('');
+  const [tiktokUrl, setTiktokUrl] = useState('');
+  const [githubUrl, setGithubUrl] = useState('');
+  const [itGithubUrl, setItGithubUrl] = useState('https://github.com/titancode/titancode/issues');
+  const [itSlackUrl, setItSlackUrl] = useState('https://slack.com/app_redirect?channel=it-support');
   const [splitModel, setSplitModel] = useState<'three_tier_60_15_25' | 'standard_70_30' | 'custom'>('three_tier_60_15_25');
   const [platformSplit, setPlatformSplit] = useState(25);
   const [overheadSplit, setOverheadSplit] = useState(15);
   const [memberSplit, setMemberSplit] = useState(60);
   const [notifyOnMilestone, setNotifyOnMilestone] = useState(true);
   const [notifyOnWithdrawal, setNotifyOnWithdrawal] = useState(true);
+
+  // Role Pay Weights & Withdrawal Limits
+  const [roleWeights, setRoleWeights] = useState<Record<string, number>>({
+    CEO: 2.0,
+    Admin: 1.8,
+    Manager: 1.5,
+    'Team Lead': 1.3,
+    Member: 1.0,
+    Assistant: 0.8,
+    HR: 1.0,
+  });
+  const [minWithdrawal, setMinWithdrawal] = useState(50);
+  const [maxWithdrawal, setMaxWithdrawal] = useState<number | ''>('');
 
   // Dynamic Pricing Tiers
   const [pricingTiers, setPricingTiers] = useState<PricingTier[]>([]);
@@ -61,6 +90,28 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         if (settings.pricing_tiers) {
           setPricingTiers(settings.pricing_tiers);
         }
+        const cp = settings.company_profile;
+        if (cp) {
+          if (cp.phone) setPhone(cp.phone);
+          if (cp.address) setAddress(cp.address);
+          if (cp.website_url) setWebsiteUrl(cp.website_url);
+          if (cp.whatsapp_number) setWhatsappNumber(cp.whatsapp_number);
+          if (cp.calendly_url !== undefined) setCalendlyUrl(cp.calendly_url);
+          if (cp.email_signature) setEmailSignature(cp.email_signature);
+          if (cp.copyright_year) setCopyrightYear(cp.copyright_year);
+          if (cp.it_github_issues_url) setItGithubUrl(cp.it_github_issues_url);
+          if (cp.it_slack_channel_url) setItSlackUrl(cp.it_slack_channel_url);
+          if (cp.socials) {
+            if (cp.socials.linkedin !== undefined) setLinkedinUrl(cp.socials.linkedin);
+            if (cp.socials.twitter !== undefined) setTwitterUrl(cp.socials.twitter);
+            if (cp.socials.instagram !== undefined) setInstagramUrl(cp.socials.instagram);
+            if (cp.socials.tiktok !== undefined) setTiktokUrl(cp.socials.tiktok);
+            if (cp.socials.github !== undefined) setGithubUrl(cp.socials.github);
+          }
+        }
+        if (settings.role_weights) setRoleWeights(settings.role_weights);
+        if (settings.min_withdrawal_amount !== undefined) setMinWithdrawal(settings.min_withdrawal_amount);
+        if (settings.max_withdrawal_amount !== undefined && settings.max_withdrawal_amount !== null) setMaxWithdrawal(settings.max_withdrawal_amount);
         setIsLoading(false);
       })
       .catch(() => {
@@ -166,6 +217,30 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
         notify_on_milestone: notifyOnMilestone,
         notify_on_withdrawal: notifyOnWithdrawal,
         pricing_tiers: pricingTiers,
+        role_weights: roleWeights,
+        min_withdrawal_amount: minWithdrawal,
+        max_withdrawal_amount: maxWithdrawal === '' ? null : maxWithdrawal,
+        company_profile: {
+          legal_name: companyName.trim(),
+          phone: phone.trim(),
+          address: address.trim(),
+          website_url: websiteUrl.trim(),
+          payment_redirect_url: '',
+          email_from_name: companyName.trim(),
+          email_signature: emailSignature.trim(),
+          socials: {
+            linkedin: linkedinUrl.trim(),
+            twitter: twitterUrl.trim(),
+            instagram: instagramUrl.trim(),
+            tiktok: tiktokUrl.trim(),
+            github: githubUrl.trim(),
+          },
+          it_github_issues_url: itGithubUrl.trim(),
+          it_slack_channel_url: itSlackUrl.trim(),
+          calendly_url: calendlyUrl.trim(),
+          whatsapp_number: whatsappNumber.trim(),
+          copyright_year: copyrightYear,
+        },
       });
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
@@ -232,6 +307,71 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
               />
             </div>
           </div>
+
+          {/* Contact & Social Links sub-section */}
+          <h4 className="tc-settings-section-title" style={{ fontSize: '0.85rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>
+            Contact &amp; Social Links
+          </h4>
+          <div className="tc-settings-grid-2">
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">Phone / WhatsApp</label>
+              <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} className="tc-settings-input" />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">Address</label>
+              <input type="text" value={address} onChange={(e) => setAddress(e.target.value)} className="tc-settings-input" />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">Website URL</label>
+              <input type="url" value={websiteUrl} onChange={(e) => setWebsiteUrl(e.target.value)} className="tc-settings-input" />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">Calendly URL</label>
+              <input type="url" value={calendlyUrl} onChange={(e) => setCalendlyUrl(e.target.value)} className="tc-settings-input" placeholder="https://calendly.com/..." />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">Email Signature</label>
+              <input type="text" value={emailSignature} onChange={(e) => setEmailSignature(e.target.value)} className="tc-settings-input" />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">Copyright Year</label>
+              <input type="number" value={copyrightYear} onChange={(e) => setCopyrightYear(Number(e.target.value))} className="tc-settings-input" min={2020} max={2100} />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">IT GitHub Issues URL</label>
+              <input type="url" value={itGithubUrl} onChange={(e) => setItGithubUrl(e.target.value)} className="tc-settings-input" />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">IT Slack Channel URL</label>
+              <input type="url" value={itSlackUrl} onChange={(e) => setItSlackUrl(e.target.value)} className="tc-settings-input" />
+            </div>
+          </div>
+
+          <h4 className="tc-settings-section-title" style={{ fontSize: '0.85rem', marginTop: '1.5rem', marginBottom: '0.75rem' }}>
+            Social Profiles
+          </h4>
+          <div className="tc-settings-grid-2">
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">LinkedIn URL</label>
+              <input type="url" value={linkedinUrl} onChange={(e) => setLinkedinUrl(e.target.value)} className="tc-settings-input" placeholder="https://linkedin.com/company/..." />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">Twitter / X URL</label>
+              <input type="url" value={twitterUrl} onChange={(e) => setTwitterUrl(e.target.value)} className="tc-settings-input" placeholder="https://x.com/..." />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">Instagram URL</label>
+              <input type="url" value={instagramUrl} onChange={(e) => setInstagramUrl(e.target.value)} className="tc-settings-input" placeholder="https://instagram.com/..." />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">TikTok URL</label>
+              <input type="url" value={tiktokUrl} onChange={(e) => setTiktokUrl(e.target.value)} className="tc-settings-input" placeholder="https://tiktok.com/@..." />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">GitHub URL</label>
+              <input type="url" value={githubUrl} onChange={(e) => setGithubUrl(e.target.value)} className="tc-settings-input" placeholder="https://github.com/..." />
+            </div>
+          </div>
         </div>
 
         {/* Section 2: Financial Settlement & Escrow Profit Split */}
@@ -272,7 +412,12 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 onChange={(e) => setCurrency(e.target.value)}
                 className="tc-settings-select"
               >
-                <option value="USD">USD ($) United States Dollar</option>
+                <option value="USD">USD ($) — United States Dollar (Subunit: Cents)</option>
+                <option value="NGN">NGN (₦) — Nigerian Naira (Subunit: Kobo)</option>
+                <option value="GHS">GHS (GH₵) — Ghanaian Cedi (Subunit: Pesewas)</option>
+                <option value="KES">KES (KSh) — Kenyan Shilling (Subunit: Cents)</option>
+                <option value="EUR">EUR (€) — Euro (Subunit: Cents)</option>
+                <option value="GBP">GBP (£) — British Pound (Subunit: Pence)</option>
               </select>
             </div>
 
@@ -547,6 +692,41 @@ export const SystemSettingsView: React.FC<{ onNavigate?: (view: ScreenId) => voi
                 </div>
               ))
             )}
+          </div>
+        </div>
+
+        {/* Role Pay Weights */}
+        <div className="tc-settings-card">
+          <h3 className="tc-settings-section-title">Role Pay Weights</h3>
+          <p className="tc-dashboard-subtitle tc-mb-3">
+            Multipliers applied to each role's share of the project squad pool. A weight of 2.0 means that role earns twice the base share.
+          </p>
+          <div className="tc-settings-grid-3">
+            {Object.entries(roleWeights).map(([role, weight]) => (
+              <div key={role} className="tc-settings-field">
+                <label className="tc-settings-label">{role}</label>
+                <input
+                  type="number"
+                  min="0.1"
+                  max="10"
+                  step="0.1"
+                  value={weight}
+                  onChange={(e) => setRoleWeights(prev => ({ ...prev, [role]: Number(e.target.value) }))}
+                  className="tc-settings-input"
+                />
+              </div>
+            ))}
+          </div>
+          {/* Min/Max Withdrawal */}
+          <div className="tc-settings-grid-2 tc-mt-3">
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">Minimum Withdrawal Amount</label>
+              <input type="number" min="0" step="1" value={minWithdrawal} onChange={(e) => setMinWithdrawal(Number(e.target.value))} className="tc-settings-input" />
+            </div>
+            <div className="tc-settings-field">
+              <label className="tc-settings-label">Maximum Withdrawal Amount (leave blank for no limit)</label>
+              <input type="number" min="0" step="1" value={maxWithdrawal} onChange={(e) => setMaxWithdrawal(e.target.value === '' ? '' : Number(e.target.value))} className="tc-settings-input" />
+            </div>
           </div>
         </div>
 

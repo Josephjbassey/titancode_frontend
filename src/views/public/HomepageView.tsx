@@ -110,17 +110,12 @@ export const HomepageView: React.FC<HomepageViewProps> = ({ onNavigate }) => {
           {/* Hero text overlay */}
           <div className="tc-hero-text-overlay">
             <h1 className="tc-hero-h1">
-              Empowering Your <span className="tc-gold">Business Ideas</span>
-              <br />
-              with <span className="tc-gold">Innovative</span> Software
-              <br />
-              Solutions
+              Empowering Your <span className="tc-gold">Business Ideas</span>{' '}
+              with <span className="tc-gold">Innovative</span> Software Solutions
             </h1>
 
             <p className="tc-hero-p">
-              We design and develop websites, mobile apps, and software platforms
-              <br />
-              that solve real-world problems.
+              We design and develop websites, mobile apps, and software platforms that solve real-world problems.
             </p>
 
             <div className="tc-hero-cta-row">
