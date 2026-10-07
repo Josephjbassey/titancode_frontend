@@ -22,7 +22,7 @@ const CAROUSEL_SLIDES: CarouselSlide[] = [
   {
     image: '/assets/aboutus_1.jpg',
     title: '70/30 Concierge Delivery',
-    description: 'High-velocity sprints with audited milestone sign-offs and Paystack escrow protection.',
+    description: 'High-velocity sprints with audited milestone sign-offs and secure escrow protection.',
   },
   {
     image: '/assets/aboutus_2.jpg',

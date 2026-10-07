@@ -543,7 +543,7 @@ export const TasksView: React.FC<TasksViewProps> = ({ onNavigate: _onNavigate })
                 <input
                   type="text"
                   required
-                  placeholder="e.g. Implement WebRTC signaling protocol"
+                  placeholder="e.g. Implement real-time signaling protocol"
                   value={newTitle}
                   onChange={(e) => setNewTitle(e.target.value)}
                   className="tc-form-input"

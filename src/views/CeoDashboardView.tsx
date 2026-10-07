@@ -457,7 +457,7 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
           <div className="tc-list-stack">
             {[
               {
-                title: 'Sumsub Employee KYC Verification Rate',
+                title: 'Employee Identity Verification Rate',
                 value: '98.2%',
                 desc: `All ${overview.totalStaff > 0 ? overview.totalStaff : 'registered'} staff identities verified before escrow payouts`,
                 status: 'Optimal',
@@ -477,7 +477,7 @@ export const CeoDashboardView: React.FC<CeoDashboardViewProps> = ({ onNavigate }
               {
                 title: 'PCI-DSS Payment Gateway Escrow Compliance',
                 value: '100%',
-                desc: 'Zero-token cardholder exposure via Paystack webhooks',
+                desc: 'Zero-token cardholder exposure via secure payment webhooks',
                 status: 'Optimal',
               },
             ].map((gov, i) => (

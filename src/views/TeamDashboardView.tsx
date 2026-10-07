@@ -478,7 +478,7 @@ export const TeamDashboardView: React.FC<TeamDashboardViewProps> = ({ onNavigate
                         )
                       )}
                     </div>
-                    <span className="tc-meeting-platform-label">Google Meet / WebRTC</span>
+                    <span className="tc-meeting-platform-label">Secure Video Meeting</span>
                   </div>
 
                   {/* Full width button */}

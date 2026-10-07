@@ -72,7 +72,7 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
     try {
       const userId = activeUser?.id ? Number(activeUser.id) : 1;
       const res = await api.initiateSumsubKyc(userId);
-      alert(`Sumsub KYC WebSDK session initialized!\nApplicant ID: ${res.applicant_id}\nLevel: Identity & Proof of Address.`);
+      alert(`Identity verification session initialized.\nApplicant ID: ${res.applicant_id}\nLevel: Identity & Proof of Address.`);
       setKycStatus('pending');
     } catch {
       alert('KYC verification submitted for administrative review.');
@@ -283,7 +283,7 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
               <div className="tc-flex-center-gap">
                 <ShieldCheck size={20} className="tc-text-gold" />
                 <h3 className="tc-card-title">
-                  Sumsub Employee KYC Verification
+                  Employee Identity Verification
                 </h3>
               </div>
               <p className="tc-dashboard-subtitle">
@@ -304,7 +304,7 @@ export const ApplicantDashboardView: React.FC<ApplicantDashboardViewProps> = ({
                 ? 'Identity Verified ✓'
                 : kycStatus === 'pending'
                 ? 'Verification In Review...'
-                : 'Start Sumsub Verification'}
+                : 'Start Verification'}
             </button>
           </div>
 

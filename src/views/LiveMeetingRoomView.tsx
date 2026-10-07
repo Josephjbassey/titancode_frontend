@@ -28,8 +28,8 @@ export const DEFAULT_RTC_ICE_SERVERS: RTCIceServer[] = [
       (import.meta as any).env?.VITE_TURN_SERVER_URL || 'turn:turn.titancode.tech:3478?transport=udp',
       (import.meta as any).env?.VITE_TURNS_SERVER_URL || 'turns:turn.titancode.tech:5349?transport=tcp',
     ],
-    username: (import.meta as any).env?.VITE_TURN_USERNAME || 'titancode_guest',
-    credential: (import.meta as any).env?.VITE_TURN_CREDENTIAL || 'titancode_turn_secret_2026',
+    username: (import.meta as any).env?.VITE_TURN_USERNAME ?? '',
+    credential: (import.meta as any).env?.VITE_TURN_CREDENTIAL ?? '',
   },
 ];
 
@@ -176,10 +176,10 @@ export const LiveMeetingRoomView: React.FC<LiveMeetingRoomViewProps> = ({
             <h2 className="tc-meeting-title">{roomTitle}</h2>
             <div
               className="tc-meeting-badge-encrypted"
-              title="WebRTC ICE Relay: Google STUN + Dedicated TURN (Coturn / Twilio NAT Traversal Active)"
+              title="Secure Connection Active"
             >
               <ShieldCheck size={13} />
-              <span>E2E ENCRYPTED (STUN / TURN)</span>
+              <span>End-to-End Encrypted</span>
             </div>
           </div>
 

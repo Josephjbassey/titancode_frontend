@@ -23,9 +23,12 @@ interface PayoutInvoice {
   project: string;
   totalPayout: number;
   split: { role: string; member: string; share: number; amount: number }[];
-  status: 'Pending Approval' | 'Settled';
+  is_approved: boolean;
   generatedDate: string;
 }
+
+const invoiceStatus = (inv: PayoutInvoice): 'Pending Approval' | 'Settled' =>
+  inv.is_approved ? 'Settled' : 'Pending Approval';
 
 interface WalletTransaction {
   ref: string;
@@ -65,9 +68,9 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
 
   // Company Treasury Metrics
   const [treasury, setTreasury] = useState({
-    totalRevenue: 98400,
-    treasuryBalance: 29500,
-    developerPoolPaid: 68900,
+    totalRevenue: 0,
+    treasuryBalance: 0,
+    developerPoolPaid: 0,
   });
 
   // Payout Invoices
@@ -134,7 +137,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
             id: `INV-${String(p.id).padStart(3, '0')}`,
             project: p.project_name || p.name || `Project #${p.id}`,
             totalPayout: budget,
-            status: isSettled ? 'Settled' : 'Pending Approval',
+            is_approved: p.is_approved ?? isSettled,
             generatedDate: p.created_at ? p.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
             split: [
               ...memberSplits,
@@ -149,7 +152,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
         (withdrawalList || []).slice(0, 5).forEach((w: any) => {
           txns.push({
             ref: `TXN-WTH-${w.id}`,
-            project: `Paystack Transfer (${w.bank_info || 'Bank Payout'})`,
+            project: `Bank Transfer (${w.bank_info || 'Bank Payout'})`,
             type: 'Settlement Debit',
             date: w.created_at ? w.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
             amount: `-$${Number(w.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
@@ -175,7 +178,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
         (withdrawalList || []).slice(0, 5).forEach((w: any) => {
           txns.push({
             ref: `TXN-WTH-${w.id}`,
-            project: `Paystack Transfer (${w.bank_info || 'Bank Payout'})`,
+            project: `Bank Transfer (${w.bank_info || 'Bank Payout'})`,
             type: 'Settlement Debit',
             date: w.created_at ? w.created_at.split('T')[0] : new Date().toISOString().split('T')[0],
             amount: `-$${Number(w.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
@@ -206,7 +209,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
     }
 
     try {
-      await api.requestWithdrawal(val, destinationInfo, `Channel: Paystack (${payoutRail})`);
+      await api.requestWithdrawal(val, destinationInfo, `Channel: Secure Payment (${payoutRail})`);
       setMyBalance((prev) => prev - val);
       setWithdrawSuccess(true);
       setTimeout(() => {
@@ -289,7 +292,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                 <span>KYC Bank Verified: GTBank •••• 6789</span>
               </div>
               <div className="tc-flex-center-gap tc-mt-2">
-                <span className="tc-badge-gold-pill">⚡ Paystack Direct Transfers</span>
+                <span className="tc-badge-gold-pill">⚡ Direct Transfers</span>
                 <span className="tc-badge-muted-pill">Local Currency & USD Domiciliary</span>
               </div>
             </div>
@@ -434,8 +437,8 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                     <div className="tc-text-xl tc-font-extrabold tc-text-gold">
                       ${inv.totalPayout.toLocaleString()} USD
                     </div>
-                    <span className={`tc-tier-badge ${inv.status === 'Settled' ? 'tc-tier-badge--active' : 'tc-tier-badge--inactive'}`}>
-                      {inv.status}
+                    <span className={`tc-tier-badge ${invoiceStatus(inv) === 'Settled' ? 'tc-tier-badge--active' : 'tc-tier-badge--inactive'}`}>
+                      {invoiceStatus(inv)}
                     </span>
                   </div>
                 </div>
@@ -457,7 +460,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                   </div>
                 </div>
 
-                {inv.status === 'Pending Approval' && (
+                {invoiceStatus(inv) === 'Pending Approval' && (
                   <div className="tc-flex-end-gap">
                     <button
                       type="button"
@@ -527,7 +530,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                   Withdrawal Request Submitted
                 </h4>
                 <p className="tc-text-muted tc-text-sm">
-                  Disbursal is queued via Paystack Transfers API and will settle directly into your account.
+                  Your withdrawal request has been queued and will settle directly into your account.
                 </p>
               </div>
             ) : (
@@ -554,7 +557,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
 
                 <div className="tc-form-group">
                   <label className="tc-form-label">
-                    Payout Channel (Paystack Settlement Rail)
+                    Payout Channel
                   </label>
                   <select
                     className="tc-form-select"
@@ -562,13 +565,13 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                     onChange={(e) => setPayoutRail(e.target.value as any)}
                   >
                     <option value="paystack_local">
-                      Paystack African Bank Transfer (NGN / GHS / KES / ZAR)
+                      African Bank Transfer (NGN / GHS / KES / ZAR)
                     </option>
                     <option value="paystack_dom">
-                      Paystack USD Domiciliary Account (Direct USD)
+                      USD Domiciliary Account (Direct USD)
                     </option>
                     <option value="paystack_recipient">
-                      Paystack Recipient Code (Instant Disbursal)
+                      Recipient Code (Instant Disbursal)
                     </option>
                   </select>
                 </div>
@@ -576,7 +579,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                 {payoutRail === 'paystack_recipient' ? (
                   <div className="tc-form-group">
                     <label className="tc-form-label">
-                      Paystack Recipient Code
+                      Recipient Code
                     </label>
                     <input
                       type="text"
@@ -619,16 +622,16 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                 )}
 
                 <div className="tc-user-detail-box tc-mb-4">
-                  <div className="tc-user-detail-box-label">Paystack Disbursal Summary:</div>
+                  <div className="tc-user-detail-box-label">Disbursal Summary:</div>
                   <div className="tc-user-detail-box-val">
                     {payoutRail === 'paystack_dom'
                       ? `USD Domiciliary Payout — $${withdrawAmount || '0.00'} USD Direct`
                       : payoutRail === 'paystack_recipient'
-                      ? `Instant Transfer to ${recipientCode || 'Paystack Recipient'}`
-                      : `Local Bank Payout — $${withdrawAmount || '0.00'} USD converted via Paystack live FX`}
+                      ? `Instant Transfer to ${recipientCode || 'Registered Recipient'}`
+                      : `Local Bank Payout — $${withdrawAmount || '0.00'} USD converted at live FX`}
                   </div>
                   <div className="tc-text-muted tc-text-2xs tc-mt-1">
-                    Zero Stripe setup barrier. Funds disbursed directly via Paystack Transfers API with webhook verification.
+                    Funds disbursed directly into your account with webhook verification.
                   </div>
                 </div>
 
@@ -644,7 +647,7 @@ export const FinancialsView: React.FC<{ onNavigate?: (view: ScreenId) => void }>
                     type="submit"
                     className="tc-action-btn-gold"
                   >
-                    Confirm Paystack Payout
+                    Confirm Payout
                   </button>
                 </div>
               </form>

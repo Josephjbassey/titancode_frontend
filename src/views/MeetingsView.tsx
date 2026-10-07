@@ -123,7 +123,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
       <div className="tc-page-header-row">
         <div>
           <h1 className="tc-page-title">
-            Meetings & WebRTC Rooms
+            Meetings & Secure Rooms
           </h1>
           <p className="tc-page-subtitle">
             Instant peer-to-peer encrypted audio and video huddles with client stakeholders and team leads.
@@ -286,7 +286,7 @@ export const MeetingsView: React.FC<MeetingsViewProps> = ({ onNavigate, onJoinRo
           >
             <div className="tc-card-header-row tc-mb-4">
               <h3 className="tc-card-title">
-                Schedule WebRTC Huddle
+                Schedule Meeting
               </h3>
               <button
                 type="button"

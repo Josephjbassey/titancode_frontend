@@ -191,7 +191,7 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
                 onClick={() => setShowKycModal(true)}
                 className="tc-kyc-verify-btn"
               >
-                Sumsub KYC Verified
+                Identity Verified
               </button>
             </div>
             <input
@@ -263,9 +263,9 @@ export const ProfileSettingsView: React.FC<ProfileSettingsViewProps> = ({
         isOpen={showKycModal}
         onClose={() => setShowKycModal(false)}
         type="kyc"
-        title="Sumsub Employee KYC Verification"
-        message="For TitanCode team members and contractors, identity proofing is handled exclusively via Sumsub. Government ID (NIN, passport) is verified directly without storing raw national ID numbers in our database."
-        actionText="Sumsub Sandbox Verified"
+        title="Identity Verification"
+        message="For TitanCode team members and contractors, identity proofing is required. Government ID (NIN, passport) is verified directly without storing raw national ID numbers in our database."
+        actionText="Verified"
       />
 
       {/* Success Modal */}

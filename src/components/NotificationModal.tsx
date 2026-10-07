@@ -33,11 +33,11 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
           </div>
 
           <h3 className="tc-kyc-modal-title">
-            {title || 'Employee Identity Verification (Sumsub)'}
+            {title || 'Identity Verification'}
           </h3>
 
           <p className="tc-kyc-modal-desc">
-            {message || 'As a TitanCode engineering team member, KYC identity verification is securely handled by Sumsub. Your National ID and biometric data are verified directly without storing sensitive government credentials on our servers.'}
+            {message || 'As a TitanCode engineering team member, identity verification is required. Your National ID and biometric data are verified directly without storing sensitive government credentials on our servers.'}
           </p>
 
           <div className="tc-kyc-modal-actions">
@@ -51,7 +51,7 @@ export const NotificationModal: React.FC<NotificationModalProps> = ({
                 onClose();
               }}
             >
-              {actionText || 'Launch Sumsub SDK'}
+              {actionText || 'Begin Verification'}
             </button>
           </div>
         </div>
