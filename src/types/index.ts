@@ -273,6 +273,30 @@ export interface ApiResponse<T> {
   error?: string;
 }
 
+export interface FinancialSettingsCompanySocials {
+  linkedin: string;
+  twitter: string;
+  instagram: string;
+  tiktok: string;
+  github: string;
+}
+
+export interface FinancialSettingsCompanyProfile {
+  legal_name: string;
+  phone: string;
+  address: string;
+  website_url: string;
+  payment_redirect_url: string;
+  email_from_name: string;
+  email_signature: string;
+  socials: FinancialSettingsCompanySocials;
+  it_github_issues_url: string;
+  it_slack_channel_url: string;
+  calendly_url: string;
+  whatsapp_number: string;
+  copyright_year: number;
+}
+
 export interface FinancialSettings {
   company_name: string;
   support_email: string;
@@ -286,6 +310,10 @@ export interface FinancialSettings {
   notify_on_withdrawal: boolean;
   // Dynamic pricing tiers for client projects
   pricing_tiers: PricingTier[];
+  company_profile?: FinancialSettingsCompanyProfile;
+  role_weights?: Record<string, number>;
+  min_withdrawal_amount?: number;
+  max_withdrawal_amount?: number | null;
 }
 
 export interface PricingTier {

@@ -875,6 +875,7 @@ class ApiService {
     company?: string;
     project_type?: string;
     description?: string;
+    budget_range?: string;
   }): Promise<{ success: boolean; offlineQueued?: boolean }> {
     const result = await offlineSync.executeOrQueue(
       {
@@ -902,6 +903,12 @@ class ApiService {
       return { success: true, offlineQueued: true };
     }
     return result.data ?? { success: true };
+  }
+
+  async getPublicPricingTiers(): Promise<any[]> {
+    const res = await fetch(`${API_BASE_URL}/public/pricing-tiers`);
+    if (!res.ok) return [];
+    return res.json();
   }
 
   async submitContact(payload: {
@@ -1396,6 +1403,34 @@ class ApiService {
         splitTreasuryPercent: 30,
       };
     }
+  }
+
+  // --- BILLING / INVOICES ---
+  async listInvoices(): Promise<any[]> {
+    const res = await this.authFetch(`${API_BASE_URL}/billing/invoices`);
+    if (!res.ok) return [];
+    const data = await res.json();
+    return Array.isArray(data) ? data : (data.items ?? []);
+  }
+
+  async generateInvoice(payload: {
+    project_id: number;
+    email: string;
+    client_name: string;
+    items: { description: string; amount: number }[];
+    payment_method: string;
+    company_name?: string;
+  }): Promise<any> {
+    const res = await this.authFetch(`${API_BASE_URL}/billing/generate-invoice`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload),
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error((err as any).detail || 'Failed to generate invoice.');
+    }
+    return res.json();
   }
 
   // --- ACTIVITY FEED ---
